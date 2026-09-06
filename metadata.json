@@ -1,0 +1,6 @@
+{
+  "name": "بروف بريس Profpress",
+  "description": "بروف بريس Profpress - منصة شاملة لإعداد وتحميل وثائق الأستاذ بالمغرب والمدارس الرائدة: البطاقة الشخصية، استعمال الزمن، ميثاق الفصل، شبكات مسار، وشواهد التقدير بدقة A4 عالية وبشعار الوزارة الرسمي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-amiri {
+    font-family: 'Amiri', serif;
+  }
+  .font-cairo {
+    font-family: 'Cairo', sans-serif;
+  }
+  .a4-portrait-box {
+    width: 210mm;
+    min-height: 297mm;
+  }
+  .a4-landscape-box {
+    width: 297mm;
+    min-height: 210mm;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print, nav, header, button, .app-sidebar, .interactive-controls, .no-print-zone {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
+    padding: 12mm 8mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    break-inside: avoid !important;
+  }
+}
+
