@@ -13,6 +13,11 @@ import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { WorkshopReport } from "./components/WorkshopReport";
 import { HomePage } from "./components/HomePage";
 import { ContactModal, PROFPRESS_CONTACT_INFO } from "./components/ContactModal";
+import {
+  AboutModal,
+  PrivacyModal,
+  SubmitTopicModal,
+} from "./components/FooterModals";
 import { TabKey, TeacherProfile } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import {
@@ -29,12 +34,18 @@ import {
   PhoneCall,
   Mail,
   ExternalLink,
+  Info,
+  ShieldCheck,
+  Send,
 } from "lucide-react";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("home");
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isSubmitTopicModalOpen, setIsSubmitTopicModalOpen] = useState(false);
   const [profile, setProfile] = useState<TeacherProfile>(() => {
     try {
       const saved = localStorage.getItem("yalla_teacher_profile");
@@ -88,32 +99,13 @@ export default function App() {
               />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  مدارس الريادة • Écoles Pionnières
-                </span>
-                <span className="text-xs text-blue-200 font-medium">
-                  الموسم 2026 / 2027
-                </span>
-              </div>
-              <h1 className="text-base md:text-lg font-black font-cairo mt-1">
-                بروف بريس Profpress • منصة وثائق الأستاذ الرقمية والمطبوعة
+              <h1 className="text-base md:text-xl font-black font-cairo">
+                بروف بريس Profpress
               </h1>
-              <p className="text-xs text-slate-300">
-                مؤسسة: <strong className="text-white">{profile.institution}</strong> • الأستاذ(ة): <strong className="text-white">{profile.fullNameAr}</strong> ({profile.assignedLevel})
-              </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-            <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="bg-emerald-700/80 hover:bg-emerald-600 text-white border border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-              title="اتصل بنا من أجل ملاحظات أو أسئلة"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-              <span>اتصل بنا</span>
-            </button>
             <button
               onClick={() => {
                 setTempProfile(profile);
@@ -356,6 +348,25 @@ export default function App() {
         onClose={() => setIsContactModalOpen(false)}
       />
 
+      {/* About Us Modal (Profpress.net) */}
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        onOpenContact={() => setIsContactModalOpen(true)}
+      />
+
+      {/* Privacy Policy Modal (Profpress.net) */}
+      <PrivacyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
+
+      {/* Submit Topic Modal (Profpress.net) */}
+      <SubmitTopicModal
+        isOpen={isSubmitTopicModalOpen}
+        onClose={() => setIsSubmitTopicModalOpen(false)}
+      />
+
       {/* Floating Quick Contact Widget (Hidden in Print) */}
       <div className="no-print fixed bottom-5 left-5 z-40 flex items-center gap-2">
         <button
@@ -378,39 +389,83 @@ export default function App() {
       {/* Footer (Hidden in Print) */}
       <footer className="no-print bg-slate-950 text-slate-400 py-8 border-t border-slate-800 mt-12 text-xs">
         <div className="max-w-7xl mx-auto px-4 space-y-6">
+          {/* Top Footer Section with Brand and Official Links */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black">
-                <PhoneCall className="w-5 h-5" />
+                <School className="w-5 h-5" />
               </div>
               <div>
                 <span className="text-amber-400 font-bold text-sm block font-cairo">
                   موقع الأساتذة بروف بريس Profpress.net
                 </span>
                 <span className="text-slate-400 text-xs">
-                  خدمة التواصل واستقبال الملاحظات والأسئلة والاقتراحات التربوية
+                  بوابة وثائق الأستاذ الرقمية والمطبوعة • مواكبة مدارس الريادة والتعليم الابتدائي
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            {/* Main Footer Menu Requested: من نحن، الخصوصية، اتصل بنا، أرسل موضوع */}
+            <nav
+              aria-label="قائمة الفوتر"
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5"
+            >
               <button
+                id="footer-about-btn"
+                type="button"
+                onClick={() => setIsAboutModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-slate-700/80 shadow-2xs hover:border-slate-500"
+              >
+                <Info className="w-3.5 h-3.5 text-blue-400" />
+                <span>من نحن</span>
+              </button>
+
+              <button
+                id="footer-privacy-btn"
+                type="button"
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-slate-700/80 shadow-2xs hover:border-slate-500"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>الخصوصية</span>
+              </button>
+
+              <button
+                id="footer-contact-btn"
+                type="button"
                 onClick={() => setIsContactModalOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-emerald-700/90 hover:bg-emerald-600 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-emerald-500/60 shadow-xs hover:border-emerald-400"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-                <span>اتصل بنا • ملاحظات وأسئلة</span>
+                <span>اتصل بنا</span>
               </button>
+
+              <button
+                id="footer-submit-topic-btn"
+                type="button"
+                onClick={() => setIsSubmitTopicModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-purple-900/90 hover:bg-purple-800 text-purple-100 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-purple-600/60 shadow-xs hover:border-purple-400"
+              >
+                <Send className="w-3.5 h-3.5 text-amber-300" />
+                <span>أرسل موضوع</span>
+              </button>
+            </nav>
+          </div>
+
+          {/* Contact Direct Channels & Links */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400 text-xs">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 font-mono">
               <a
                 href={`tel:${PROFPRESS_CONTACT_INFO.phone}`}
-                className="text-slate-300 hover:text-white flex items-center gap-1 font-mono text-xs hover:underline"
+                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline"
               >
-                <span>📞 {PROFPRESS_CONTACT_INFO.phoneFormatted}</span>
+                <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
+                <span>الهاتف: {PROFPRESS_CONTACT_INFO.phoneFormatted}</span>
               </a>
               <span className="text-slate-700 hidden sm:inline">•</span>
               <a
                 href={`mailto:${PROFPRESS_CONTACT_INFO.primaryEmail}`}
-                className="text-slate-300 hover:text-white flex items-center gap-1 font-mono text-xs hover:underline"
+                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline font-mono"
               >
                 <Mail className="w-3.5 h-3.5 text-blue-400" />
                 <span>{PROFPRESS_CONTACT_INFO.primaryEmail}</span>
@@ -420,19 +475,14 @@ export default function App() {
                 href={PROFPRESS_CONTACT_INFO.contactPageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-bold text-xs hover:underline"
+                className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-bold font-cairo hover:underline"
               >
-                <span>صفحة الاتصال بالموقع</span>
+                <span>صفحة الاتصال بالموقع الرسمي</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
-          </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-slate-500 text-[11px]">
-            <div>
-              منصة بروف بريس الشاملة لإعداد وطباعة وثائق الأستاذ بالمغرب (مدارس الريادة والتعليم العمومي)
-            </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 text-slate-500 text-[11px]">
               <span>متوافق مع مسار</span>
               <span>•</span>
               <span>مقاس A4 المعتمد</span>

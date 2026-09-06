@@ -800,15 +800,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={onOpenContactModal}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3.5 py-2 rounded-xl text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer border border-emerald-400/50"
-              title="اتصل بنا من أجل ملاحظات أو أسئلة"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-              <span>اتصل بنا • ملاحظات وأسئلة</span>
-            </button>
             <a
               href={PROFPRESS_LINKS.main}
               target="_blank"
