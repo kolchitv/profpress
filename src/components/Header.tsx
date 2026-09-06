@@ -15,6 +15,7 @@ import {
   Eye,
   ClipboardList,
   ExternalLink,
+  PhoneCall,
 } from "lucide-react";
 import { TabKey } from "../types";
 
@@ -23,6 +24,7 @@ interface HeaderProps {
   onSelectTab: (tab: TabKey) => void;
   onPrintCurrent: () => void;
   onOpenPrintPreview: () => void;
+  onOpenContactModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -30,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTab,
   onPrintCurrent,
   onOpenPrintPreview,
+  onOpenContactModal,
 }) => {
   const tabs = [
     { key: "home" as TabKey, label: "الرئيسية", icon: Home, badge: "البوابة" },
@@ -67,6 +70,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              id="header-contact-btn"
+              onClick={onOpenContactModal}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer border border-emerald-400/40"
+              title="اتصل بنا من أجل ملاحظات أو أسئلة"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+              <span>اتصل بنا • ملاحظات وأسئلة</span>
+            </button>
             <a
               href="https://www.profpress.net/"
               target="_blank"
@@ -130,6 +142,22 @@ export const Header: React.FC<HeaderProps> = ({
                 منصة بروف بريس Profpress الشاملة لتجهيز وتنظيم وتوليد وثائق أستاذ التعليم الابتدائي بالمغرب بصيغة A4 وبشعار الوزارة الرسمي
               </p>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-start md:self-auto">
+            <button
+              onClick={onOpenContactModal}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-950 border border-emerald-300 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-2xs group cursor-pointer"
+              title="اتصل بنا من أجل ملاحظات أو أسئلة (Profpress.net)"
+            >
+              <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+              </div>
+              <div className="text-right">
+                <span className="block text-xs font-black text-emerald-900">اتصل بنا • ملاحظات وأسئلة</span>
+                <span className="block text-[10px] text-emerald-700 font-medium">0707983967 • kolchitv@gmail.com</span>
+              </div>
+            </button>
           </div>
         </div>
 

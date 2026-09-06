@@ -44,6 +44,9 @@ import {
   BookMarked,
   Layers,
   Baby,
+  PhoneCall,
+  Mail,
+  MessageCircle,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 
@@ -51,11 +54,13 @@ interface HomePageProps {
   teacherProfile: TeacherProfile;
   onNavigateToTab: (tab: TabKey) => void;
   onOpenPrintPreview: () => void;
+  onOpenContactModal?: () => void;
 }
 
 // Official Profpress.net Direct Links Catalog for Full Integration
 export const PROFPRESS_LINKS = {
   main: "https://www.profpress.net/",
+  contact: "https://www.profpress.net/p/contact-us.html",
   news: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
   articles: "https://www.profpress.net/search/label/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA%20%D8%AA%D8%B1%D8%A8%D9%88%D9%8A%D8%A9",
   recruitment: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
@@ -127,6 +132,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   teacherProfile,
   onNavigateToTab,
   onOpenPrintPreview,
+  onOpenContactModal,
 }) => {
   // Educational Cycle Filter: all, primary, middle, high
   const [selectedCycle, setSelectedCycle] = useState<"all" | "primary" | "middle" | "high">("primary");
@@ -794,6 +800,15 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={onOpenContactModal}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3.5 py-2 rounded-xl text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer border border-emerald-400/50"
+              title="اتصل بنا من أجل ملاحظات أو أسئلة"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+              <span>اتصل بنا • ملاحظات وأسئلة</span>
+            </button>
             <a
               href={PROFPRESS_LINKS.main}
               target="_blank"
@@ -1182,6 +1197,62 @@ export const HomePage: React.FC<HomePageProps> = ({
               <Eye className="w-3.5 h-3.5" />
               <span>فتح مركز المعاينة والطباعة</span>
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. CONTACT & FEEDBACK SECTION (اتصل بنا من أجل ملاحظات أو أسئلة - Profpress.net) */}
+      {/* ========================================================================= */}
+      <section className="no-print bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-2xl p-5 text-white shadow-sm border border-slate-800">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+          <div className="flex items-center gap-3.5 max-w-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 shadow-md">
+              <PhoneCall className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                  تواصل مباشر مع إدارة بروف بريس
+                </span>
+                <span className="text-blue-300 text-xs font-mono">0707983967 • kolchitv@gmail.com</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black font-cairo text-white">
+                هل لديك ملاحظات أو أسئلة أو اقتراحات لتطوير وثائق المنصة؟
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                يسعد فريق موقع <strong className="text-amber-300">Profpress.net</strong> بتلقي كافة استفساراتكم وملاحظاتكم التربوية والتقنية والتواصل معكم فورياً عبر الواتساب أو البريد.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0 w-full lg:w-auto justify-start lg:justify-end">
+            <button
+              type="button"
+              onClick={onOpenContactModal}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2.5 rounded-xl text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer border border-emerald-400/50"
+            >
+              <PhoneCall className="w-4 h-4 text-amber-300" />
+              <span>اتصل بنا الآن</span>
+            </button>
+            <a
+              href="https://wa.me/212707983967"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-emerald-700/80 hover:bg-emerald-600 text-white border border-emerald-500/50 font-bold px-3.5 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5"
+            >
+              <MessageCircle className="w-4 h-4 text-emerald-300" />
+              <span>واتساب (0707983967)</span>
+            </a>
+            <a
+              href={PROFPRESS_LINKS.contact}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-3.5 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-blue-300" />
+              <span>صفحة الاتصال بالموقع ↗</span>
+            </a>
           </div>
         </div>
       </section>

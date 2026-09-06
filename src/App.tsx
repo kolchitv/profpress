@@ -12,6 +12,7 @@ import { AiPedagogyAssistant } from "./components/AiPedagogyAssistant";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { WorkshopReport } from "./components/WorkshopReport";
 import { HomePage } from "./components/HomePage";
+import { ContactModal, PROFPRESS_CONTACT_INFO } from "./components/ContactModal";
 import { TabKey, TeacherProfile } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import {
@@ -25,11 +26,15 @@ import {
   HelpCircle,
   Eye,
   Download,
+  PhoneCall,
+  Mail,
+  ExternalLink,
 } from "lucide-react";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("home");
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [profile, setProfile] = useState<TeacherProfile>(() => {
     try {
       const saved = localStorage.getItem("yalla_teacher_profile");
@@ -67,6 +72,7 @@ export default function App() {
         onSelectTab={setActiveTab}
         onPrintCurrent={() => window.print()}
         onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+        onOpenContactModal={() => setIsContactModalOpen(true)}
       />
 
       {/* Main Container */}
@@ -100,6 +106,14 @@ export default function App() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+            <button
+              onClick={() => setIsContactModalOpen(true)}
+              className="bg-emerald-700/80 hover:bg-emerald-600 text-white border border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+              title="اتصل بنا من أجل ملاحظات أو أسئلة"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+              <span>اتصل بنا</span>
+            </button>
             <button
               onClick={() => {
                 setTempProfile(profile);
@@ -135,6 +149,7 @@ export default function App() {
               teacherProfile={profile}
               onNavigateToTab={setActiveTab}
               onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+              onOpenContactModal={() => setIsContactModalOpen(true)}
             />
           )}
 
@@ -335,21 +350,95 @@ export default function App() {
         initialDocument={activeTab === "print_preview" ? "timetable" : activeTab}
       />
 
+      {/* Official Contact Modal (Profpress.net) */}
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
+
+      {/* Floating Quick Contact Widget (Hidden in Print) */}
+      <div className="no-print fixed bottom-5 left-5 z-40 flex items-center gap-2">
+        <button
+          id="floating-contact-btn"
+          onClick={() => setIsContactModalOpen(true)}
+          className="group bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white shadow-xl hover:shadow-2xl rounded-full px-4 py-3 flex items-center gap-2.5 transition-all duration-200 cursor-pointer border-2 border-white/90 hover:scale-105"
+          title="اتصل بنا من أجل ملاحظات أو أسئلة"
+        >
+          <div className="relative">
+            <PhoneCall className="w-5 h-5 text-amber-300 animate-pulse" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-emerald-900" />
+          </div>
+          <div className="text-right leading-tight hidden sm:block">
+            <span className="text-xs font-black block">اتصل بنا</span>
+            <span className="text-[10px] text-emerald-100 font-medium block">ملاحظات وأسئلة</span>
+          </div>
+        </button>
+      </div>
+
       {/* Footer (Hidden in Print) */}
-      <footer className="no-print bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-12 text-xs">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400 font-bold text-sm">بروف بريس Profpress</span>
-            <span>-</span>
-            <span>بوابة الأدوات الرقمية والوثائق التربوية لأساتذة التعليم الابتدائي بالمغرب (مدارس الريادة والعمومي)</span>
+      <footer className="no-print bg-slate-950 text-slate-400 py-8 border-t border-slate-800 mt-12 text-xs">
+        <div className="max-w-7xl mx-auto px-4 space-y-6">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black">
+                <PhoneCall className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-amber-400 font-bold text-sm block font-cairo">
+                  موقع الأساتذة بروف بريس Profpress.net
+                </span>
+                <span className="text-slate-400 text-xs">
+                  خدمة التواصل واستقبال الملاحظات والأسئلة والاقتراحات التربوية
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+                <span>اتصل بنا • ملاحظات وأسئلة</span>
+              </button>
+              <a
+                href={`tel:${PROFPRESS_CONTACT_INFO.phone}`}
+                className="text-slate-300 hover:text-white flex items-center gap-1 font-mono text-xs hover:underline"
+              >
+                <span>📞 {PROFPRESS_CONTACT_INFO.phoneFormatted}</span>
+              </a>
+              <span className="text-slate-700 hidden sm:inline">•</span>
+              <a
+                href={`mailto:${PROFPRESS_CONTACT_INFO.primaryEmail}`}
+                className="text-slate-300 hover:text-white flex items-center gap-1 font-mono text-xs hover:underline"
+              >
+                <Mail className="w-3.5 h-3.5 text-blue-400" />
+                <span>{PROFPRESS_CONTACT_INFO.primaryEmail}</span>
+              </a>
+              <span className="text-slate-700 hidden sm:inline">•</span>
+              <a
+                href={PROFPRESS_CONTACT_INFO.contactPageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-bold text-xs hover:underline"
+              >
+                <span>صفحة الاتصال بالموقع</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-500">
-            <span>متوافق مع منظومة مسار</span>
-            <span>•</span>
-            <span>مقاس الطباعة A4 المعتمد</span>
-            <span>•</span>
-            <span>الموسم 2026/2027</span>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-slate-500 text-[11px]">
+            <div>
+              منصة بروف بريس الشاملة لإعداد وطباعة وثائق الأستاذ بالمغرب (مدارس الريادة والتعليم العمومي)
+            </div>
+            <div className="flex items-center gap-3">
+              <span>متوافق مع مسار</span>
+              <span>•</span>
+              <span>مقاس A4 المعتمد</span>
+              <span>•</span>
+              <span>الموسم 2026/2027</span>
+            </div>
           </div>
         </div>
       </footer>
