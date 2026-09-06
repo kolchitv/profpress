@@ -14,6 +14,7 @@ import {
   Sparkles,
   Eye,
   ClipboardList,
+  ExternalLink,
 } from "lucide-react";
 import { TabKey } from "../types";
 
@@ -66,7 +67,18 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-blue-200 text-xs hidden sm:inline-block">الموسم: 2026/2027</span>
+            <a
+              href="https://www.profpress.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs"
+              title="زيارة وتصفح موقع Profpress.net الأصلي"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-amber-300" />
+              <span className="hidden sm:inline">موقع Profpress.net</span>
+              <span className="sm:hidden">Profpress</span>
+            </a>
+            <span className="text-blue-200 text-xs hidden md:inline-block">الموسم: 2026/2027</span>
             <button
               id="header-preview-pdf-btn"
               onClick={onOpenPrintPreview}

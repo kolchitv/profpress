@@ -53,6 +53,43 @@ interface HomePageProps {
   onOpenPrintPreview: () => void;
 }
 
+// Official Profpress.net Direct Links Catalog for Full Integration
+export const PROFPRESS_LINKS = {
+  main: "https://www.profpress.net/",
+  news: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+  articles: "https://www.profpress.net/search/label/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA%20%D8%AA%D8%B1%D8%A8%D9%88%D9%8A%D8%A9",
+  recruitment: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
+  inspection: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%81%D8%AA%D9%8A%D8%B4",
+  orientation: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%88%D8%AC%D9%8A%D9%87",
+  license: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B1%D8%AE%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A%D8%A9",
+  primary: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A7%D8%A8%D8%AA%D8%AF%D8%A7%D8%A6%D9%8A",
+  middle: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
+  high: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%88%D9%8A",
+  pioneers: "https://www.profpress.net/search/label/%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D8%B1%D8%A7%D8%A6%D8%AF%D8%A9",
+  periodic: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D9%85%D8%B1%D8%AD%D9%84%D9%8A%D8%A9",
+  annual: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D8%B3%D9%86%D9%88%D9%8A%D8%A9",
+  explicitTeaching: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B5%D8%B1%D9%8A%D8%AD",
+  gpa: "https://www.profpress.net/search?q=%D8%AD%D8%B3%D8%A7%D8%A8+%D8%A7%D9%84%D9%85%D8%B9%D8%AF%D9%84+%D8%A7%D9%84%D8%B9%D8%A7%D9%85",
+  lessonPlans: "https://www.profpress.net/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
+  exams: "https://www.profpress.net/search/label/%D9%81%D8%B1%D9%88%D8%B6",
+  smartToolsAll: "https://www.profpress.net/search?q=%D8%A3%D8%AF%D9%88%D8%A7%D8%AA+%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
+  game: "https://www.profpress.net/search?q=%D9%84%D8%B9%D8%A8%D8%A9+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
+  promotion: "https://www.profpress.net/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AA%D8%B1%D9%82%D9%8A%D8%A9",
+  middleExam: "https://www.profpress.net/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9+%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
+  dictation: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%A5%D9%85%D9%84%D8%A7%D8%A1+%D8%A7%D9%84%D8%B0%D9%83%D9%8A",
+  arabicConjugate: "https://www.profpress.net/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
+  frenchConjugate: "https://www.profpress.net/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
+  vocalization: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%AA%D8%B4%D9%83%D9%8A%D9%84+%D9%88%D8%A7%D9%84%D8%A5%D8%B9%D8%B1%D8%A7%D8%A8",
+  remarksGen: "https://www.profpress.net/search?q=%D9%85%D9%88%D9%84%D8%AF+%D9%85%D9%84%D8%A7%D8%AD%D8%B8%D8%A7%D8%AA",
+  textToImage: "https://www.profpress.net/search?q=%D8%A7%D9%84%D9%86%D8%B5+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1%D8%A9",
+  dateConverter: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE",
+  colorPicker: "https://www.profpress.net/search?q=%D9%85%D8%AD%D8%AF%D8%AF+%D8%A7%D9%84%D8%A3%D9%84%D9%88%D8%A7%D9%86",
+  qrGen: "https://www.profpress.net/search?q=%D9%85%D9%88%D9%84%D8%AF+QR",
+  smartTranslator: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%AA%D8%B1%D8%AC%D9%85%D8%A9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
+  numberConverter: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%A3%D8%B1%D9%82%D8%A7%D9%85",
+  pdfToImages: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+PDF+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1",
+};
+
 // Top Category Item Interface
 interface PortalCategory {
   id: string;
@@ -63,6 +100,7 @@ interface PortalCategory {
   borderHover: string;
   description: string;
   badge?: string;
+  externalUrl: string;
   content: {
     subtitle: string;
     highlights: string[];
@@ -82,6 +120,7 @@ interface SmartToolItem {
   shortDesc: string;
   actionType: "modal" | "tab";
   targetTab?: TabKey;
+  externalUrl: string;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -135,6 +174,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       borderHover: "hover:border-red-400",
       description: "المذكرات الوزارية والدخول المدرسي 2026/2027 ومؤسسات الريادة",
       badge: "عاجل",
+      externalUrl: PROFPRESS_LINKS.news,
       content: {
         subtitle: "آخر مستجدات وزارة التربية الوطنية والتعليم الأولي والرياضة",
         highlights: [
@@ -155,6 +195,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-orange-50",
       borderHover: "hover:border-orange-400",
       description: "ديداكتيك المواد، التعليم الصريح، والمقاربات البيداغوجية الحديثة",
+      externalUrl: PROFPRESS_LINKS.articles,
       content: {
         subtitle: "مقالات ودراسات بيداغوجية تطبيقية للأستاذ",
         highlights: [
@@ -176,6 +217,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       borderHover: "hover:border-blue-400",
       description: "أطر مرجعية، ديداكتيك التخصص، ومواضيع الاختبارات الكتابية والشفوية",
       badge: "دورة 2026",
+      externalUrl: PROFPRESS_LINKS.recruitment,
       content: {
         subtitle: "دليل ومراجع مباريات ولوج المراكز الجهوية لمهن التربية والتكوين (CRMEF)",
         highlights: [
@@ -194,6 +236,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-emerald-50",
       borderHover: "hover:border-emerald-400",
       description: "مركز تكوين مفتشي التعليم (CFIE)، علوم التربية، والتشريع المدرسي",
+      externalUrl: PROFPRESS_LINKS.inspection,
       content: {
         subtitle: "المسار المهني لولوج سلك التفتيش والتأطير والمراقبة التربوية",
         highlights: [
@@ -214,6 +257,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-purple-50",
       borderHover: "hover:border-purple-400",
       description: "مركز التوجيه والتخطيط التربوي (COPE)، استشارات ومشروع التلميذ",
+      externalUrl: PROFPRESS_LINKS.orientation,
       content: {
         subtitle: "دليل مباراة المستشارين في التوجيه والتخطيط التربوي",
         highlights: [
@@ -234,6 +278,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-amber-50",
       borderHover: "hover:border-amber-400",
       description: "شهادة الكفاءة التربوية، الترسيم، والترقية بالامتحان المهني",
+      externalUrl: PROFPRESS_LINKS.license,
       content: {
         subtitle: "ملف الكفاءة المهنية، الترسيم، وحساب نقط الأقدمية",
         highlights: [
@@ -259,6 +304,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-blue-50",
       badge: "نشط • الريادة",
       docCount: "9 وثائق معتمدة",
+      externalUrl: PROFPRESS_LINKS.primary,
     },
     {
       id: "middle" as const,
@@ -269,6 +315,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-emerald-50",
       badge: "متوفر",
       docCount: "7 وثائق مسار",
+      externalUrl: PROFPRESS_LINKS.middle,
     },
     {
       id: "high" as const,
@@ -279,6 +326,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-purple-50",
       badge: "تأهيلي",
       docCount: "6 نماذج جاهزة",
+      externalUrl: PROFPRESS_LINKS.high,
     },
   ];
 
@@ -426,7 +474,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     },
   ];
 
-  // Smart Tools (Matching Screenshot 2)
+  // Smart Tools (Matching Screenshot 2 + Profpress.net)
   const smartTools: SmartToolItem[] = [
     {
       id: "game",
@@ -436,6 +484,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-amber-50",
       shortDesc: "تطبيق مسابقات تفاعلي للكلمات والتهجئة الفرنسية بالفصل",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.game,
     },
     {
       id: "promotion",
@@ -445,6 +494,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-blue-50",
       shortDesc: "حاسبة احتساب نقط الترقية بالاختيار والامتحان المهني للأستاذ",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.promotion,
     },
     {
       id: "middle_exam",
@@ -454,6 +504,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-emerald-50",
       shortDesc: "حساب معدل الموحد المحلي والجهوي والمراقبة المستمرة لمسار",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.middleExam,
     },
     {
       id: "dictation",
@@ -463,6 +514,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-pink-50",
       shortDesc: "نصوص إملائية معيارية متدرجة حسب مستويات ومسارات الريادة",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.dictation,
     },
     {
       id: "arabic_conjugate",
@@ -472,6 +524,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-purple-50",
       shortDesc: "جداول تصريف الأفعال الثلاثية والمعتلة في جميع الأزمنة والضمائر",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.arabicConjugate,
     },
     {
       id: "french_conjugate",
@@ -481,6 +534,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-teal-50",
       shortDesc: "Conjugaison des verbes usuels (présent, imparfait, futur, passé composé)",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.frenchConjugate,
     },
     {
       id: "vocalization",
@@ -490,6 +544,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-fuchsia-50",
       shortDesc: "ضبط أواخر الكلمات بالشكل التام وتفكيك الجمل لمساعد الأستاذ",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.vocalization,
     },
     {
       id: "remarks_gen",
@@ -499,6 +554,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-cyan-50",
       shortDesc: "توليد فوري لملاحظات بيانات النقط ومسار بنقرة واحدة",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.remarksGen,
     },
     {
       id: "text_to_image",
@@ -508,6 +564,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-rose-50",
       shortDesc: "توليد بطاقات الوسائل التعليمية والصور التوضيحية للدروس",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.textToImage,
     },
     {
       id: "date_converter",
@@ -517,6 +574,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-slate-100",
       shortDesc: "تحويل فوري بين التاريخ الهجري والميلادي مع التقويم المدرسي",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.dateConverter,
     },
     {
       id: "color_picker",
@@ -526,6 +584,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-amber-50",
       shortDesc: "درجات ألوان الهوية البصرية الرسمية للوزارة والريادة ونسخها",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.colorPicker,
     },
     {
       id: "qr_generator",
@@ -535,6 +594,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-indigo-50",
       shortDesc: "إنشاء رمز استجابة سريعة للدروس والملفات والمذكرات الرقمية",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.qrGen,
     },
     {
       id: "smart_translator",
@@ -544,6 +604,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-blue-50",
       shortDesc: "معجم ديداكتيكي فوري للمصطلحات التربوية (عربية / فرنسية / إنجليزية)",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.smartTranslator,
     },
     {
       id: "number_converter",
@@ -553,6 +614,17 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-violet-50",
       shortDesc: "تفقيط الأعداد وتحويل النقط والمبالغ إلى حروف عربية وفرنسية",
       actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.numberConverter,
+    },
+    {
+      id: "pdf_to_images",
+      title: "محول PDF إلى صور",
+      icon: FileText,
+      iconColor: "text-emerald-600",
+      iconBg: "bg-emerald-50",
+      shortDesc: "تحويل وثائق ومذكرات PDF إلى صور عالية الجودة للاستعمال الصفي",
+      actionType: "modal",
+      externalUrl: PROFPRESS_LINKS.pdfToImages,
     },
   ];
 
@@ -565,6 +637,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-blue-600",
       iconBg: "bg-blue-50",
       subtext: "أطر مرجعية ودليل الاختبارات",
+      externalUrl: PROFPRESS_LINKS.recruitment,
       action: () => {
         const cat = portalCategories.find((c) => c.id === "recruitment");
         if (cat) setActiveCategoryModal(cat);
@@ -577,6 +650,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-emerald-600",
       iconBg: "bg-emerald-50",
       subtext: "المراحل 1، 2، 3 و 4",
+      externalUrl: PROFPRESS_LINKS.periodic,
       action: () => onNavigateToTab("portfolio"),
     },
     {
@@ -586,6 +660,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-purple-600",
       iconBg: "bg-purple-50",
       subtext: "التخطيط السنوي 2026/2027",
+      externalUrl: PROFPRESS_LINKS.annual,
       action: () => onNavigateToTab("portfolio"),
     },
     {
@@ -595,6 +670,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-rose-600",
       iconBg: "bg-rose-50",
       subtext: "النمذجة، الممارسة الموجهة والمستقلة",
+      externalUrl: PROFPRESS_LINKS.explicitTeaching,
       action: () => {
         const cat = portalCategories.find((c) => c.id === "articles");
         if (cat) setActiveCategoryModal(cat);
@@ -607,6 +683,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-amber-600",
       iconBg: "bg-amber-50",
       subtext: "معدلات المراقبة المستمرة ومسار",
+      externalUrl: PROFPRESS_LINKS.gpa,
       action: () => setActiveSmartTool("middle_exam"),
     },
   ];
@@ -696,6 +773,59 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* ========================================================================= */}
+      {/* 0. INTEGRATION BANNER: الربط المباشر والدمج الكامل مع موقع Profpress.net */}
+      {/* ========================================================================= */}
+      <section className="no-print bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-5 text-white shadow-xs border border-blue-800/80">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
+                <ExternalLink className="w-3 h-3" />
+                <span>الدمج الرسمي • Profpress.net</span>
+              </span>
+              <span className="text-blue-300 text-xs font-semibold">بوابة الدمج الموحدة للأستاذ المغربي</span>
+            </div>
+            <h1 className="text-base sm:text-lg font-black font-cairo text-white">
+              منظومة إعداد وطباعة الوثائق مع موارد ومقالات موقع بروف بريس
+            </h1>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              تم ربط كافة أقسام وتصنيفات موقع <strong className="text-amber-300">Profpress.net</strong> لتتيح لك تصفح المستجدات الوزارية، بنك الجذاذات، وفروض المراقبة، بالتزامن مع إمكانية تحرير وتوليد وطباعة الوثائق الرسمية وسجلات الريادة بصيغة A4.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <a
+              href={PROFPRESS_LINKS.main}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-xs flex items-center gap-1.5"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>زيارة الموقع الأصلي ↗</span>
+            </a>
+            <a
+              href={PROFPRESS_LINKS.lessonPlans}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-blue-300" />
+              <span>بنك الجذاذات</span>
+            </a>
+            <a
+              href={PROFPRESS_LINKS.exams}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1"
+            >
+              <Table className="w-3.5 h-3.5 text-emerald-300" />
+              <span>فروض وامتحانات</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
       {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم... - مثل الصورة 1) */}
       {/* ========================================================================= */}
       <section className="no-print">
@@ -734,6 +864,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <span className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-blue-900 transition-colors font-cairo">
                   {item.title}
+                </span>
+                <span className="text-[10px] text-slate-400 group-hover:text-blue-600 flex items-center gap-0.5 mt-[-4px]">
+                  <span>تصفح</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
                 </span>
               </button>
             );
@@ -790,10 +924,21 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <span className="text-[11px] text-slate-500 block truncate mt-0.5">
                       {cycle.subtitle}
                     </span>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center justify-between gap-2 mt-1">
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
                         {cycle.docCount}
                       </span>
+                      <a
+                        href={cycle.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[10px] text-blue-700 hover:text-blue-900 font-bold flex items-center gap-0.5 hover:underline"
+                        title="تصفح مواد هذا السلك على Profpress.net"
+                      >
+                        <span>محتوى Profpress</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
                     </div>
                   </div>
                 </button>
@@ -903,43 +1048,63 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="no-print grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Right 2-Columns: أدوات الموقع الذكية (Matching Screenshot 2) */}
         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
               <span className="text-rose-500 text-lg">✏️</span>
               <h3 className="text-base font-black text-slate-900 font-cairo">
-                أدوات الموقع الذكية
+                أدوات الموقع الذكية (15 أداة تفاعلية)
               </h3>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              أدوات مساعدة تفاعلية لتسهيل مهامك اليومية
-            </span>
+            <a
+              href={PROFPRESS_LINKS.smartToolsAll}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1 hover:underline"
+              title="تصفح جميع الأدوات على Profpress.net"
+            >
+              <span>فتح الأدوات على Profpress.net</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
 
-          {/* 14 Smart Tools Grid in 2 Columns matching Screenshot 2 */}
+          {/* 15 Smart Tools Grid in 2 Columns matching Screenshot 2 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {smartTools.map((tool) => {
               const Icon = tool.icon;
               return (
-                <button
+                <div
                   key={tool.id}
-                  type="button"
                   onClick={() => setActiveSmartTool(tool.id)}
                   className="bg-slate-50/80 hover:bg-blue-50/50 border border-slate-200/90 hover:border-blue-300 rounded-xl p-3.5 flex items-center justify-between transition-all cursor-pointer group text-right"
                 >
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo">
-                      {tool.title}
-                    </span>
+                  <div className="space-y-0.5 flex-1 min-w-0 pr-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo truncate">
+                        {tool.title}
+                      </span>
+                    </div>
                     <span className="text-[11px] text-slate-500 block line-clamp-1">
                       {tool.shortDesc}
                     </span>
                   </div>
-                  <div
-                    className={`w-9 h-9 rounded-xl ${tool.iconBg} ${tool.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-110 transition-transform mr-2`}
-                  >
-                    <Icon className="w-4 h-4" />
+                  <div className="flex items-center gap-2 shrink-0 mr-2">
+                    <a
+                      href={tool.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      title={`فتح ${tool.title} على Profpress.net`}
+                      className="text-slate-400 hover:text-blue-700 hover:bg-white p-1 rounded-md transition"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <div
+                      className={`w-9 h-9 rounded-xl ${tool.iconBg} ${tool.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-110 transition-transform`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -948,11 +1113,14 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* Left 1-Column: الأكثر قراءة وطلباً (Matching Screenshot 3) */}
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-              <span className="text-red-500 text-lg">🔥</span>
-              <h3 className="text-base font-black text-slate-900 font-cairo">
-                الأكثر قراءة وطلباً
-              </h3>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-red-500 text-lg">🔥</span>
+                <h3 className="text-base font-black text-slate-900 font-cairo">
+                  الأكثر قراءة وطلباً
+                </h3>
+              </div>
+              <span className="text-[11px] text-slate-500 font-medium">من بروف بريس</span>
             </div>
 
             {/* List of cards matching Screenshot 3 */}
@@ -960,27 +1128,38 @@ export const HomePage: React.FC<HomePageProps> = ({
               {trendingItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <button
+                  <div
                     key={item.id}
-                    type="button"
                     onClick={item.action}
                     className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between transition cursor-pointer group text-right"
                   >
-                    <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1 shrink-0" />
-                    <div className="flex-1 px-3">
-                      <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1" />
+                      <a
+                        href={item.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        title="فتح في Profpress.net"
+                        className="text-slate-400 hover:text-blue-700 hover:bg-white p-1 rounded-md transition"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                    <div className="flex-1 px-2 min-w-0">
+                      <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo truncate">
                         {item.title}
                       </span>
-                      <span className="text-[10px] text-slate-500 block">
+                      <span className="text-[10px] text-slate-500 block truncate">
                         {item.subtext}
                       </span>
                     </div>
                     <div
-                      className={`w-9 h-9 rounded-xl ${item.iconBg} ${item.iconColor} flex items-center justify-center shrink-0 shadow-2xs`}
+                      className={`w-9 h-9 rounded-xl ${item.iconBg} ${item.iconColor} flex items-center justify-center shrink-0 shadow-2xs mr-1`}
                     >
                       <Icon className="w-4 h-4" />
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -1061,29 +1240,40 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setActiveCategoryModal(null)}
-                className="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
+            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <a
+                href={activeCategoryModal.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl text-xs font-black cursor-pointer transition shadow-xs flex items-center gap-1.5"
               >
-                إغلاق
-              </button>
-              {activeCategoryModal.content.targetTab && (
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>تصفح مقالات هذا القسم على Profpress.net ↗</span>
+              </a>
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    if (activeCategoryModal.content.targetTab) {
-                      onNavigateToTab(activeCategoryModal.content.targetTab);
-                    }
-                    setActiveCategoryModal(null);
-                  }}
-                  className="px-4 py-2 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-xs flex items-center gap-1.5"
+                  onClick={() => setActiveCategoryModal(null)}
+                  className="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
                 >
-                  <span>{activeCategoryModal.content.actionLabel || "الانتقال للوثيقة"}</span>
-                  <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                  إغلاق
                 </button>
-              )}
+                {activeCategoryModal.content.targetTab && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (activeCategoryModal.content.targetTab) {
+                        onNavigateToTab(activeCategoryModal.content.targetTab);
+                      }
+                      setActiveCategoryModal(null);
+                    }}
+                    className="px-4 py-2 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-xs flex items-center gap-1.5"
+                  >
+                    <span>{activeCategoryModal.content.actionLabel || "الانتقال للوثيقة"}</span>
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -1103,12 +1293,26 @@ export const HomePage: React.FC<HomePageProps> = ({
                   {smartTools.find((t) => t.id === activeSmartTool)?.title || "أداة ذكية"}
                 </h3>
               </div>
-              <button
-                onClick={() => setActiveSmartTool(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl && (
+                  <a
+                    href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition shadow-2xs"
+                    title="فتح هذه الأداة في موقع بروف بريس"
+                  >
+                    <span>فتح في Profpress</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                <button
+                  onClick={() => setActiveSmartTool(null)}
+                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Tool 1: Date Converter */}
@@ -1374,8 +1578,38 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             )}
 
+            {/* Tool 8: PDF to Images */}
+            {activeSmartTool === "pdf_to_images" && (
+              <div className="space-y-4 text-xs">
+                <p className="text-slate-600">
+                  محول ملفات PDF البيداغوجية إلى صور عالية الوضوح لاستخدامها في العروض الصفيّة والوسائل التعليمية وجذاذات الريادة:
+                </p>
+                <div className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 text-center space-y-2 bg-slate-50 transition">
+                  <FileText className="w-8 h-8 text-emerald-600 mx-auto" />
+                  <p className="font-bold text-slate-800">اسحب وأفلت ملف PDF هنا أو انقر للاختيار</p>
+                  <p className="text-[11px] text-slate-500">يدعم المذكرات، الجذاذات، كراسات التلميذ وملفات الفروض</p>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer pt-2"
+                  />
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-950 flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-medium">أداة معتمدة ومتزامنة مع بروف بريس</span>
+                  <a
+                    href={PROFPRESS_LINKS.pdfToImages}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-emerald-800 hover:underline flex items-center gap-1"
+                  >
+                    <span>فتح محول PDF على Profpress.net ↗</span>
+                  </a>
+                </div>
+              </div>
+            )}
+
             {/* Other Tools Placeholder info */}
-            {!["date_converter", "number_converter", "qr_generator", "color_picker", "promotion", "game", "remarks_gen"].includes(
+            {!["date_converter", "number_converter", "qr_generator", "color_picker", "promotion", "game", "remarks_gen", "pdf_to_images"].includes(
               activeSmartTool
             ) && (
               <div className="space-y-3 text-xs">
@@ -1390,20 +1624,46 @@ export const HomePage: React.FC<HomePageProps> = ({
                     يمكنك الوصول إلى الأدوات المتخصصة والملاحظات التلقائية عبر قسم «المساعد البيداغوجي ومولد الملاحظات».
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onNavigateToTab("remarks");
-                    setActiveSmartTool(null);
-                  }}
-                  className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 rounded-xl transition cursor-pointer"
-                >
-                  فتح المساعد البيداغوجي الذكي
-                </button>
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onNavigateToTab("remarks");
+                      setActiveSmartTool(null);
+                    }}
+                    className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 rounded-xl transition cursor-pointer text-center"
+                  >
+                    فتح المساعد البيداغوجي الذكي
+                  </button>
+                  {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl && (
+                    <a
+                      href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-xl transition text-center shadow-xs flex items-center justify-center gap-1"
+                    >
+                      <span>تشغيل الأداة على Profpress.net</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
               </div>
             )}
 
-            <div className="pt-3 border-t border-slate-200 flex justify-end">
+            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl ? (
+                <a
+                  href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-800 hover:text-blue-950 font-bold flex items-center gap-1 hover:underline"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                  <span>تصفح الأداة والشرح على Profpress.net ↗</span>
+                </a>
+              ) : (
+                <div />
+              )}
               <button
                 type="button"
                 onClick={() => setActiveSmartTool(null)}
