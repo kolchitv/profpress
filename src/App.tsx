@@ -11,6 +11,7 @@ import { CertificatesGenerator } from "./components/CertificatesGenerator";
 import { AiPedagogyAssistant } from "./components/AiPedagogyAssistant";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { WorkshopReport } from "./components/WorkshopReport";
+import { HomePage } from "./components/HomePage";
 import { TabKey, TeacherProfile } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import {
@@ -27,7 +28,7 @@ import {
 } from "lucide-react";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>("workshop_report");
+  const [activeTab, setActiveTab] = useState<TabKey>("home");
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [profile, setProfile] = useState<TeacherProfile>(() => {
     try {
@@ -129,6 +130,14 @@ export default function App() {
 
         {/* View Switcher based on activeTab */}
         <div className="transition-opacity duration-150">
+          {activeTab === "home" && (
+            <HomePage
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+              onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+            />
+          )}
+
           {activeTab === "workshop_report" && (
             <WorkshopReport teacherProfile={profile} />
           )}

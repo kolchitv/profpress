@@ -1,4 +1,6 @@
 export type TabKey =
+  | "home"
+  | "workshop_report"
   | "portfolio"
   | "timetable"
   | "card"
@@ -8,7 +10,6 @@ export type TabKey =
   | "holidays"
   | "certificates"
   | "remarks"
-  | "workshop_report"
   | "print_preview";
 
 export interface WorkshopTechnicalCard {

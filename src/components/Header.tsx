@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Home,
   FolderKanban,
   Calendar,
   UserCheck,
@@ -30,6 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPrintPreview,
 }) => {
   const tabs = [
+    { key: "home" as TabKey, label: "الرئيسية", icon: Home, badge: "البوابة" },
     { key: "workshop_report" as TabKey, label: "تقرير الورشات", icon: ClipboardList, badge: "جديد 3P" },
     { key: "portfolio" as TabKey, label: "الملف التراكمي", icon: FolderKanban, badge: "الريادة" },
     { key: "timetable" as TabKey, label: "استعمال الزمن", icon: Calendar },
@@ -90,16 +92,19 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Main Brand Title & Nav */}
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2">
-          <div className="flex items-center gap-3">
+          <div
+            onClick={() => onSelectTab("home")}
+            className="flex items-center gap-3 cursor-pointer group"
+          >
             <img
               src="/morocco-ministry-logo.png"
               alt="شعار وزارة التربية الوطنية"
-              className="w-12 h-12 object-contain hidden sm:block drop-shadow-xs"
+              className="w-12 h-12 object-contain hidden sm:block drop-shadow-xs group-hover:scale-105 transition-transform"
             />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-                  <span>بروف بريس</span>
+                  <span className="group-hover:text-blue-900 transition-colors">بروف بريس</span>
                   <span className="text-blue-700 font-black tracking-tight text-base md:text-lg bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
                     Profpress
                   </span>
