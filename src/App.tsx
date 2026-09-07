@@ -15,13 +15,17 @@ import { HomePage } from "./components/HomePage";
 import { AnnouncementsPage } from "./components/AnnouncementsPage";
 import { CompetitionsView } from "./components/PortalViews";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
+import { ContactPage } from "./components/ContactPage";
+import { EducationalBranchPage } from "./components/EducationalBranchPage";
+import { OrientationPage } from "./components/OrientationPage";
 import { ContactModal, PROFPRESS_CONTACT_INFO } from "./components/ContactModal";
 import {
   AboutModal,
   PrivacyModal,
   SubmitTopicModal,
 } from "./components/FooterModals";
-import { TabKey, TeacherProfile } from "./types";
+import { Footer } from "./components/Footer";
+import { TabKey, TeacherProfile, GradeLevelId } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import { applyCustomScripts, getCustomCodeSettings, CUSTOM_CODE_EVENT } from "./utils/customScripts";
 import {
@@ -257,6 +261,35 @@ export default function App() {
               </button>
             </div>
           )}
+
+          {activeTab === "contact" && (
+            <ContactPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {/* Educational Levels dedicated pages (التعليم الابتدائي، الإعدادي، الثانوي) */}
+          {(activeTab === "primary_1" ||
+            activeTab === "primary_2" ||
+            activeTab === "primary_3" ||
+            activeTab === "primary_4" ||
+            activeTab === "primary_5" ||
+            activeTab === "primary_6" ||
+            activeTab === "middle_1" ||
+            activeTab === "middle_2" ||
+            activeTab === "middle_3" ||
+            activeTab === "high_common" ||
+            activeTab === "high_1bac" ||
+            activeTab === "high_2bac") && (
+            <EducationalBranchPage
+              levelId={activeTab as GradeLevelId}
+              onNavigateToTab={setActiveTab}
+              onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+            />
+          )}
+
+          {/* Orientation & Guidance dedicated page (توجيه) */}
+          {activeTab === "orientation" && (
+            <OrientationPage onNavigateToTab={setActiveTab} />
+          )}
         </div>
       </main>
 
@@ -392,6 +425,7 @@ export default function App() {
       <ContactModal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
+        onNavigateToContactPage={() => setActiveTab("contact")}
       />
 
       {/* About Us Modal (Profpress.net) */}
@@ -433,112 +467,14 @@ export default function App() {
       </div>
 
       {/* Footer (Hidden in Print) */}
-      <footer className="no-print bg-slate-950 text-slate-400 py-8 border-t border-slate-800 mt-12 text-xs">
-        <div className="max-w-7xl mx-auto px-4 space-y-6">
-          {/* Top Footer Section with Brand and Official Links */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black">
-                <School className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-amber-400 font-bold text-sm block font-cairo">
-                  موقع الأساتذة بروف بريس Profpress.net
-                </span>
-                <span className="text-slate-400 text-xs">
-                  بوابة وثائق الأستاذ الرقمية والمطبوعة • مواكبة مدارس الريادة والتعليم الابتدائي
-                </span>
-              </div>
-            </div>
-
-            {/* Main Footer Menu Requested: من نحن، الخصوصية، اتصل بنا، أرسل موضوع */}
-            <nav
-              aria-label="قائمة الفوتر"
-              className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5"
-            >
-              <button
-                id="footer-about-btn"
-                type="button"
-                onClick={() => setIsAboutModalOpen(true)}
-                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-slate-700/80 shadow-2xs hover:border-slate-500"
-              >
-                <Info className="w-3.5 h-3.5 text-blue-400" />
-                <span>من نحن</span>
-              </button>
-
-              <button
-                id="footer-privacy-btn"
-                type="button"
-                onClick={() => setIsPrivacyModalOpen(true)}
-                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-slate-700/80 shadow-2xs hover:border-slate-500"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>الخصوصية</span>
-              </button>
-
-              <button
-                id="footer-contact-btn"
-                type="button"
-                onClick={() => setIsContactModalOpen(true)}
-                className="px-3.5 py-2 rounded-xl bg-emerald-700/90 hover:bg-emerald-600 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-emerald-500/60 shadow-xs hover:border-emerald-400"
-              >
-                <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-                <span>اتصل بنا</span>
-              </button>
-
-              <button
-                id="footer-submit-topic-btn"
-                type="button"
-                onClick={() => setIsSubmitTopicModalOpen(true)}
-                className="px-3.5 py-2 rounded-xl bg-purple-900/90 hover:bg-purple-800 text-purple-100 hover:text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 border border-purple-600/60 shadow-xs hover:border-purple-400"
-              >
-                <Send className="w-3.5 h-3.5 text-amber-300" />
-                <span>أرسل موضوع</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* Contact Direct Channels & Links */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400 text-xs">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 font-mono">
-              <a
-                href={`tel:${PROFPRESS_CONTACT_INFO.phone}`}
-                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline"
-              >
-                <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
-                <span>الهاتف: {PROFPRESS_CONTACT_INFO.phoneFormatted}</span>
-              </a>
-              <span className="text-slate-700 hidden sm:inline">•</span>
-              <button
-                type="button"
-                onClick={() => setIsContactModalOpen(true)}
-                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline font-cairo cursor-pointer"
-              >
-                <Mail className="w-3.5 h-3.5 text-blue-400" />
-                <span>نموذج المراسلة والاقتراحات</span>
-              </button>
-              <span className="text-slate-700 hidden sm:inline">•</span>
-              <a
-                href={PROFPRESS_CONTACT_INFO.contactPageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-bold font-cairo hover:underline"
-              >
-                <span>صفحة الاتصال والملاحظات</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-
-            <div className="flex items-center gap-3 text-slate-500 text-[11px]">
-              <span>متوافق مع مسار</span>
-              <span>•</span>
-              <span>مقاس A4 المعتمد</span>
-              <span>•</span>
-              <span>الموسم 2026/2027</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer
+        onNavigateToTab={setActiveTab}
+        onOpenAboutModal={() => setIsAboutModalOpen(true)}
+        onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
+        onOpenContactModal={() => setIsContactModalOpen(true)}
+        onOpenSubmitTopicModal={() => setIsSubmitTopicModalOpen(true)}
+        onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+      />
     </div>
   );
 }

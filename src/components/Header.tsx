@@ -21,6 +21,7 @@ import {
   GraduationCap,
   Files,
   CheckCircle2,
+  PhoneCall,
 } from "lucide-react";
 import { TabKey } from "../types";
 
@@ -95,17 +96,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <a
-              href="https://www.profpress.net/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs"
-              title="زيارة وتصفح موقع Profpress.net الأصلي"
+            <button
+              id="header-contact-quick-btn"
+              onClick={() => onSelectTab("contact")}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+              title="صفحة الاتصال والملاحظات على الموقع"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-amber-300" />
-              <span className="hidden sm:inline">موقع Profpress.net</span>
-              <span className="sm:hidden">Profpress</span>
-            </a>
+              <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
+              <span>اتصل بنا والملاحظات</span>
+            </button>
             <button
               id="header-preview-pdf-btn"
               onClick={onOpenPrintPreview}
@@ -354,6 +353,24 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+
+          {/* 6. صفحة الاتصال والملاحظات */}
+          <button
+            key="contact"
+            id="nav-tab-contact"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("contact");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "contact"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <PhoneCall className={`w-4 h-4 ${activeTab === "contact" ? "text-amber-300" : "text-emerald-600"}`} />
+            <span>الاتصال والملاحظات</span>
+          </button>
         </nav>
 
         {/* Secondary Sub-Bar for quick document switching when inside any pedagogical doc */}

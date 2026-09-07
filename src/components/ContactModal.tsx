@@ -20,6 +20,7 @@ interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTopic?: string;
+  onNavigateToContactPage?: () => void;
 }
 
 export const PROFPRESS_CONTACT_INFO = {
@@ -36,6 +37,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   isOpen,
   onClose,
   defaultTopic = "",
+  onNavigateToContactPage,
 }) => {
   const [senderName, setSenderName] = useState("");
   const [senderContact, setSenderContact] = useState("");
@@ -185,27 +187,31 @@ ${messageText || "أود الاستفسار والتواصل معكم بخصوص
               </div>
             </div>
 
-            {/* Official Website Contact Page */}
+            {/* On-Site Contact & Feedback Page */}
             <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3 flex flex-col justify-between space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0">
                   <Globe className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-[11px] font-bold text-amber-950 block">صفحة الاتصال الرسمية</span>
-                  <span className="text-[10px] text-amber-800 block">Profpress.net</span>
+                  <span className="text-[11px] font-bold text-amber-950 block">صفحة الاتصال والملاحظات</span>
+                  <span className="text-[10px] text-amber-800 block">على الموقع الداخلي</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 pt-1">
-                <a
-                  href={PROFPRESS_CONTACT_INFO.contactPageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 shadow-2xs"
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    if (onNavigateToContactPage) {
+                      onNavigateToContactPage();
+                    }
+                  }}
+                  className="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>فتح في الموقع ↗</span>
-                </a>
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>فتح الصفحة الكاملة بالموقع</span>
+                </button>
               </div>
             </div>
           </div>

@@ -14,7 +14,85 @@ export type TabKey =
   | "holidays"
   | "certificates"
   | "remarks"
-  | "print_preview";
+  | "print_preview"
+  | "contact"
+  // التعليم الابتدائي
+  | "primary_1" // الأول ابتدائي
+  | "primary_2" // الثاني ابتدائي
+  | "primary_3" // الثالث ابتدائي
+  | "primary_4" // الرابع ابتدائي
+  | "primary_5" // الخامس ابتدائي
+  | "primary_6" // السادس ابتدائي
+  // التعليم الإعدادي
+  | "middle_1" // الأولى ثانوي إعدادي
+  | "middle_2" // الثانية ثانوي إعدادي
+  | "middle_3" // الثالثة ثانوي إعدادي
+  // التعليم الثانوي
+  | "high_common" // الجذع المشترك
+  | "high_1bac" // الأولى باكالوريا
+  | "high_2bac" // الثانية باكالوريا
+  // توجيه ومباريات
+  | "orientation";
+
+export type EducationalCycleType = "primary" | "middle" | "high";
+
+export type GradeLevelId =
+  | "primary_1"
+  | "primary_2"
+  | "primary_3"
+  | "primary_4"
+  | "primary_5"
+  | "primary_6"
+  | "middle_1"
+  | "middle_2"
+  | "middle_3"
+  | "high_common"
+  | "high_1bac"
+  | "high_2bac";
+
+export interface EducationalResourceItem {
+  id: string;
+  title: string;
+  category: "lessons" | "exams" | "planning" | "guidelines" | "textbooks";
+  subject: string;
+  semester?: "s1" | "s2" | "annual";
+  format: "PDF" | "DOCX" | "A4 Print" | "Interactive";
+  description: string;
+  downloadUrl?: string;
+  updatedDate: string;
+  downloadsCount: number;
+  featured?: boolean;
+  tags: string[];
+}
+
+export interface EducationalLevelInfo {
+  id: GradeLevelId;
+  title: string;
+  shortTitle: string;
+  cycle: EducationalCycleType;
+  cycleTitle: string;
+  themeColor: {
+    bg: string;
+    border: string;
+    text: string;
+    badge: string;
+    lightBg: string;
+    hoverBg: string;
+    accent: string;
+  };
+  description: string;
+  academicYear: string;
+  subjects: string[];
+  totalResources: number;
+  featuredExam?: {
+    name: string;
+    type: string;
+    dateDescription: string;
+    countdownDays?: number;
+  };
+  pioneerFeatures?: string[];
+  resources: EducationalResourceItem[];
+}
 
 export type TopicCategory =
   | "memo" // مذكرة
