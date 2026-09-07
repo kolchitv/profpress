@@ -50,6 +50,7 @@ import {
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 import { SmartToolsModal } from "./SmartToolsModal";
+import { HolidayReminderBanner } from "./HolidayReminderBanner";
 
 interface HomePageProps {
   teacherProfile: TeacherProfile;
@@ -815,7 +816,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-xs flex items-center gap-1.5"
             >
               <ExternalLink className="w-4 h-4" />
-              <span>زيارة الموقع الأصلي ↗</span>
+              <span>تصفح profpress.net ↗</span>
             </a>
             <a
               href={PROFPRESS_LINKS.lessonPlans}
@@ -1139,7 +1140,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full">
                   تواصل مباشر مع إدارة بروف بريس
                 </span>
-                <span className="text-blue-300 text-xs font-mono">0707983967 • kolchitv@gmail.com</span>
+                <span className="text-blue-300 text-xs font-mono">0707983967 • عبر نموذج الاتصال والواتساب</span>
               </div>
               <h3 className="text-base sm:text-lg font-black font-cairo text-white">
                 هل لديك ملاحظات أو أسئلة أو اقتراحات لتطوير وثائق المنصة؟
@@ -1180,6 +1181,11 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* AUTOMATIC HOLIDAY REMINDER (COMPACT): التذكير التلقائي المصغر بالعطل في الأسفل */}
+      {/* ========================================================================= */}
+      <HolidayReminderBanner onNavigateToTab={onNavigateToTab} />
 
       {/* ========================================================================= */}
       {/* CATEGORY DETAILS MODAL (مستجدات، مباريات، رخصة مهنية...) */}

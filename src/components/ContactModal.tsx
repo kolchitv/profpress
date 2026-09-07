@@ -26,8 +26,8 @@ export const PROFPRESS_CONTACT_INFO = {
   phone: "0707983967",
   phoneFormatted: "+212 707-983967",
   whatsappNumber: "212707983967",
-  primaryEmail: "kolchitv@gmail.com",
-  secondaryEmail: "contact@profpress.ma",
+  primaryEmail: "contact@profpress.net",
+  secondaryEmail: "contact@profpress.net",
   contactPageUrl: "https://www.profpress.net/p/contact-us.html",
   websiteUrl: "https://www.profpress.net/",
 };
@@ -393,7 +393,7 @@ ${messageText || "أود الاستفسار والتواصل معكم بخصوص
         {/* Modal Footer Note */}
         <div className="bg-slate-100 border-t border-slate-200 px-5 py-3 text-[11px] text-slate-600 flex flex-wrap items-center justify-between gap-2">
           <span>
-            الموقع الرسمي: <a href={PROFPRESS_CONTACT_INFO.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-bold">www.profpress.net</a>
+            البوابة: <a href={PROFPRESS_CONTACT_INFO.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-bold">www.profpress.net</a>
           </span>
           <span className="text-slate-500">
             موقع الأساتذة بروف بريس • المملكة المغربية

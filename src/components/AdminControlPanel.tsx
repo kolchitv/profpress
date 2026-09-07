@@ -31,8 +31,19 @@ import {
   Copy,
   EyeOff,
   AlertCircle,
+  Code2,
+  Layers,
+  Terminal,
+  Power,
+  Play,
+  CheckCheck,
+  FileCode,
+  Sliders,
+  Shield,
+  RefreshCw,
+  Save,
 } from "lucide-react";
-import { TopicItem, AdminSession, VisitorPermissions, TopicProposal, TopicCategory } from "../types";
+import { TopicItem, AdminSession, VisitorPermissions, TopicProposal, TopicCategory, CustomCodeSettings } from "../types";
 import { analyzeRankMathSeo } from "../utils/rankMathSeo";
 import {
   getAdminCredentials,
@@ -41,6 +52,12 @@ import {
   DEFAULT_ADMIN_EMAIL,
   AdminCredentials,
 } from "../utils/adminAuth";
+import {
+  getCustomCodeSettings,
+  saveCustomCodeSettings,
+  SCRIPT_PRESETS,
+  ScriptPreset,
+} from "../utils/customScripts";
 
 interface AdminControlPanelProps {
   topics: TopicItem[];
@@ -63,9 +80,74 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   onSaveTopics,
   onLogout,
 }) => {
-  const [activeTab, setActiveTab] = useState<"topics" | "seo" | "permissions" | "monitoring" | "account">("topics");
+  const [activeTab, setActiveTab] = useState<"topics" | "seo" | "permissions" | "monitoring" | "custom_code" | "account">("topics");
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedSitemap, setCopiedSitemap] = useState(false);
+
+  // Custom Code Injection state (Header, Body, Footer)
+  const [customCode, setCustomCode] = useState<CustomCodeSettings>(getCustomCodeSettings);
+  const [codeSaveMsg, setCodeSaveMsg] = useState<string | null>(null);
+  const [activeCodeZone, setActiveCodeZone] = useState<"all" | "header" | "body" | "footer">("all");
+  const [showInjectedInspector, setShowInjectedInspector] = useState(false);
+
+  const handleSaveCustomCode = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const ok = saveCustomCodeSettings(customCode);
+    if (ok) {
+      setCodeSaveMsg("تم حفظ وتطبيق الأكواد بنجاح في المتصفح فوراً!");
+      setTimeout(() => setCodeSaveMsg(null), 3500);
+    }
+  };
+
+  const handleToggleCodeEnabled = () => {
+    const updated: CustomCodeSettings = { ...customCode, isEnabled: !customCode.isEnabled };
+    setCustomCode(updated);
+    saveCustomCodeSettings(updated);
+    setCodeSaveMsg(updated.isEnabled ? "تم تفعيل حقن الأكواد في الموقع." : "تم تعطيل حقن الأكواد مؤقتاً.");
+    setTimeout(() => setCodeSaveMsg(null), 3500);
+  };
+
+  const handleApplyPreset = (preset: ScriptPreset) => {
+    if (preset.target === "gtm_combo") {
+      setCustomCode((prev) => ({
+        ...prev,
+        headerCode: prev.headerCode ? `${prev.headerCode}\n\n${preset.codeSnippet}` : preset.codeSnippet,
+        bodyStartCode: prev.bodyStartCode ? `${prev.bodyStartCode}\n\n${preset.secondarySnippet || ""}` : (preset.secondarySnippet || ""),
+      }));
+    } else if (preset.target === "header") {
+      setCustomCode((prev) => ({
+        ...prev,
+        headerCode: prev.headerCode ? `${prev.headerCode}\n\n${preset.codeSnippet}` : preset.codeSnippet,
+      }));
+    } else if (preset.target === "bodyStart") {
+      setCustomCode((prev) => ({
+        ...prev,
+        bodyStartCode: prev.bodyStartCode ? `${prev.bodyStartCode}\n\n${preset.codeSnippet}` : preset.codeSnippet,
+      }));
+    } else if (preset.target === "footer") {
+      setCustomCode((prev) => ({
+        ...prev,
+        footerCode: prev.footerCode ? `${prev.footerCode}\n\n${preset.codeSnippet}` : preset.codeSnippet,
+      }));
+    }
+    setCodeSaveMsg(`تم إدراج نموذج: ${preset.name} بنجاح. اضغط على "حفظ وتطبيق الأكواد" لتفعيل التغيير.`);
+    setTimeout(() => setCodeSaveMsg(null), 4000);
+  };
+
+  const handleClearAllCode = () => {
+    if (window.confirm("هل أنت متأكد من رغبتك في تفريغ كافة الأكواد المحقونة (Header, Body, Footer)؟")) {
+      const reset: CustomCodeSettings = {
+        headerCode: "",
+        bodyStartCode: "",
+        footerCode: "",
+        isEnabled: customCode.isEnabled,
+      };
+      setCustomCode(reset);
+      saveCustomCodeSettings(reset);
+      setCodeSaveMsg("تم تفريغ كافة حقول الأكواد بنجاح.");
+      setTimeout(() => setCodeSaveMsg(null), 3000);
+    }
+  };
 
   // Account & Credentials state (tied to kolchitv@gmail.com)
   const [adminCreds, setAdminCreds] = useState<AdminCredentials>(getAdminCredentials);
@@ -396,6 +478,22 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
 
         <button
           type="button"
+          onClick={() => setActiveTab("custom_code")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+            activeTab === "custom_code"
+              ? "bg-teal-700 text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          <Code2 className="w-4 h-4 text-amber-300" />
+          <span>أكواد وسكربتات (Header, Body, Footer)</span>
+          {customCode.isEnabled && (customCode.headerCode.trim() || customCode.bodyStartCode.trim() || customCode.footerCode.trim()) ? (
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="شفرات نشطة"></span>
+          ) : null}
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab("account")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "account"
@@ -405,8 +503,8 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
         >
           <KeyRound className="w-4 h-4 text-amber-300" />
           <span>إعدادات الحساب وكلمة المرور</span>
-          <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-mono hidden md:inline">
-            kolchitv@gmail.com
+          <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold hidden md:inline">
+            حساب الإدارة
           </span>
         </button>
       </div>
@@ -653,7 +751,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                     <span>⛔ تحرير المقالات والمستجدات</span>
                   </span>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    محجوب كلياً عن الزوار ومحصور فقط بمدير الموقع (kolchitv@gmail.com). لا تظهر أي أزرار تحرير أو إضافة مواضيع لغير المدير.
+                    محجوب كلياً عن الزوار ومحصور فقط بمدير المنصة المعتمد. لا تظهر أي أزرار تحرير أو إضافة مواضيع لغير المدير.
                   </p>
                 </div>
                 <div className="bg-white/5 p-3 rounded-xl border border-white/10 space-y-1">
@@ -936,8 +1034,438 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 5: ACCOUNT SETTINGS & CHANGE PASSWORD (kolchitv@gmail.com) */}
+      {/* TAB: CUSTOM CODE INJECTION (HEADER, BODY, FOOTER) */}
       {/* ========================================================================= */}
+      {activeTab === "custom_code" && (
+        <div className="space-y-6">
+          {/* Notification Banner */}
+          {codeSaveMsg && (
+            <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs sm:text-sm p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span className="font-bold">{codeSaveMsg}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCodeSaveMsg(null)}
+                className="text-emerald-700 hover:text-emerald-950 text-xs font-bold cursor-pointer"
+              >
+                إغلاق
+              </button>
+            </div>
+          )}
+
+          {/* Top Master Control Header Card */}
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-teal-950 text-white p-6 rounded-3xl border border-slate-800 shadow-md">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+              <div className="space-y-2 max-w-2xl">
+                <div className="flex items-center gap-2">
+                  <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-black px-3 py-1 rounded-full flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5 text-amber-400" />
+                    <span>حقن وتخصيص الأكواد والمخطوطات (Custom Scripts)</span>
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                    تحديث فوري وتطبيق مباشر في المتصفح
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black font-cairo text-white">
+                  إضافة وإدارة الأكواد البرمجية في Header و Body و Footer
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  يمكنك من هنا إضافة شفرات التتبع والإعلانات (Google AdSense, Meta Pixel, GTM)، وسوم الميتا للتحقق من ملكية الموقع (Search Console / Bing)، وأكواد التنسيق CSS، وسكربتات المحادثة الحية أو الأزرار التفاعلية بكل سهولة وبدون تعديل ملفات السورس كود يدوياً.
+                </p>
+              </div>
+
+              {/* Master Actions */}
+              <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-start lg:justify-end">
+                {/* Master Switch Button */}
+                <button
+                  type="button"
+                  onClick={handleToggleCodeEnabled}
+                  className={`px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs border ${
+                    customCode.isEnabled
+                      ? "bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/50"
+                      : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                  }`}
+                >
+                  <Power className={`w-4 h-4 ${customCode.isEnabled ? "text-amber-300" : "text-slate-400"}`} />
+                  <span>{customCode.isEnabled ? "الحقن مفعّل ونشط" : "الحقن معطّل مؤقتاً"}</span>
+                </button>
+
+                {/* Save Button */}
+                <button
+                  type="button"
+                  onClick={() => handleSaveCustomCode()}
+                  className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition shadow-sm flex items-center gap-2 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>حفظ وتطبيق الأكواد</span>
+                </button>
+
+                {/* Clear All Button */}
+                <button
+                  type="button"
+                  onClick={handleClearAllCode}
+                  className="bg-white/10 hover:bg-rose-950/60 text-rose-300 hover:text-rose-200 border border-white/10 hover:border-rose-400/30 px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                  title="تفريغ كافة الحقول"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>تفريغ</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Status Bar */}
+            <div className="mt-5 pt-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
+                <span className="text-slate-400 text-[11px] block">حالة تفعيل الحقن:</span>
+                <strong className={`font-mono text-xs ${customCode.isEnabled ? "text-emerald-400" : "text-amber-400"}`}>
+                  {customCode.isEnabled ? "● نشط ومحقون" : "○ متوقف مؤقتاً"}
+                </strong>
+              </div>
+              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
+                <span className="text-slate-400 text-[11px] block">شفرات الرأس (Header):</span>
+                <strong className="text-blue-300 font-mono text-xs">
+                  {customCode.headerCode.trim() ? `${customCode.headerCode.split("\n").length} أسطر` : "فارغ"}
+                </strong>
+              </div>
+              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
+                <span className="text-slate-400 text-[11px] block">شفرات المتن (Body Start):</span>
+                <strong className="text-teal-300 font-mono text-xs">
+                  {customCode.bodyStartCode.trim() ? `${customCode.bodyStartCode.split("\n").length} أسطر` : "فارغ"}
+                </strong>
+              </div>
+              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
+                <span className="text-slate-400 text-[11px] block">شفرات التذييل (Footer):</span>
+                <strong className="text-amber-300 font-mono text-xs">
+                  {customCode.footerCode.trim() ? `${customCode.footerCode.split("\n").length} أسطر` : "فارغ"}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Preset Templates Shelf */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs space-y-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 font-cairo">
+                  نماذج وقوالب شائعة جاهزة للإدراج بنقرة واحدة:
+                </h4>
+              </div>
+              <span className="text-[11px] text-slate-500">
+                انقر على أي نموذج لإدراجه مباشرة في موضعه المناسب
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 pt-1">
+              {SCRIPT_PRESETS.map((preset) => (
+                <div
+                  key={preset.id}
+                  className="bg-slate-50 hover:bg-teal-50/50 border border-slate-200 hover:border-teal-300 rounded-2xl p-3 flex flex-col justify-between space-y-2 transition group"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="font-bold text-xs text-slate-900 group-hover:text-teal-900 line-clamp-1">
+                        {preset.name}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                        {preset.target === "header"
+                          ? "Head"
+                          : preset.target === "bodyStart"
+                          ? "Body"
+                          : preset.target === "footer"
+                          ? "Footer"
+                          : "Combo"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2">
+                      {preset.description}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset(preset)}
+                    className="w-full bg-white group-hover:bg-teal-700 group-hover:text-white text-teal-800 border border-teal-200 group-hover:border-teal-700 font-bold text-[11px] py-1.5 px-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>إدراج في الحقل</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Code Zone Selector Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setActiveCodeZone("all")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  activeCodeZone === "all"
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                عرض الكل (Header + Body + Footer)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCodeZone("header")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                  activeCodeZone === "header"
+                    ? "bg-blue-700 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                <Globe className="w-3.5 h-3.5" />
+                <span>رأس الصفحة (Header - &lt;head&gt;)</span>
+                {customCode.headerCode.trim() && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCodeZone("body")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                  activeCodeZone === "body"
+                    ? "bg-teal-700 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>بداية المتن (Body Start - &lt;body&gt;)</span>
+                {customCode.bodyStartCode.trim() && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCodeZone("footer")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                  activeCodeZone === "footer"
+                    ? "bg-amber-700 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5" />
+                <span>تذييل الصفحة (Footer - قبل &lt;/body&gt;)</span>
+                {customCode.footerCode.trim() && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                )}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowInjectedInspector(!showInjectedInspector)}
+              className="text-xs text-teal-800 hover:text-teal-950 font-bold flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-teal-50 transition cursor-pointer border border-teal-200"
+            >
+              <Eye className="w-3.5 h-3.5 text-teal-600" />
+              <span>{showInjectedInspector ? "إخفاء فاحص الـ DOM" : "معاينة العناصر المحقونة في الـ DOM"}</span>
+            </button>
+          </div>
+
+          {/* Inspector Panel if toggled */}
+          {showInjectedInspector && (
+            <div className="bg-slate-900 text-slate-100 p-5 rounded-3xl border border-slate-800 space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-amber-400 flex items-center gap-2">
+                  <Terminal className="w-4 h-4" />
+                  <span>فاحص الحقن الفعلي للـ DOM (Active Injected Elements):</span>
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  المعرفات: #profpress-injected-head-code • #profpress-injected-body-start-code • #profpress-injected-footer-code
+                </span>
+              </div>
+              <div className="bg-black/50 p-3 rounded-xl space-y-2 border border-slate-800 text-[11px] overflow-x-auto text-left" dir="ltr">
+                <div>
+                  <span className="text-blue-400 font-bold">&lt;!-- Injected inside document.head --&gt;</span>
+                  <pre className="text-slate-300 mt-1 whitespace-pre-wrap">{customCode.headerCode || "// No header code"}</pre>
+                </div>
+                <div className="border-t border-slate-800 pt-2">
+                  <span className="text-teal-400 font-bold">&lt;!-- Injected at top of document.body --&gt;</span>
+                  <pre className="text-slate-300 mt-1 whitespace-pre-wrap">{customCode.bodyStartCode || "// No body start code"}</pre>
+                </div>
+                <div className="border-t border-slate-800 pt-2">
+                  <span className="text-amber-400 font-bold">&lt;!-- Injected at bottom of document.body --&gt;</span>
+                  <pre className="text-slate-300 mt-1 whitespace-pre-wrap">{customCode.footerCode || "// No footer code"}</pre>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Form with the 3 Code Fields */}
+          <form onSubmit={handleSaveCustomCode} className="space-y-6">
+            {/* FIELD 1: HEADER CODE (<head>) */}
+            {(activeCodeZone === "all" || activeCodeZone === "header") && (
+              <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center shrink-0">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 font-cairo flex items-center gap-2">
+                        <span>أكواد رأس الصفحة (Header Scripts)</span>
+                        <code className="text-[11px] bg-blue-100 text-blue-900 px-2 py-0.5 rounded-md font-mono">
+                          &lt;head&gt; ... &lt;/head&gt;
+                        </code>
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        تُحقن داخل وسم &lt;head&gt; قبل تحميل عناصر الصفحة
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                    <span>{customCode.headerCode.split("\n").length} أسطر</span>
+                    <span>•</span>
+                    <span>{customCode.headerCode.length} حرف</span>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50/50 border border-blue-200/60 rounded-xl p-3 text-[11px] text-blue-900 leading-relaxed">
+                  💡 <strong>استخدامات شائعة:</strong> شفرات التتبع والإحصائيات (Google Analytics, Meta Pixel)، وسوم التحقق من ملكية الموقع (Google Search Console, Bing)، وسوم Meta الإضافية، وكتل الستايل المخصصة <code className="font-mono bg-white px-1 rounded">&lt;style&gt;</code>.
+                </div>
+
+                <div className="relative">
+                  <textarea
+                    value={customCode.headerCode}
+                    onChange={(e) => setCustomCode({ ...customCode, headerCode: e.target.value })}
+                    rows={8}
+                    placeholder="<!-- ضع أكواد الرأس هنا: <meta>, <script>, <link>, <style> -->"
+                    className="w-full bg-slate-900 text-blue-300 font-mono text-xs p-4 rounded-2xl border border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-hidden leading-relaxed shadow-inner"
+                    dir="ltr"
+                    spellCheck={false}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {/* FIELD 2: BODY START CODE (<body>) */}
+            {(activeCodeZone === "all" || activeCodeZone === "body") && (
+              <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center shrink-0">
+                      <Layers className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 font-cairo flex items-center gap-2">
+                        <span>أكواد بداية جسم الصفحة (Body Start Scripts)</span>
+                        <code className="text-[11px] bg-teal-100 text-teal-900 px-2 py-0.5 rounded-md font-mono">
+                          مباشرة بعد &lt;body&gt;
+                        </code>
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        تُحقن في بداية وسم &lt;body&gt; قبل واجهة المحتوى
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                    <span>{customCode.bodyStartCode.split("\n").length} أسطر</span>
+                    <span>•</span>
+                    <span>{customCode.bodyStartCode.length} حرف</span>
+                  </div>
+                </div>
+
+                <div className="bg-teal-50/50 border border-teal-200/60 rounded-xl p-3 text-[11px] text-teal-900 leading-relaxed">
+                  💡 <strong>استخدامات شائعة:</strong> شفرة Google Tag Manager (noscript)، بنرات وشاشات التنبيه العلوية، شفرات التتبع الفورية عند فتح المتن.
+                </div>
+
+                <div className="relative">
+                  <textarea
+                    value={customCode.bodyStartCode}
+                    onChange={(e) => setCustomCode({ ...customCode, bodyStartCode: e.target.value })}
+                    rows={8}
+                    placeholder="<!-- ضع أكواد بداية المتن هنا: <noscript>, <div class='banner'>, <script> -->"
+                    className="w-full bg-slate-900 text-teal-300 font-mono text-xs p-4 rounded-2xl border border-slate-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-hidden leading-relaxed shadow-inner"
+                    dir="ltr"
+                    spellCheck={false}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {/* FIELD 3: FOOTER CODE (</body>) */}
+            {(activeCodeZone === "all" || activeCodeZone === "footer") && (
+              <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
+                      <Terminal className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 font-cairo flex items-center gap-2">
+                        <span>أكواد تذييل الصفحة (Footer Scripts)</span>
+                        <code className="text-[11px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-mono">
+                          قبل إغلاق &lt;/body&gt;
+                        </code>
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        تُحقن في أسفل الصفحة بعد اكتمال تحميل العناصر الأساسية
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                    <span>{customCode.footerCode.split("\n").length} أسطر</span>
+                    <span>•</span>
+                    <span>{customCode.footerCode.length} حرف</span>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50/50 border border-amber-200/60 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed">
+                  💡 <strong>استخدامات شائعة:</strong> أدوات المحادثة المباشرة (WhatsApp Widget, Live Chat, Tawk.to)، إعلانات AdSense أسفل الصفحة، شفرات الإحصائيات المتأخرة التحميل لتحسين سرعة وأداء الموقع (Core Web Vitals).
+                </div>
+
+                <div className="relative">
+                  <textarea
+                    value={customCode.footerCode}
+                    onChange={(e) => setCustomCode({ ...customCode, footerCode: e.target.value })}
+                    rows={8}
+                    placeholder="<!-- ضع أكواد التذييل هنا: <script src='...'>, أزرار عائمة، شفرات إعلانية -->"
+                    className="w-full bg-slate-900 text-amber-300 font-mono text-xs p-4 rounded-2xl border border-slate-700 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-hidden leading-relaxed shadow-inner"
+                    dir="ltr"
+                    spellCheck={false}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Save / Action Bar */}
+            <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-600">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>
+                  الحفظ يقوم بتطبيق وتحديث الأكواد فوراً على كافة صفحات ومكونات المنصة دون الحاجة لإعادة تحميل.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleClearAllCode}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition cursor-pointer"
+                >
+                  مسح الحقول
+                </button>
+                <button
+                  type="submit"
+                  className="bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl transition shadow-xs flex items-center gap-2 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>حفظ وتطبيق الأكواد الآن</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
       {activeTab === "account" && (
         <div className="space-y-6">
           {/* Success / Error Banners */}

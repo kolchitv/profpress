@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { HolidayItem, TeacherProfile } from "../types";
 import { MOROCCAN_HOLIDAYS_2026_2027 } from "../data/holidays2026_2027";
+import { calculateHolidayReminder } from "../utils/holidayReminder";
 
 interface HolidaysCalendarProps {
   teacherProfile: TeacherProfile;
@@ -28,6 +29,7 @@ export const HolidaysCalendar: React.FC<HolidaysCalendarProps> = ({ teacherProfi
       : holidays.filter((h) => h.type === filterType);
 
   const totalDays = holidays.reduce((acc, h) => acc + h.durationDays, 0);
+  const reminderInfo = calculateHolidayReminder();
 
   // Generate .ics calendar file download
   const handleDownloadICal = () => {
@@ -242,18 +244,39 @@ export const HolidaysCalendar: React.FC<HolidaysCalendarProps> = ({ teacherProfi
                 </tr>
               </thead>
               <tbody>
-                {filteredHolidays.map((holiday, idx) => (
+                {filteredHolidays.map((holiday, idx) => {
+                  const isCurrent = holiday.id === reminderInfo.currentHoliday?.id;
+                  const isNext = !reminderInfo.currentHoliday && holiday.id === reminderInfo.nextHoliday?.id;
+                  return (
                   <tr
                     key={holiday.id}
-                    className={`hover:bg-slate-50 ${
-                      holiday.type === "periodique" ? "bg-emerald-50/20" : ""
+                    className={`hover:bg-slate-50 transition-colors ${
+                      isCurrent
+                        ? "bg-emerald-100/70 border-2 border-emerald-500 font-bold"
+                        : isNext
+                        ? "bg-amber-50/80 border-2 border-amber-400"
+                        : holiday.type === "periodique"
+                        ? "bg-emerald-50/20"
+                        : ""
                     }`}
                   >
                     <td className="border border-slate-300 p-2 text-center font-bold text-slate-500">
                       {idx + 1}
                     </td>
                     <td className="border border-slate-300 p-2 font-bold text-slate-900">
-                      {holiday.nameAr}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span>{holiday.nameAr}</span>
+                        {isCurrent && (
+                          <span className="no-print bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                            عطلة جارية حالياً
+                          </span>
+                        )}
+                        {isNext && (
+                          <span className="no-print bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">
+                            العطلة القادمة (بعد {reminderInfo.daysUntilNext} يوماً)
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="border border-slate-300 p-2 text-slate-600 font-medium" dir="ltr">
                       {holiday.nameFr}
@@ -271,7 +294,8 @@ export const HolidaysCalendar: React.FC<HolidaysCalendarProps> = ({ teacherProfi
                       {holiday.hijriDate || "—"}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
               <tfoot>
                 <tr className="bg-slate-100 font-black text-slate-900">

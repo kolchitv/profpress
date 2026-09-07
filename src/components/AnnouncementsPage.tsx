@@ -287,7 +287,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           <div className="flex items-center gap-2.5">
             <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs px-3 py-1 rounded-xl font-bold">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>مدير الموقع: {adminSession.adminEmail || "kolchitv@gmail.com"}</span>
+              <span>إدارة المنصة (حساب مسؤول معتمد)</span>
             </span>
             <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
               صلاحية كاملة للتحرير والسيو
@@ -297,7 +297,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <Lock className="w-3.5 h-3.5 text-amber-600" />
             <span>
-              لوحة التحكم والتحرير محصورة بمدير المنصة (<strong className="font-mono text-slate-900">kolchitv@gmail.com</strong>)
+              لوحة التحكم والتحرير محصورة بمدير المنصة المعتمد
             </span>
           </div>
         )}
@@ -350,7 +350,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
               className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>دخول لوحة تحكم المدير (kolchitv@gmail.com)</span>
+              <span>دخول لوحة تحكم الإدارة</span>
             </button>
           )}
         </div>

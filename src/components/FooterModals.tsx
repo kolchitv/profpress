@@ -126,23 +126,6 @@ export const AboutModal: React.FC<AboutModalProps> = ({
               </p>
             </div>
           </div>
-
-          {/* Direct External Link */}
-          <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="space-y-0.5 text-right">
-              <span className="font-bold text-amber-950 block">زيارة الموقع الرسمي الأصلي:</span>
-              <span className="text-slate-600">يمكنكم متابعة أحدث المقالات والمستجدات على الرابط المباشر.</span>
-            </div>
-            <a
-              href="https://www.profpress.net/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2 rounded-xl transition shadow-xs flex items-center gap-1.5 shrink-0"
-            >
-              <span>profpress.net ↗</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
         </div>
 
         {/* Footer Actions */}
@@ -334,9 +317,7 @@ ${topicDetails || "لا توجد تفاصيل إضافية."}
   };
 
   const handleSendEmail = () => {
-    const subject = encodeURIComponent(`مساهمة للنشر على Profpress: ${subjectTitle || "موضوع تربوي"}`);
-    const body = encodeURIComponent(formattedSummary);
-    window.open(`mailto:kolchitv@gmail.com?subject=${subject}&body=${body}`, "_blank");
+    window.open("https://www.profpress.net/p/contact-us.html", "_blank");
   };
 
   const handleCopySummary = () => {

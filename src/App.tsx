@@ -23,6 +23,7 @@ import {
 } from "./components/FooterModals";
 import { TabKey, TeacherProfile } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
+import { applyCustomScripts, getCustomCodeSettings, CUSTOM_CODE_EVENT } from "./utils/customScripts";
 import {
   Sparkles,
   School,
@@ -77,6 +78,25 @@ export default function App() {
     handleUpdateProfile(tempProfile);
     setIsProfileModalOpen(false);
   };
+
+  // Initialize and listen to custom script injections (Header, Body, Footer)
+  useEffect(() => {
+    applyCustomScripts(getCustomCodeSettings());
+
+    const handleCustomCodeUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail) {
+        applyCustomScripts(customEvent.detail);
+      } else {
+        applyCustomScripts(getCustomCodeSettings());
+      }
+    };
+
+    window.addEventListener(CUSTOM_CODE_EVENT, handleCustomCodeUpdate);
+    return () => {
+      window.removeEventListener(CUSTOM_CODE_EVENT, handleCustomCodeUpdate);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-cairo selection:bg-blue-200 selection:text-blue-900" dir="rtl">
@@ -489,13 +509,14 @@ export default function App() {
                 <span>الهاتف: {PROFPRESS_CONTACT_INFO.phoneFormatted}</span>
               </a>
               <span className="text-slate-700 hidden sm:inline">•</span>
-              <a
-                href={`mailto:${PROFPRESS_CONTACT_INFO.primaryEmail}`}
-                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline font-mono"
+              <button
+                type="button"
+                onClick={() => setIsContactModalOpen(true)}
+                className="text-slate-300 hover:text-white flex items-center gap-1.5 hover:underline font-cairo cursor-pointer"
               >
                 <Mail className="w-3.5 h-3.5 text-blue-400" />
-                <span>{PROFPRESS_CONTACT_INFO.primaryEmail}</span>
-              </a>
+                <span>نموذج المراسلة والاقتراحات</span>
+              </button>
               <span className="text-slate-700 hidden sm:inline">•</span>
               <a
                 href={PROFPRESS_CONTACT_INFO.contactPageUrl}
@@ -503,7 +524,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-bold font-cairo hover:underline"
               >
-                <span>صفحة الاتصال بالموقع الرسمي</span>
+                <span>صفحة الاتصال والملاحظات</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>

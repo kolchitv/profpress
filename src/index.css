@@ -60,14 +60,24 @@
     page: portrait-sheet !important;
     box-shadow: none !important;
     border-radius: 0 !important;
+    border: none !important;
     margin: 0 auto !important;
     width: 210mm !important;
     max-width: 210mm !important;
-    min-height: 297mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    overflow: hidden !important;
     box-sizing: border-box !important;
-    padding: 6mm 8mm !important;
+    padding: 8mm 10mm !important;
+    page-break-after: always !important;
+    break-after: page !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  .print-sheet:last-child, .print-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   /* Exact A4 Landscape Sheets (297mm x 210mm 100% full match) */

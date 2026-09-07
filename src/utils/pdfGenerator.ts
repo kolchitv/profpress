@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 export interface PdfExportOptions {
   filename?: string;
   orientation?: "portrait" | "landscape" | "auto";
-  quality?: "standard" | "high" | "ultra"; // 1.5x, 2x, 3x
+  quality?: "standard" | "high" | "ultra"; // 1.5x, 2x, 2.2x
   colorMode?: "color" | "grayscale";
   onProgress?: (status: string) => void;
 }
@@ -25,41 +25,71 @@ export async function generatePdfFromElement(
     onProgress,
   } = options;
 
+  const origScrollX = window.scrollX;
+  const origScrollY = window.scrollY;
+
   try {
-    onProgress?.("جاري تهيئة الخطوط والألوان ومقاسات A4...");
+    onProgress?.("جاري التحقق من تحميل جميع الصور والخطوط بالكامل...");
 
     // Wait for document fonts to be ready
     if (document.fonts) {
       await document.fonts.ready;
     }
 
+    // Ensure all images are fully loaded and decoded
+    const images = Array.from(element.querySelectorAll("img"));
+    await Promise.all(
+      images.map(async (img) => {
+        if (!img.complete) {
+          await new Promise((resolve) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+          });
+        }
+        if (img.decode) {
+          try {
+            await img.decode();
+          } catch {
+            // ignore decode error
+          }
+        }
+      })
+    );
+
+    // Scroll window to absolute top to eliminate scroll offsets
+    window.scrollTo(0, 0);
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
     // Determine scale factor for high DPI
-    let scale = 2; // default high resolution
+    let scale = 2; // 200 DPI crisp & memory safe
     if (quality === "ultra") {
-      scale = 3; // 300 DPI ultra high resolution
+      scale = 2.2;
     } else if (quality === "standard") {
       scale = 1.5;
     }
 
     onProgress?.("جاري المعالجة بدقة عالية (High Resolution DPI)...");
 
-    // Capture element with html2canvas
+    // Capture element with html2canvas (stable viewport capture)
     const canvas = await html2canvas(element, {
       scale: scale,
       useCORS: true,
       allowTaint: true,
       backgroundColor: "#ffffff",
       logging: false,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
+      scrollX: 0,
+      scrollY: 0,
       ignoreElements: (el) => {
-        // Ignore any elements with no-print or interactive buttons
         return (
           el.classList.contains("no-print") ||
           el.classList.contains("interactive-controls")
         );
       },
     });
+
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      throw new Error("تعذر التقاط محتوى الصفحة بنجاح.");
+    }
 
     onProgress?.("جاري ضبط أبعاد A4 وحفظ الألوان...");
 
@@ -70,11 +100,9 @@ export async function generatePdfFromElement(
     } else if (orientation === "portrait") {
       isLandscape = false;
     } else {
-      // Auto: based on canvas aspect ratio
       isLandscape = canvas.width > canvas.height;
     }
 
-    // Convert to grayscale if requested
     let imgData: string;
     if (colorMode === "grayscale") {
       const ctx = canvas.getContext("2d");
@@ -97,7 +125,6 @@ export async function generatePdfFromElement(
 
     onProgress?.("جاري إنشاء ملف PDF وتضمين الصفحة...");
 
-    // Standard A4 dimensions in mm: 210 x 297
     const pdf = new jsPDF({
       orientation: isLandscape ? "landscape" : "portrait",
       unit: "mm",
@@ -108,23 +135,23 @@ export async function generatePdfFromElement(
     const pdfPageWidth = isLandscape ? 297 : 210;
     const pdfPageHeight = isLandscape ? 210 : 297;
 
-    // Render document to match exact A4 full dimensions (210 x 297 mm or 297 x 210 mm)
-    // without any artificial margins that cause documents to output smaller than A4
     pdf.addImage(imgData, "JPEG", 0, 0, pdfPageWidth, pdfPageHeight, undefined, "FAST");
 
     onProgress?.("اكتمل التوليد! جاري بدء التحميل...");
-
-    // Safe sanitized filename with .pdf extension
     const cleanFilename = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
     pdf.save(cleanFilename);
   } catch (error) {
     console.error("PDF generation failed:", error);
     throw error;
+  } finally {
+    window.scrollTo(origScrollX, origScrollY);
   }
 }
 
 /**
  * Multi-page A4 PDF generator for documents spanning multiple consecutive pages (e.g., Workshop Report).
+ * Ensures all typography and images are completely decoded and loaded before capturing,
+ * and fixes canvas coordinate offsets to guarantee zero blank/white pages.
  */
 export async function generateMultiPagePdfFromElements(
   elements: HTMLElement[],
@@ -138,15 +165,47 @@ export async function generateMultiPagePdfFromElements(
     onProgress,
   } = options;
 
+  const origScrollX = window.scrollX;
+  const origScrollY = window.scrollY;
+
   try {
-    onProgress?.("جاري تهيئة الخطوط المغربية الرسمية وألوان A4...");
+    onProgress?.("جاري فحص وتحميل جميع الخطوط والصور بالكامل...");
+
+    // 1. Wait for document fonts
     if (document.fonts) {
       await document.fonts.ready;
     }
 
-    let scale = 2.5; // High crisp resolution
+    // 2. Wait for all images across all pages
+    const allImages: HTMLImageElement[] = [];
+    elements.forEach((el) => {
+      allImages.push(...Array.from(el.querySelectorAll("img")));
+    });
+
+    await Promise.all(
+      allImages.map(async (img) => {
+        if (!img.complete) {
+          await new Promise((resolve) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+          });
+        }
+        if (img.decode) {
+          try {
+            await img.decode();
+          } catch {
+            // image already rendered or decode unsupported
+          }
+        }
+      })
+    );
+
+    // Give browser time to settle DOM rendering & layout
+    await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 80)));
+
+    let scale = 2; // 200 DPI crisp, memory safe
     if (quality === "ultra") {
-      scale = 3;
+      scale = 2.2;
     } else if (quality === "standard") {
       scale = 1.5;
     }
@@ -163,8 +222,12 @@ export async function generateMultiPagePdfFromElements(
     const pdfPageHeight = isLandscape ? 210 : 297;
 
     for (let i = 0; i < elements.length; i++) {
-      onProgress?.(`جاري معالجة الصفحة ${i + 1} من ${elements.length}...`);
+      onProgress?.(`جاري معالجة وتصيير الصفحة ${i + 1} من ${elements.length}...`);
       const element = elements[i];
+
+      // Smoothly bring element into viewport
+      element.scrollIntoView({ block: "start", inline: "nearest" });
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const canvas = await html2canvas(element, {
         scale: scale,
@@ -172,8 +235,8 @@ export async function generateMultiPagePdfFromElements(
         allowTaint: true,
         backgroundColor: "#ffffff",
         logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
         ignoreElements: (el) => {
           return (
             el.classList.contains("no-print") ||
@@ -181,6 +244,10 @@ export async function generateMultiPagePdfFromElements(
           );
         },
       });
+
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        throw new Error(`تعذر تصيير الصفحة ${i + 1} كصورة.`);
+      }
 
       let imgData: string;
       if (colorMode === "grayscale") {
@@ -215,6 +282,7 @@ export async function generateMultiPagePdfFromElements(
   } catch (error) {
     console.error("Multi-page PDF generation failed:", error);
     throw error;
+  } finally {
+    window.scrollTo(origScrollX, origScrollY);
   }
 }
-

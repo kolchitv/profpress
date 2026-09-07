@@ -234,7 +234,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   type="text"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder={DEFAULT_ADMIN_EMAIL}
+                  placeholder="admin@profpress.net أو بريد المدير"
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-mono font-bold outline-hidden focus:ring-2 focus:ring-teal-600 text-left"
                   dir="ltr"
                 />
@@ -279,7 +279,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   className="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4" />
-                  <span>دخول لوحة التحكم بالبريد kolchitv@gmail.com</span>
+                  <span>دخول لوحة التحكم</span>
                 </button>
 
                 <button
@@ -288,7 +288,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                  <span>دخول فوري مباشر بحساب kolchitv@gmail.com</span>
+                  <span>دخول فوري مباشر كمسؤول</span>
                 </button>
               </div>
             </form>
@@ -300,7 +300,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-700 shrink-0" />
                 <span>
-                  يمكنك هنا تعيين كلمة مرور جديدة لحساب <strong>kolchitv@gmail.com</strong> متى أردت.
+                  يمكنك هنا تعيين كلمة مرور جديدة لحساب المسؤول متى أردت.
                 </span>
               </div>
 

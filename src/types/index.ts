@@ -76,6 +76,14 @@ export interface VisitorPermissions {
   allowComments: boolean;
 }
 
+export interface CustomCodeSettings {
+  headerCode: string; // Injected into <head> (meta tags, tracking scripts, CSS)
+  bodyStartCode: string; // Injected at start of <body> (GTM noscript, top banners)
+  footerCode: string; // Injected before </body> (live chat, ad scripts, footer trackers)
+  isEnabled: boolean; // Master toggle to enable/disable scripts
+  lastUpdated?: string;
+}
+
 export interface TopicProposal {
   id: string;
   title: string;
@@ -95,6 +103,12 @@ export interface WorkshopTechnicalCard {
   strategicObjective: string; // الهدف الاستراتيجي
 }
 
+export interface MathActivityRow {
+  id: string;
+  domain: string; // مجال النشاط
+  activities: string; // الأنشطة والوسائل المعتمدة
+}
+
 export interface MathLevelRow {
   id: string;
   level: string; // المستوى الدراسي
@@ -109,7 +123,7 @@ export interface ArabicPathRow {
 
 export interface WorkshopReportData {
   title: string;
-  dayNumber: string; // مثلا: "اليوم الثاني"
+  dayNumber: string; // مثلا: "اليوم الثالث"
   subtitle: string;
   projectName: string;
   dateText: string;
@@ -121,6 +135,7 @@ export interface WorkshopReportData {
 
   // Math
   mathIntro: string;
+  mathActivities?: MathActivityRow[];
   mathLevels: MathLevelRow[];
   mathBlocks: string[];
 
