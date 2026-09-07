@@ -12,6 +12,9 @@ import { AiPedagogyAssistant } from "./components/AiPedagogyAssistant";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { WorkshopReport } from "./components/WorkshopReport";
 import { HomePage } from "./components/HomePage";
+import { AnnouncementsPage } from "./components/AnnouncementsPage";
+import { CompetitionsView } from "./components/PortalViews";
+import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { ContactModal, PROFPRESS_CONTACT_INFO } from "./components/ContactModal";
 import {
   AboutModal,
@@ -142,6 +145,29 @@ export default function App() {
               onNavigateToTab={setActiveTab}
               onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
               onOpenContactModal={() => setIsContactModalOpen(true)}
+            />
+          )}
+
+          {activeTab === "news" && (
+            <AnnouncementsPage onNavigateToTab={setActiveTab} defaultFilter="الكل" />
+          )}
+
+          {activeTab === "articles" && (
+            <AnnouncementsPage onNavigateToTab={setActiveTab} defaultFilter="article" />
+          )}
+
+          {activeTab === "competitions" && (
+            <CompetitionsView onNavigateToTab={setActiveTab} />
+          )}
+
+          {activeTab === "pedagogical_docs" && (
+            <PedagogicalDocsHub
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+              onOpenPrintPreview={(docKey) => {
+                if (docKey) setActiveTab(docKey);
+                setIsPrintPreviewOpen(true);
+              }}
             />
           )}
 

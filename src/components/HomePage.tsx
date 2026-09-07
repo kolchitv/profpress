@@ -49,6 +49,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
+import { SmartToolsModal } from "./SmartToolsModal";
 
 interface HomePageProps {
   teacherProfile: TeacherProfile;
@@ -103,6 +104,7 @@ interface PortalCategory {
   iconColor: string;
   iconBg: string;
   borderHover: string;
+  borderBottomColor: string;
   description: string;
   badge?: string;
   externalUrl: string;
@@ -178,6 +180,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-red-500",
       iconBg: "bg-red-50",
       borderHover: "hover:border-red-400",
+      borderBottomColor: "border-b-red-500",
       description: "المذكرات الوزارية والدخول المدرسي 2026/2027 ومؤسسات الريادة",
       badge: "عاجل",
       externalUrl: PROFPRESS_LINKS.news,
@@ -200,6 +203,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-orange-500",
       iconBg: "bg-orange-50",
       borderHover: "hover:border-orange-400",
+      borderBottomColor: "border-b-orange-500",
       description: "ديداكتيك المواد، التعليم الصريح، والمقاربات البيداغوجية الحديثة",
       externalUrl: PROFPRESS_LINKS.articles,
       content: {
@@ -221,6 +225,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-blue-500",
       iconBg: "bg-blue-50",
       borderHover: "hover:border-blue-400",
+      borderBottomColor: "border-b-blue-600",
       description: "أطر مرجعية، ديداكتيك التخصص، ومواضيع الاختبارات الكتابية والشفوية",
       badge: "دورة 2026",
       externalUrl: PROFPRESS_LINKS.recruitment,
@@ -241,6 +246,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-emerald-500",
       iconBg: "bg-emerald-50",
       borderHover: "hover:border-emerald-400",
+      borderBottomColor: "border-b-emerald-600",
       description: "مركز تكوين مفتشي التعليم (CFIE)، علوم التربية، والتشريع المدرسي",
       externalUrl: PROFPRESS_LINKS.inspection,
       content: {
@@ -262,6 +268,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-purple-500",
       iconBg: "bg-purple-50",
       borderHover: "hover:border-purple-400",
+      borderBottomColor: "border-b-purple-600",
       description: "مركز التوجيه والتخطيط التربوي (COPE)، استشارات ومشروع التلميذ",
       externalUrl: PROFPRESS_LINKS.orientation,
       content: {
@@ -283,6 +290,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconColor: "text-amber-500",
       iconBg: "bg-amber-50",
       borderHover: "hover:border-amber-400",
+      borderBottomColor: "border-b-amber-400",
       description: "شهادة الكفاءة التربوية، الترسيم، والترقية بالامتحان المهني",
       externalUrl: PROFPRESS_LINKS.license,
       content: {
@@ -832,125 +840,93 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم... - مثل الصورة 1) */}
+      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم... - مثل الصورة 4) */}
       {/* ========================================================================= */}
       <section className="no-print">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-            <h2 className="text-sm md:text-base font-black text-slate-900 font-cairo">
-              أقسام وبوابات الأستاذ المهنية
-            </h2>
-          </div>
-          <span className="text-[11px] text-slate-500 font-medium">
-            روابط سريعة لأهم محطات المنظومة التربوية
-          </span>
-        </div>
-
-        {/* 6 Responsive Rounded Cards Bar matching Screenshot 1 */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* 6 Responsive Rounded Cards Bar matching Screenshot 4 with solid colored bottom borders */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
           {portalCategories.map((item) => {
             const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveCategoryModal(item)}
-                className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs hover:shadow-md transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderHover}`}
-              >
-                {item.badge && (
-                  <span className="absolute top-2 left-2 text-[9px] font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-2xs">
-                    {item.badge}
-                  </span>
-                )}
-                <div
-                  className={`w-12 h-12 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
+            const isInternalTab = item.id === "news" || item.id === "articles";
+
+            if (isInternalTab) {
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigateToTab(item.id as TabKey)}
+                  className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
+                  title={`تصفح صفحة ${item.title} مع المحرر الداخلي ومساعد السيو Rank Math`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <div
+                    className={`w-13 h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo flex items-center justify-center gap-1.5">
+                    <span>{item.title}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="داخلي" />
+                  </span>
+                </button>
+              );
+            }
+
+            return (
+              <a
+                key={item.id}
+                href={item.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
+                title={`فتح قسم ${item.title} على موقع Profpress.net`}
+              >
+                <div
+                  className={`w-13 h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
+                >
+                  <Icon className="w-6 h-6" />
                 </div>
-                <span className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-blue-900 transition-colors font-cairo">
+                <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo">
                   {item.title}
                 </span>
-                <span className="text-[10px] text-slate-400 group-hover:text-blue-600 flex items-center gap-0.5 mt-[-4px]">
-                  <span>تصفح</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </span>
-              </button>
+              </a>
             );
           })}
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. EDUCATIONAL CYCLES SELECTOR (الابتدائي، الإعدادي، الثانوي - مثل الصورة 4) */}
+      {/* 2. EDUCATIONAL CYCLES SELECTOR (الابتدائي، الإعدادي، الثانوي - مثل الصورة 1) */}
       {/* ========================================================================= */}
       <section className="no-print">
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
-            <div className="flex items-center gap-2">
-              <School className="w-4 h-4 text-blue-700" />
-              <h3 className="text-sm font-black text-slate-900 font-cairo">
-                اختر سلك التدريس لعرض الوثائق المناسبة لمستواك:
-              </h3>
-            </div>
-            <div className="text-xs text-slate-500 font-medium">
-              تصفية فورية لجميع الوثائق والسجلات أسفله
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {educationalCycles.map((cycle) => {
-              const Icon = cycle.icon;
-              const isSelected = selectedCycle === cycle.id;
-              return (
-                <button
-                  key={cycle.id}
-                  type="button"
-                  onClick={() => setSelectedCycle(cycle.id)}
-                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-3.5 text-right cursor-pointer group ${
-                    isSelected
-                      ? "bg-blue-50/70 border-blue-600 shadow-sm ring-2 ring-blue-500/20"
-                      : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60"
-                  }`}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {educationalCycles.map((cycle) => {
+            const Icon = cycle.icon;
+            const isSelected = selectedCycle === cycle.id;
+            return (
+              <a
+                key={cycle.id}
+                href={cycle.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setSelectedCycle(cycle.id)}
+                className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center cursor-pointer group shadow-2xs hover:shadow-md ${
+                  isSelected
+                    ? "bg-blue-50/40 border-blue-600 ring-2 ring-blue-500/20"
+                    : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                }`}
+                title={`تصفح وثائق ${cycle.title} على موقع Profpress.net`}
+              >
+                <div
+                  className={`w-16 h-16 rounded-2xl ${cycle.iconBg} ${cycle.iconColor} flex items-center justify-center mb-3 shadow-2xs group-hover:scale-105 transition-transform`}
                 >
-                  <div
-                    className={`w-12 h-12 rounded-2xl ${cycle.iconBg} ${cycle.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}
-                  >
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-black text-slate-900 font-cairo block truncate">
-                        {cycle.title}
-                      </span>
-                      {isSelected && (
-                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                      )}
-                    </div>
-                    <span className="text-[11px] text-slate-500 block truncate mt-0.5">
-                      {cycle.subtitle}
-                    </span>
-                    <div className="flex items-center justify-between gap-2 mt-1">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
-                        {cycle.docCount}
-                      </span>
-                      <a
-                        href={cycle.externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-[10px] text-blue-700 hover:text-blue-900 font-bold flex items-center gap-0.5 hover:underline"
-                        title="تصفح مواد هذا السلك على Profpress.net"
-                      >
-                        <span>محتوى Profpress</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  <Icon className="w-8 h-8" />
+                </div>
+                <span className="text-base md:text-lg font-black text-slate-900 font-cairo block">
+                  {cycle.title}
+                </span>
+              </a>
+            );
+          })}
         </div>
       </section>
 
@@ -1053,80 +1029,49 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ========================================================================= */}
       <section className="no-print grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Right 2-Columns: أدوات الموقع الذكية (Matching Screenshot 2) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-rose-500 text-lg">✏️</span>
-              <h3 className="text-base font-black text-slate-900 font-cairo">
-                أدوات الموقع الذكية (15 أداة تفاعلية)
-              </h3>
-            </div>
-            <a
-              href={PROFPRESS_LINKS.smartToolsAll}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1 hover:underline"
-              title="تصفح جميع الأدوات على Profpress.net"
-            >
-              <span>فتح الأدوات على Profpress.net</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          {/* Red Header Bar matching Screenshot 2 */}
+          <div className="bg-[#fef2f2] border-b border-red-100 py-3.5 px-4 text-center flex items-center justify-center gap-2">
+            <span className="text-rose-600 text-lg">✏️</span>
+            <h3 className="text-base md:text-lg font-black text-red-800 font-cairo">
+              أدوات الموقع الذكية
+            </h3>
           </div>
 
           {/* 15 Smart Tools Grid in 2 Columns matching Screenshot 2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 p-4 bg-white">
             {smartTools.map((tool) => {
               const Icon = tool.icon;
               return (
-                <div
+                <button
                   key={tool.id}
+                  type="button"
                   onClick={() => setActiveSmartTool(tool.id)}
-                  className="bg-slate-50/80 hover:bg-blue-50/50 border border-slate-200/90 hover:border-blue-300 rounded-xl p-3.5 flex items-center justify-between transition-all cursor-pointer group text-right"
+                  className="bg-[#f8fafc] hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-400 rounded-2xl py-4 px-2 text-center flex flex-col items-center justify-center gap-2.5 transition shadow-2xs hover:shadow-xs group cursor-pointer"
+                  title={`تشغيل ${tool.title} داخلياً`}
                 >
-                  <div className="space-y-0.5 flex-1 min-w-0 pr-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo truncate">
-                        {tool.title}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-slate-500 block line-clamp-1">
-                      {tool.shortDesc}
-                    </span>
+                  <div
+                    className={`w-11 h-11 rounded-xl ${tool.iconBg} ${tool.iconColor} flex items-center justify-center shadow-2xs group-hover:scale-110 transition-transform`}
+                  >
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <div className="flex items-center gap-2 shrink-0 mr-2">
-                    <a
-                      href={tool.externalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      title={`فتح ${tool.title} على Profpress.net`}
-                      className="text-slate-400 hover:text-blue-700 hover:bg-white p-1 rounded-md transition"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <div
-                      className={`w-9 h-9 rounded-xl ${tool.iconBg} ${tool.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-110 transition-transform`}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                  </div>
-                </div>
+                  <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-900 font-cairo text-center">
+                    {tool.title}
+                  </span>
+                </button>
               );
             })}
           </div>
         </div>
 
-        {/* Left 1-Column: الأكثر قراءة وطلباً (Matching Screenshot 3) */}
+        {/* Left 1-Column: الأكثر قراءة (Matching Screenshot 3) */}
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-red-500 text-lg">🔥</span>
-                <h3 className="text-base font-black text-slate-900 font-cairo">
-                  الأكثر قراءة وطلباً
-                </h3>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">من بروف بريس</span>
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <span className="text-red-500 text-lg">🔥</span>
+              <h3 className="text-base md:text-lg font-black text-slate-900 font-cairo">
+                الأكثر قراءة
+              </h3>
             </div>
 
             {/* List of cards matching Screenshot 3 */}
@@ -1134,38 +1079,26 @@ export const HomePage: React.FC<HomePageProps> = ({
               {trendingItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div
+                  <a
                     key={item.id}
-                    onClick={item.action}
-                    className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between transition cursor-pointer group text-right"
+                    href={item.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#f8fafc] hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between transition cursor-pointer shadow-2xs hover:shadow-xs group"
+                    title={`فتح ${item.title} على موقع Profpress.net`}
                   >
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1" />
-                      <a
-                        href={item.externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        title="فتح في Profpress.net"
-                        className="text-slate-400 hover:text-blue-700 hover:bg-white p-1 rounded-md transition"
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`w-10 h-10 rounded-xl ${item.iconBg} ${item.iconColor} flex items-center justify-center shrink-0 shadow-2xs`}
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                    <div className="flex-1 px-2 min-w-0">
-                      <span className="text-xs font-black text-slate-900 group-hover:text-blue-900 block font-cairo truncate">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-900 font-cairo truncate">
                         {item.title}
                       </span>
-                      <span className="text-[10px] text-slate-500 block truncate">
-                        {item.subtext}
-                      </span>
                     </div>
-                    <div
-                      className={`w-9 h-9 rounded-xl ${item.iconBg} ${item.iconColor} flex items-center justify-center shrink-0 shadow-2xs mr-1`}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                  </div>
+                    <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1 shrink-0" />
+                  </a>
                 );
               })}
             </div>
@@ -1342,401 +1275,15 @@ export const HomePage: React.FC<HomePageProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* INTERACTIVE SMART TOOLS MODALS (محول التاريخ، الأرقام، QR، الترقية...) */}
+      {/* 15 INTERACTIVE SMART TOOLS MODAL (فتح الأدوات داخلياً بكامل الوظائف التفاعلية) */}
       {/* ========================================================================= */}
-      {activeSmartTool && (
-        <div className="no-print fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🛠️</span>
-                <h3 className="text-base font-black text-slate-900 font-cairo">
-                  {smartTools.find((t) => t.id === activeSmartTool)?.title || "أداة ذكية"}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl && (
-                  <a
-                    href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition shadow-2xs"
-                    title="فتح هذه الأداة في موقع بروف بريس"
-                  >
-                    <span>فتح في Profpress</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                <button
-                  onClick={() => setActiveSmartTool(null)}
-                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Tool 1: Date Converter */}
-            {activeSmartTool === "date_converter" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  أداة ضبط وتأريخ الجذاذات والمذكرات الرسمية وفق التقويمين الهجري والميلادي المعتمدين في المغرب:
-                </p>
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">حدد التاريخ الميلادي:</label>
-                  <input
-                    type="date"
-                    value={gregorianDate}
-                    onChange={(e) => setGregorianDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-sans text-sm"
-                  />
-                </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center space-y-1">
-                  <span className="text-slate-500 block text-[11px] font-bold">التاريخ الهجري المقابل:</span>
-                  <span className="text-base font-black text-blue-950 font-cairo block">
-                    {calculateHijriDate(gregorianDate)}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Tool 2: Number Converter (Tafqit) */}
-            {activeSmartTool === "number_converter" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  تفقيط الأعداد والنقط إلى حروف عربية بالكامل لشواهد التقدير وبيانات النقط:
-                </p>
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">أدخل العدد أو النقطة (مثال: 18.5):</label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    min="0"
-                    max="20"
-                    value={numberToConvert}
-                    onChange={(e) => setNumberToConvert(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-base"
-                  />
-                </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center space-y-1">
-                  <span className="text-slate-500 block text-[11px] font-bold">كتابة العدد بالحروف العربية:</span>
-                  <span className="text-base font-black text-purple-950 font-cairo block">
-                    {getTafqitArabic(Number(numberToConvert))}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Tool 3: QR Code Generator */}
-            {activeSmartTool === "qr_generator" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  أنشئ رمز QR للدروس الرقمية أو موقع المؤسسة وألصقه مباشرة في جذاذاتك وأوراق عملك:
-                </p>
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">الرابط أو النص المطلوب تحويله:</label>
-                  <input
-                    type="text"
-                    value={qrText}
-                    onChange={(e) => setQrText(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-sans"
-                    placeholder="https://..."
-                  />
-                </div>
-                <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                      qrText || "Profpress"
-                    )}`}
-                    alt="QR Code"
-                    className="w-44 h-44 rounded-lg bg-white p-2 border border-slate-300 shadow-xs"
-                  />
-                  <span className="text-[10px] text-slate-500 mt-2">
-                    انقر بزر الفأرة الأيمن لنسخ الصورة أو حفظها للطباعة
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Tool 4: Color Picker (Palette) */}
-            {activeSmartTool === "color_picker" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  درجات الألوان الرسمية المعتمدة لوزارة التربية الوطنية ومؤسسات الريادة:
-                </p>
-                <div className="space-y-2">
-                  {officialColors.map((c) => (
-                    <div
-                      key={c.hex}
-                      className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-slate-50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-8 h-8 rounded-lg shadow-2xs border border-black/10 shrink-0"
-                          style={{ backgroundColor: c.hex }}
-                        />
-                        <div>
-                          <span className="font-bold text-slate-900 block">{c.name}</span>
-                          <span className="text-[10px] text-slate-500">{c.role}</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard?.writeText(c.hex);
-                          setCopiedColor(c.hex);
-                          setTimeout(() => setCopiedColor(null), 1500);
-                        }}
-                        className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg text-xs font-mono font-bold cursor-pointer transition"
-                      >
-                        {copiedColor === c.hex ? "تم النسخ!" : c.hex}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Tool 5: Promotion Calculator */}
-            {activeSmartTool === "promotion" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  حاسبة تقديرية لنقط الترقية بالاختيار لأساتذة التعليم الابتدائي والثانوي:
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">سنوات الأقدمية في السلم:</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="30"
-                      value={scaleYears}
-                      onChange={(e) => setScaleYears(parseInt(e.target.value) || 0)}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">سنوات الأقدمية العامة:</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="40"
-                      value={seniorityYears}
-                      onChange={(e) => setSeniorityYears(parseInt(e.target.value) || 0)}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-bold"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">نقطة التفتيش / الأداء المهني (على 20):</label>
-                  <input
-                    type="number"
-                    min="10"
-                    max="20"
-                    step="0.5"
-                    value={performanceScore}
-                    onChange={(e) => setPerformanceScore(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-bold"
-                  />
-                </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-                  <span className="text-slate-500 block text-[11px] font-bold">مجموع النقاط التقديرية للترقية:</span>
-                  <span className="text-xl font-black text-blue-900 font-mono">
-                    {(scaleYears * 2 + seniorityYears * 1 + performanceScore).toFixed(1)} نقطة
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Tool 6: French Mini Game */}
-            {activeSmartTool === "game" && (
-              <div className="space-y-4 text-xs font-sans text-left" dir="ltr">
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-slate-800">
-                  <p className="font-bold text-amber-900">Jeu pédagogique : Le bon mot en classe</p>
-                  <p className="text-[11px] text-slate-600">Choisissez la bonne orthographe pour les apprenants :</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="font-bold text-sm text-slate-900">
-                    Complétez la phrase : « Les élèves écrivent sur le ...... »
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {["tableau", "tablo", "tableu", "tableaux"].map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => {
-                          if (opt === "tableau") {
-                            setQuizAnswerFeedback("Bravo ! Réponse correcte (+10 pts)");
-                            setQuizScore((s) => s + 10);
-                          } else {
-                            setQuizAnswerFeedback("Incorrect, essayez encore !");
-                          }
-                        }}
-                        className="bg-slate-100 hover:bg-blue-100 border border-slate-300 rounded-lg p-2.5 font-bold text-center cursor-pointer transition"
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                  {quizAnswerFeedback && (
-                    <div className="p-2 rounded bg-emerald-100 text-emerald-900 text-center font-bold text-xs mt-2">
-                      {quizAnswerFeedback} • Score : {quizScore}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Tool 7: Remarks Generator Quick Tool */}
-            {activeSmartTool === "remarks_gen" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">اختر مستوى التحصيل لتوليد ملاحظة دقيقة متوافقة مع منظومة مسار:</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {(
-                    [
-                      { key: "excellent", label: "ممتاز", color: "bg-emerald-600 text-white" },
-                      { key: "good", label: "جيد", color: "bg-blue-600 text-white" },
-                      { key: "average", label: "متوسط", color: "bg-amber-600 text-white" },
-                      { key: "weak", label: "في حاجة لدعم", color: "bg-rose-600 text-white" },
-                    ] as const
-                  ).map((lvl) => (
-                    <button
-                      key={lvl.key}
-                      type="button"
-                      onClick={() => setSelectedRemarkScore(lvl.key)}
-                      className={`p-2 rounded-lg font-bold text-xs cursor-pointer transition ${
-                        selectedRemarkScore === lvl.key ? lvl.color : "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      {lvl.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="bg-slate-50 border border-slate-300 rounded-xl p-3.5 space-y-2">
-                  <span className="font-bold text-slate-800 block">نموذج الملاحظة المقترحة لمسار:</span>
-                  <p className="text-sm font-medium text-slate-800 leading-relaxed font-cairo">
-                    {selectedRemarkScore === "excellent" &&
-                      "عمل متميز، ومشاركة صفية واعية، استمر في هذا العطاء والاجتهاد."}
-                    {selectedRemarkScore === "good" &&
-                      "نتائج مشجعة، قادر على تحقيق الأفضل بالمزيد من التركيز والمواظبة."}
-                    {selectedRemarkScore === "average" &&
-                      "مستوى مقبول، يحتاج لمزيد من المراجعة المنزلية وتكثيف التمارين الداعمة."}
-                    {selectedRemarkScore === "weak" &&
-                      "تعثرات في اكتساب التعلمات الأساسية، يستدعي معالجة فورية ومتابعة أسرية حثيثة."}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onNavigateToTab("remarks");
-                      setActiveSmartTool(null);
-                    }}
-                    className="text-blue-700 font-bold hover:underline block pt-1"
-                  >
-                    فتح المساعد البيداغوجي بالذكاء الاصطناعي للتوليد الشامل ←
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Tool 8: PDF to Images */}
-            {activeSmartTool === "pdf_to_images" && (
-              <div className="space-y-4 text-xs">
-                <p className="text-slate-600">
-                  محول ملفات PDF البيداغوجية إلى صور عالية الوضوح لاستخدامها في العروض الصفيّة والوسائل التعليمية وجذاذات الريادة:
-                </p>
-                <div className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 text-center space-y-2 bg-slate-50 transition">
-                  <FileText className="w-8 h-8 text-emerald-600 mx-auto" />
-                  <p className="font-bold text-slate-800">اسحب وأفلت ملف PDF هنا أو انقر للاختيار</p>
-                  <p className="text-[11px] text-slate-500">يدعم المذكرات، الجذاذات، كراسات التلميذ وملفات الفروض</p>
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer pt-2"
-                  />
-                </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-950 flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-medium">أداة معتمدة ومتزامنة مع بروف بريس</span>
-                  <a
-                    href={PROFPRESS_LINKS.pdfToImages}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-emerald-800 hover:underline flex items-center gap-1"
-                  >
-                    <span>فتح محول PDF على Profpress.net ↗</span>
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {/* Other Tools Placeholder info */}
-            {!["date_converter", "number_converter", "qr_generator", "color_picker", "promotion", "game", "remarks_gen", "pdf_to_images"].includes(
-              activeSmartTool
-            ) && (
-              <div className="space-y-3 text-xs">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-slate-800 space-y-2">
-                  <p className="font-bold text-blue-900">
-                    أداة {smartTools.find((t) => t.id === activeSmartTool)?.title}
-                  </p>
-                  <p className="text-slate-600 leading-relaxed">
-                    {smartTools.find((t) => t.id === activeSmartTool)?.shortDesc}
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    يمكنك الوصول إلى الأدوات المتخصصة والملاحظات التلقائية عبر قسم «المساعد البيداغوجي ومولد الملاحظات».
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onNavigateToTab("remarks");
-                      setActiveSmartTool(null);
-                    }}
-                    className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 rounded-xl transition cursor-pointer text-center"
-                  >
-                    فتح المساعد البيداغوجي الذكي
-                  </button>
-                  {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl && (
-                    <a
-                      href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-xl transition text-center shadow-xs flex items-center justify-center gap-1"
-                    >
-                      <span>تشغيل الأداة على Profpress.net</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-              {smartTools.find((t) => t.id === activeSmartTool)?.externalUrl ? (
-                <a
-                  href={smartTools.find((t) => t.id === activeSmartTool)?.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-800 hover:text-blue-950 font-bold flex items-center gap-1 hover:underline"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                  <span>تصفح الأداة والشرح على Profpress.net ↗</span>
-                </a>
-              ) : (
-                <div />
-              )}
-              <button
-                type="button"
-                onClick={() => setActiveSmartTool(null)}
-                className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 rounded-lg font-bold text-xs cursor-pointer"
-              >
-                إغلاق
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SmartToolsModal
+        toolId={activeSmartTool}
+        onClose={() => setActiveSmartTool(null)}
+        onNavigateToTab={onNavigateToTab}
+        smartTools={smartTools}
+        onSelectTool={(id) => setActiveSmartTool(id)}
+      />
     </div>
   );
 };

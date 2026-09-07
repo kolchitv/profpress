@@ -1,5 +1,9 @@
 export type TabKey =
   | "home"
+  | "news"
+  | "articles"
+  | "competitions"
+  | "pedagogical_docs"
   | "workshop_report"
   | "portfolio"
   | "timetable"
@@ -11,6 +15,75 @@ export type TabKey =
   | "certificates"
   | "remarks"
   | "print_preview";
+
+export type TopicCategory =
+  | "memo" // مذكرة
+  | "announcement" // إعلان
+  | "article" // مقال
+  | "communique" // بلاغ
+  | "results"; // نتائج وترقيات
+
+export interface SeoMetadata {
+  focusKeyword: string;
+  seoTitle: string;
+  slug: string;
+  metaDescription: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+}
+
+export interface TopicItem {
+  id: string;
+  title: string;
+  category: TopicCategory;
+  categoryLabel: string;
+  date: string;
+  gregorianDate?: string;
+  author: string;
+  urgent?: boolean;
+  summary: string;
+  content: string;
+  highlights?: string[];
+  tags: string[];
+  downloadUrl?: string;
+  downloadLabel?: string;
+  seo: SeoMetadata;
+  viewsCount?: number;
+  readTimeMinutes?: number;
+  featured?: boolean;
+  isCustom?: boolean;
+  status?: "published" | "draft" | "archived";
+}
+
+export interface AdminSession {
+  isAdmin: boolean;
+  adminName: string;
+  adminEmail: string;
+  role: "super_admin" | "editor" | "visitor";
+  lastLogin?: string;
+}
+
+export interface VisitorPermissions {
+  canReadTopics: boolean;
+  canDownloadAttachments: boolean;
+  canShareWhatsApp: boolean;
+  canSuggestTopics: boolean;
+  requireApprovalBeforePublish: boolean;
+  showRankMathBadgeToVisitors: boolean;
+  allowComments: boolean;
+}
+
+export interface TopicProposal {
+  id: string;
+  title: string;
+  category: TopicCategory;
+  authorName: string;
+  authorEmail: string;
+  institution: string;
+  summary: string;
+  date: string;
+  status: "pending" | "approved" | "rejected";
+}
 
 export interface WorkshopTechnicalCard {
   targetAudience: string; // المستهدفون بالدورة
