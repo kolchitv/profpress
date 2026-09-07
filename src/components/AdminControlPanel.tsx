@@ -131,6 +131,9 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
       canDownloadAttachments: true,
       canShareWhatsApp: true,
       canSuggestTopics: true,
+      canEditTopics: false, // Visitors cannot edit or post articles; reserved exclusively for kolchitv@gmail.com
+      canCustomizeDocumentInfo: true, // Visitors can customize their personal information in documents
+      canCustomizeDocumentColors: true, // Visitors can change colors and themes in documents
       requireApprovalBeforePublish: true,
       showRankMathBadgeToVisitors: true,
       allowComments: false,
@@ -638,7 +641,63 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
               </p>
             </div>
 
+            {/* Strict Policy Banner matching user directive */}
+            <div className="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 space-y-3">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                <Lock className="w-4 h-4" />
+                <span>سياسة الأمان المطبقة: حصر تحرير المقالات بالمدير وتفويض تعديل الوثائق للزوار</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/10 space-y-1">
+                  <span className="font-bold text-rose-400 flex items-center gap-1.5">
+                    <span>⛔ تحرير المقالات والمستجدات</span>
+                  </span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    محجوب كلياً عن الزوار ومحصور فقط بمدير الموقع (kolchitv@gmail.com). لا تظهر أي أزرار تحرير أو إضافة مواضيع لغير المدير.
+                  </p>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/10 space-y-1">
+                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <span>✅ تعديل الوثائق وتخصيص الألوان</span>
+                  </span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    متاح للزوار والأساتذة لتعديل معلوماتهم الإدارية (الاسم، SOM، المؤسسة) واختيار الألوان والسمات البيداغوجية وطباعتها A4.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="flex items-start gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <input
+                  type="checkbox"
+                  checked={permissions.canCustomizeDocumentInfo}
+                  onChange={(e) =>
+                    updatePermissions({ ...permissions, canCustomizeDocumentInfo: e.target.checked })
+                  }
+                  className="w-4 h-4 mt-0.5 text-teal-600 focus:ring-teal-500 rounded"
+                />
+                <div className="space-y-0.5">
+                  <span className="font-bold text-xs text-slate-800 block">السماح بتعديل المعلومات الشخصية في الوثائق</span>
+                  <span className="text-[11px] text-slate-500">تمكين الأساتذة من كتابة بياناتهم (الاسم، البطاقة، المؤسسة، الجدول).</span>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <input
+                  type="checkbox"
+                  checked={permissions.canCustomizeDocumentColors}
+                  onChange={(e) =>
+                    updatePermissions({ ...permissions, canCustomizeDocumentColors: e.target.checked })
+                  }
+                  className="w-4 h-4 mt-0.5 text-teal-600 focus:ring-teal-500 rounded"
+                />
+                <div className="space-y-0.5">
+                  <span className="font-bold text-xs text-slate-800 block">السماح بتغيير ألوان وسمات الوثائق الرسمية</span>
+                  <span className="text-[11px] text-slate-500">إتاحة تبديل القوالب (ذهبي، زمردي، أزرق، ملكي) بحرية تامة.</span>
+                </div>
+              </label>
+
               <label className="flex items-start gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
                 <input
                   type="checkbox"

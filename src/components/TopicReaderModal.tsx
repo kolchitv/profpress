@@ -29,6 +29,7 @@ interface TopicReaderModalProps {
   onClose: () => void;
   onEdit: (topic: TopicItem) => void;
   onDelete?: (topicId: string) => void;
+  isAdmin?: boolean;
 }
 
 export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
@@ -37,6 +38,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
   onClose,
   onEdit,
   onDelete,
+  isAdmin = false,
 }) => {
   if (!isOpen || !topic) return null;
 
@@ -152,14 +154,16 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
-            <button
-              type="button"
-              onClick={() => onEdit(topic)}
-              className="p-2 rounded-xl text-slate-600 hover:text-blue-800 hover:bg-blue-50 transition cursor-pointer"
-              title="تعديل في المحرر الداخلي"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => onEdit(topic)}
+                className="p-2 rounded-xl text-slate-600 hover:text-blue-800 hover:bg-blue-50 transition cursor-pointer"
+                title="تعديل في المحرر الداخلي (خاص بالمدير)"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

@@ -18,15 +18,31 @@
 }
 
 @page {
-  size: A4;
-  margin: 8mm;
+  size: A4 portrait;
+  margin: 0;
+}
+
+@page landscape-sheet {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@page portrait-sheet {
+  size: A4 portrait;
+  margin: 0;
 }
 
 @media print {
+  @page {
+    margin: 0 !important;
+  }
+
   html, body {
     background: #ffffff !important;
     color: #000000 !important;
-    font-size: 11pt;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -39,30 +55,40 @@
     display: block !important;
   }
 
-  .print-sheet {
+  /* Exact A4 Portrait Sheets (210mm x 297mm 100% full match) */
+  .print-sheet, .print-page {
+    page: portrait-sheet !important;
     box-shadow: none !important;
-    border: none !important;
+    border-radius: 0 !important;
     margin: 0 auto !important;
-    padding: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    box-sizing: border-box !important;
+    padding: 6mm 8mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Exact A4 Landscape Sheets (297mm x 210mm 100% full match) */
+  .print-sheet-landscape {
+    page: landscape-sheet !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 auto !important;
+    width: 297mm !important;
+    max-width: 297mm !important;
+    min-height: 210mm !important;
+    box-sizing: border-box !important;
+    padding: 6mm 8mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .page-break {
     page-break-after: always !important;
     break-after: page !important;
   }
-
-  .print-page {
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 auto !important;
-    padding: 12mm 8mm !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    break-inside: avoid !important;
-  }
 }
+
 

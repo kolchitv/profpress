@@ -33,6 +33,8 @@ import { EvaluationGrid } from "./EvaluationGrid";
 import { HolidaysCalendar } from "./HolidaysCalendar";
 import { CertificatesGenerator } from "./CertificatesGenerator";
 import { CumulativePortfolio } from "./CumulativePortfolio";
+import { WorkshopReport } from "./WorkshopReport";
+import { ClipboardList } from "lucide-react";
 
 interface PrintPreviewModalProps {
   isOpen: boolean;
@@ -114,6 +116,14 @@ const DOCUMENTS: DocumentMeta[] = [
     category: "الملف التراكمي",
     icon: FolderKanban,
     filename: "فهرس_الملف_التراكمي.pdf",
+  },
+  {
+    key: "workshop_report",
+    title: "تقرير ورشات مؤسسات الريادة (3 صفحات)",
+    orientation: "portrait",
+    category: "تقارير الريادة",
+    icon: ClipboardList,
+    filename: "تقرير_ورشات_مؤسسات_الريادة.pdf",
   },
 ];
 
@@ -372,7 +382,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             </div>
 
             {/* Render Document Component */}
-            <div className="p-4 md:p-6">
+            <div className="w-full">
               {selectedDocKey === "timetable" && (
                 <TimetableEditor teacherProfile={teacherProfile} />
               )}
@@ -406,6 +416,10 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
               {selectedDocKey === "portfolio" && (
                 <CumulativePortfolio teacherProfile={teacherProfile} />
+              )}
+
+              {selectedDocKey === "workshop_report" && (
+                <WorkshopReport teacherProfile={teacherProfile} />
               )}
             </div>
           </div>

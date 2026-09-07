@@ -369,7 +369,7 @@ export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile }
       </div>
 
       {/* Official A4 Printable Evaluation Sheet */}
-      <div ref={sheetRef} className="print-sheet bg-white border border-slate-300 rounded-2xl p-6 md:p-8 shadow-xs max-w-6xl mx-auto">
+      <div ref={sheetRef} className="print-sheet print-sheet-landscape bg-white border border-slate-300 rounded-2xl p-6 md:p-8 shadow-xs max-w-6xl mx-auto">
         {/* Printable Official Header */}
         <div className="border-b-2 border-slate-800 pb-3 mb-4">
           <div className="flex items-start justify-between text-xs text-slate-700 font-semibold">

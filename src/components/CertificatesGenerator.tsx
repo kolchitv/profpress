@@ -207,7 +207,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
       {/* Certificate Print Render: Single Certificate OR Batch */}
       {mode === "single" ? (
         <div
-          className={`print-sheet bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 ${
+          className={`print-sheet print-sheet-landscape bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 ${
             styleTheme === "gold"
               ? "border-amber-500 ring-8 ring-amber-100"
               : styleTheme === "emerald"
@@ -304,7 +304,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
           {batchStudents.map((std, idx) => (
             <div
               key={std.id}
-              className="print-sheet page-break bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 border-amber-500 ring-8 ring-amber-100 mb-8"
+              className="print-sheet print-sheet-landscape page-break bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 border-amber-500 ring-8 ring-amber-100 mb-8"
             >
               <div className="border-b border-slate-200 pb-3 text-center">
                 <div className="flex items-center justify-between text-xs text-slate-700 font-semibold mb-1">

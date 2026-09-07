@@ -68,6 +68,9 @@ export interface VisitorPermissions {
   canDownloadAttachments: boolean;
   canShareWhatsApp: boolean;
   canSuggestTopics: boolean;
+  canEditTopics: boolean; // Strictly false for visitors; editing is reserved for admin (kolchitv@gmail.com)
+  canCustomizeDocumentInfo: boolean; // True for visitors (editing teacher personal details in docs)
+  canCustomizeDocumentColors: boolean; // True for visitors (editing colors & themes in docs)
   requireApprovalBeforePublish: boolean;
   showRankMathBadgeToVisitors: boolean;
   allowComments: boolean;

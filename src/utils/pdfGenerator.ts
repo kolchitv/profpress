@@ -108,29 +108,9 @@ export async function generatePdfFromElement(
     const pdfPageWidth = isLandscape ? 297 : 210;
     const pdfPageHeight = isLandscape ? 210 : 297;
 
-    // Small margin for neat official printing (e.g. 5mm)
-    const margin = 5;
-    const availableWidth = pdfPageWidth - margin * 2;
-    const availableHeight = pdfPageHeight - margin * 2;
-
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = imgWidth / imgHeight;
-
-    let renderWidth = availableWidth;
-    let renderHeight = availableWidth / ratio;
-
-    // If height exceeds available height, scale by height instead
-    if (renderHeight > availableHeight) {
-      renderHeight = availableHeight;
-      renderWidth = availableHeight * ratio;
-    }
-
-    // Center horizontally and vertically on A4
-    const posX = margin + (availableWidth - renderWidth) / 2;
-    const posY = margin + (availableHeight - renderHeight) / 2;
-
-    pdf.addImage(imgData, "JPEG", posX, posY, renderWidth, renderHeight, undefined, "FAST");
+    // Render document to match exact A4 full dimensions (210 x 297 mm or 297 x 210 mm)
+    // without any artificial margins that cause documents to output smaller than A4
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfPageWidth, pdfPageHeight, undefined, "FAST");
 
     onProgress?.("اكتمل التوليد! جاري بدء التحميل...");
 
@@ -181,9 +161,6 @@ export async function generateMultiPagePdfFromElements(
 
     const pdfPageWidth = isLandscape ? 297 : 210;
     const pdfPageHeight = isLandscape ? 210 : 297;
-    const margin = 4; // neat official margin in mm
-    const availableWidth = pdfPageWidth - margin * 2;
-    const availableHeight = pdfPageHeight - margin * 2;
 
     for (let i = 0; i < elements.length; i++) {
       onProgress?.(`جاري معالجة الصفحة ${i + 1} من ${elements.length}...`);
@@ -224,25 +201,12 @@ export async function generateMultiPagePdfFromElements(
         imgData = canvas.toDataURL("image/jpeg", 0.95);
       }
 
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = imgWidth / imgHeight;
-
-      let renderWidth = availableWidth;
-      let renderHeight = availableWidth / ratio;
-      if (renderHeight > availableHeight) {
-        renderHeight = availableHeight;
-        renderWidth = availableHeight * ratio;
-      }
-
-      const posX = margin + (availableWidth - renderWidth) / 2;
-      const posY = margin + (availableHeight - renderHeight) / 2;
-
       if (i > 0) {
         pdf.addPage("a4", isLandscape ? "landscape" : "portrait");
       }
 
-      pdf.addImage(imgData, "JPEG", posX, posY, renderWidth, renderHeight, undefined, "FAST");
+      // Exact A4 dimensions edge-to-edge
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfPageWidth, pdfPageHeight, undefined, "FAST");
     }
 
     onProgress?.("اكتمل تجهيز الملف! جاري التنزيل...");
