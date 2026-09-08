@@ -896,115 +896,103 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. EDUCATIONAL CYCLES & BRANCHES (التعليم الابتدائي، الإعدادي، الثانوي - القائمة التفاعلية المطابقة للصورة) */}
+      {/* 2. EDUCATIONAL CYCLES & BRANCHES (شجرة الأسلاك والأقسام التعليمية - التصميم الأفقي الشامل) */}
       {/* ========================================================================= */}
-      <section className="no-print">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Main Interactive Accordion Column (matching uploaded screenshot) */}
-          <div className="lg:col-span-6 xl:col-span-5">
-            <div className="mb-2.5 flex items-center justify-between">
+      <section className="no-print space-y-4">
+        {/* Full-Width Horizontal Tree */}
+        <EducationalCyclesAccordion
+          onNavigateToTab={onNavigateToTab}
+          initialMode="tree"
+          defaultExpandedAll={true}
+        />
+
+        {/* Quick Highlights & Overview Strip below the horizontal tree */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          {/* Main Showcase Banner */}
+          <div className="lg:col-span-8 bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-md relative overflow-hidden flex flex-col justify-between">
+            <div className="relative z-10 space-y-2.5">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-                <h3 className="text-sm font-black text-slate-900">
-                  شجرة الأسلاك والأقسام التعليمية
-                </h3>
+                <span className="bg-amber-400 text-slate-950 text-xs px-2.5 py-0.5 rounded-full font-black">
+                  دليل المستويات الدراسية 2026/2027
+                </span>
+                <span className="bg-white/15 text-slate-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                  12 صفحة مستقلة مع بنك الوثائق والامتحانات
+                </span>
               </div>
-              <span className="text-[11px] text-slate-500 font-bold">
-                اضغط على أي قسم لفتح صفحته المخصصة
-              </span>
+              <h2 className="text-lg md:text-xl font-black text-white">
+                صفحات مخصصة وشاملة لكل سلك ومستوى دراسي
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                تضم كل صفحة مستقلاً: الجذاذات اليومية، فروض المراقبة المستمرة لجميع المراحل، نماذج الامتحانات الإقليمية والجهوية والوطنية المصححة، التوازيع السنوية والمرحلية، والأطر المرجعية المعتمدة.
+              </p>
             </div>
-            <EducationalCyclesAccordion
-              onNavigateToTab={onNavigateToTab}
-              defaultExpandedAll={true}
-            />
+
+            <div className="pt-3 flex flex-wrap gap-2 relative z-10">
+              <button
+                type="button"
+                onClick={() => onNavigateToTab("primary_6")}
+                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <span>السادس ابتدائي (الموحد الإقليمي)</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigateToTab("middle_3")}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <span>الثالثة إعدادي (الجهوي والمحلي)</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigateToTab("high_2bac")}
+                className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <span>الثانية باكالوريا (الامتحان الوطني)</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigateToTab("orientation")}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <Compass className="w-3 h-3" />
+                <span>فضاء التوجيه المدرسي والمهني</span>
+              </button>
+            </div>
           </div>
 
-          {/* Complementary Showcase Cards for Quick Access */}
-          <div className="lg:col-span-6 xl:col-span-7 space-y-4">
-            <div className="bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
-              <div className="relative z-10 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="bg-amber-400 text-slate-950 text-xs px-2.5 py-0.5 rounded-full font-black">
-                    دليل المستويات الدراسية 2026/2027
-                  </span>
-                  <span className="bg-white/15 text-slate-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                    12 صفحة مستقلة
-                  </span>
-                </div>
-                <h2 className="text-xl md:text-2xl font-black text-white">
-                  صفحات مخصصة وشاملة لكل سلك ومستوى دراسي
-                </h2>
-                <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                  تضم كل صفحة مستقلاً: الجذاذات اليومية، فروض المراقبة المستمرة لجميع المراحل، نماذج الامتحانات الإقليمية والجهوية والوطنية المصححة، التوازيع السنوية والمرحلية، والأطر المرجعية المعتمدة.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTab("primary_6")}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
-                  >
-                    <span>السادس ابتدائي (الموحد الإقليمي)</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTab("middle_3")}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
-                  >
-                    <span>الثالثة إعدادي (الجهوي والمحلي)</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTab("high_2bac")}
-                    className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
-                  >
-                    <span>الثانية باكالوريا (الامتحان الوطني)</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTab("orientation")}
-                    className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
-                  >
-                    <Compass className="w-3 h-3" />
-                    <span>فضاء التوجيه المدرسي والمهني</span>
-                  </button>
-                </div>
+          {/* Quick cycle stats */}
+          <div className="lg:col-span-4 flex flex-col justify-between gap-2.5">
+            <div className="bg-blue-50/70 border border-blue-200/80 rounded-xl p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-blue-900">التعليم الابتدائي (6 مستويات)</span>
+                <span className="text-[10px] bg-blue-200 text-blue-900 font-bold px-1.5 py-0.2 rounded-md">مدارس الريادة</span>
               </div>
+              <p className="text-[11px] text-blue-800 leading-tight">
+                من 1AEP إلى 6AEP • مقاربة TaRL، التعليم الصريح وكراسات الأستاذ
+              </p>
             </div>
 
-            {/* Quick stats / overview of the 3 cycles */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-blue-50/60 border border-blue-200/80 rounded-xl p-3.5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-blue-900">التعليم الابتدائي</span>
-                  <span className="text-[10px] bg-blue-200 text-blue-900 font-bold px-1.5 py-0.2 rounded-md">6 مستويات</span>
-                </div>
-                <p className="text-[11px] text-blue-800 leading-tight">
-                  من الأول إلى السادس ابتدائي • مدارس الريادة، مقاربة TaRL، والتعليم الصريح
-                </p>
+            <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-emerald-900">التعليم الإعدادي (3 سنوات)</span>
+                <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-1.5 py-0.2 rounded-md">1AC - 3AC</span>
               </div>
+              <p className="text-[11px] text-emerald-800 leading-tight">
+                الإعداديات الرائدة، فروض مسار، والامتحانات الموحدة
+              </p>
+            </div>
 
-              <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-3.5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-emerald-900">التعليم الإعدادي</span>
-                  <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-1.5 py-0.2 rounded-md">3 سنوات</span>
-                </div>
-                <p className="text-[11px] text-emerald-800 leading-tight">
-                  الأولى، الثانية، والثالثة إعدادي • الإعداديات الرائدة، فروض مسار والموحد الجهوي
-                </p>
+            <div className="bg-purple-50/70 border border-purple-200/80 rounded-xl p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-purple-900">التعليم الثانوي (3 مسالك)</span>
+                <span className="text-[10px] bg-purple-200 text-purple-900 font-bold px-1.5 py-0.2 rounded-md">TC - 2BAC</span>
               </div>
-
-              <div className="bg-purple-50/60 border border-purple-200/80 rounded-xl p-3.5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-purple-900">التعليم الثانوي</span>
-                  <span className="text-[10px] bg-purple-200 text-purple-900 font-bold px-1.5 py-0.2 rounded-md">3 مسالك</span>
-                </div>
-                <p className="text-[11px] text-purple-800 leading-tight">
-                  الجذع المشترك، الأولى باك (الجهوي)، والثانية باك (الامتحان الوطني الموحد)
-                </p>
-              </div>
+              <p className="text-[11px] text-purple-800 leading-tight">
+                الجذع المشترك، الأولى باك (الجهوي)، والثانية باك (الوطني)
+              </p>
             </div>
           </div>
         </div>

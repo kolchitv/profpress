@@ -16,6 +16,7 @@ import {
   Sparkles,
   CheckCircle2,
   FileCheck2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 
@@ -31,6 +32,21 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
   onOpenPrintPreview,
 }) => {
   const pedagogicalDocuments = [
+    {
+      key: "positioning_grids" as TabKey,
+      title: "شبكة تفريغ روائز الموضعة (TaRL) - شتنبر 2026",
+      badge: "حصري ومطابق للوزارة",
+      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+      icon: FileSpreadsheet,
+      iconBg: "bg-emerald-600 text-white",
+      description:
+        "الشبكة الرسمية لتفريغ نتائج روائز الموضعة في القراءة (عربية وفرنسية) والحساب والمسألة، مع تعبئة تفاعلية وتصدير لـ Excel و PDF وحساب الإحصائيات.",
+      features: [
+        "تصدير فوري لملف Excel (.xlsx) و PDF",
+        "تعبئة تفاعلية سريعة بنقرة واحدة",
+        "حساب تلقائي لنسب ونسب التموضع",
+      ],
+    },
     {
       key: "workshop_report" as TabKey,
       title: "تقرير ورشات التقويم والمحطات 3P",
@@ -206,7 +222,7 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
-              الوثائق التربوية المعتمدة
+              صفحة الأدوات والمولدات التربوية
             </span>
             <span className="text-xs text-blue-200">
               مؤسسة: {teacherProfile.institution || "التعليم الابتدائي"}
@@ -218,11 +234,11 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
           </div>
 
           <h2 className="text-2xl md:text-3xl font-black font-cairo text-white">
-            مركز تجميع وإدارة كافة الوثائق التربوية للأستاذ
+            صفحة الأدوات والوثائق البيداغوجية للأستاذ
           </h2>
 
           <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-            تم تجميع كافة وثائق ومطبوعات الأستاذ في بوابة موحدة: تقرير ورشات الريادة 3P، الملف التراكمي، استعمال الزمن، البطاقة الشخصية، ميثاق القسم، واجهات الملفات، شبكات مسار، العطل، الشواهد التقديرية، ومولد الملاحظات — بصيغة A4 جاهزة للمعاينة والطباعة الفورية.
+            بنك الأدوات والمولدات الرسمية المتكاملة: تقرير ورشات الريادة 3P، الملف التراكمي، استعمال الزمن، البطاقة الشخصية، ميثاق القسم، واجهات الملفات، شبكات مسار، العطل، الشواهد التقديرية، ومولد الملاحظات — جاهزة للمعاينة والطباعة الفورية بصيغة A4.
           </p>
         </div>
       </div>

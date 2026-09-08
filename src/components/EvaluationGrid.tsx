@@ -13,16 +13,18 @@ import {
   XCircle,
   RotateCcw,
   FileDown,
+  FileSpreadsheet,
 } from "lucide-react";
-import { StudentGrade, TeacherProfile } from "../types";
+import { StudentGrade, TeacherProfile, TabKey } from "../types";
 import { DEFAULT_STUDENTS_GRADES } from "../data/defaultTemplates";
 import { generatePdfFromElement } from "../utils/pdfGenerator";
 
 interface EvaluationGridProps {
   teacherProfile: TeacherProfile;
+  onNavigateToTab?: (tab: TabKey) => void;
 }
 
-export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile }) => {
+export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile, onNavigateToTab }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
   const [students, setStudents] = useState<StudentGrade[]>(DEFAULT_STUDENTS_GRADES);
@@ -164,6 +166,37 @@ export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile }
 
   return (
     <div className="space-y-6">
+      {/* Banner linking to Positioning Grids (TaRL) */}
+      <div className="no-print bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-sm md:text-base">
+                شبكة تفريغ روائز الموضعة (TaRL) - شتنبر 2026
+              </span>
+              <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">
+                جديد الوزارة
+              </span>
+            </div>
+            <p className="text-xs text-emerald-100 mt-0.5">
+              تعبئة تفاعلية لروائز القراءة (عربية وفرنسية) والحساب والمسألة مع
+              التصدير المباشر لـ Excel (.xlsx) و PDF وحساب الإحصائيات.
+            </p>
+          </div>
+        </div>
+        {onNavigateToTab && (
+          <button
+            onClick={() => onNavigateToTab("positioning_grids")}
+            className="bg-white hover:bg-emerald-50 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs whitespace-nowrap cursor-pointer shrink-0"
+          >
+            الانتقال إلى شبكة روائز الموضعة ←
+          </button>
+        )}
+      </div>
+
       {/* Controls Bar (Hidden in Print) */}
       <div className="no-print bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-3">

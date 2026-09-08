@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 @layer utilities {
   .font-amiri {
     font-family: 'Amiri', serif;
@@ -78,6 +88,24 @@
   .print-sheet:last-child, .print-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
+  }
+
+  /* Multi-page printable fluid sheet for long grids & tables */
+  .print-sheet-fluid {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
 
   /* Exact A4 Landscape Sheets (297mm x 210mm 100% full match) */

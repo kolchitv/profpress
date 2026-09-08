@@ -11,6 +11,7 @@ export type TabKey =
   | "charter"
   | "covers"
   | "grids"
+  | "positioning_grids"
   | "holidays"
   | "certificates"
   | "remarks"

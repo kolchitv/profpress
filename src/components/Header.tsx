@@ -22,6 +22,7 @@ import {
   Files,
   CheckCircle2,
   PhoneCall,
+  FileSpreadsheet,
 } from "lucide-react";
 import { TabKey } from "../types";
 
@@ -59,6 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Pedagogical documents list consolidated under "وثائق تربوية"
   const pedagogicalDocs = [
+    { key: "positioning_grids" as TabKey, label: "روائز الموضعة TaRL", icon: FileSpreadsheet, badge: "شتنبر 2026" },
     { key: "workshop_report" as TabKey, label: "تقرير الورشات", icon: ClipboardList, badge: "جديد 3P" },
     { key: "portfolio" as TabKey, label: "الملف التراكمي", icon: FolderKanban, badge: "الريادة" },
     { key: "timetable" as TabKey, label: "استعمال الزمن", icon: Calendar },
@@ -160,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Primary Navigation Bar (الرئيسية، مستجدات، مقالات، مباريات مهنية، وثائق تربوية) */}
-        <nav className="flex items-center gap-2 overflow-x-visible pb-1 pt-1 text-xs md:text-sm relative">
+        <nav className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 pt-1 text-xs md:text-sm relative max-w-full scrollbar-thin">
           {/* 1. الرئيسية */}
           <button
             key="home"
@@ -218,7 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span>مقالات</span>
           </button>
 
-          {/* 4. مباريات مهنية */}
+          {/* 4. مباراة التعليم */}
           <button
             key="competitions"
             id="nav-tab-competitions"
@@ -233,7 +235,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <GraduationCap className={`w-4 h-4 ${activeTab === "competitions" ? "text-amber-300" : "text-blue-600"}`} />
-            <span>مباريات مهنية</span>
+            <span>مباراة التعليم</span>
           </button>
 
           {/* 5. وثائق تربوية (تجميع جميع الوثائق) */}
@@ -292,7 +294,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Dropdown Menu listing all 11 consolidated documents */}
             {isDocsDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 py-2 divide-y divide-slate-100 animate-fadeIn text-right">
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 py-2 divide-y divide-slate-100 animate-fadeIn text-right">
                 <div className="px-3 py-2 bg-blue-50/70 rounded-t-xl flex items-center justify-between">
                   <span className="font-black text-blue-950 text-xs flex items-center gap-1.5">
                     <Files className="w-3.5 h-3.5 text-blue-600" />

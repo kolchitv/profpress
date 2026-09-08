@@ -6,6 +6,7 @@ import { TeacherCard } from "./components/TeacherCard";
 import { ClassCharter } from "./components/ClassCharter";
 import { CoverGenerator } from "./components/CoverGenerator";
 import { EvaluationGrid } from "./components/EvaluationGrid";
+import { PositioningGridsEditor } from "./components/PositioningGridsEditor";
 import { HolidaysCalendar } from "./components/HolidaysCalendar";
 import { CertificatesGenerator } from "./components/CertificatesGenerator";
 import { AiPedagogyAssistant } from "./components/AiPedagogyAssistant";
@@ -13,7 +14,7 @@ import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { WorkshopReport } from "./components/WorkshopReport";
 import { HomePage } from "./components/HomePage";
 import { AnnouncementsPage } from "./components/AnnouncementsPage";
-import { CompetitionsView } from "./components/PortalViews";
+import { TeachingCompetitionPage } from "./components/TeachingCompetitionPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
@@ -181,7 +182,7 @@ export default function App() {
           )}
 
           {activeTab === "competitions" && (
-            <CompetitionsView onNavigateToTab={setActiveTab} />
+            <TeachingCompetitionPage onNavigateToTab={setActiveTab} />
           )}
 
           {activeTab === "pedagogical_docs" && (
@@ -226,7 +227,14 @@ export default function App() {
           )}
 
           {activeTab === "grids" && (
-            <EvaluationGrid teacherProfile={profile} />
+            <EvaluationGrid
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === "positioning_grids" && (
+            <PositioningGridsEditor teacherProfile={profile} />
           )}
 
           {activeTab === "holidays" && (
