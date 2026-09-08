@@ -19,6 +19,7 @@ import { InspectionCompetitionPage } from "./components/InspectionCompetitionPag
 import { OrientationPlanningPage } from "./components/OrientationPlanningPage";
 import { ExplicitTeachingPage } from "./components/ExplicitTeachingPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
+import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
 import { OrientationPage } from "./components/OrientationPage";
@@ -275,6 +276,10 @@ export default function App() {
                 setIsPrintPreviewOpen(true);
               }}
             />
+          )}
+
+          {activeTab === "daily_log" && (
+            <DailyDiaryLog teacherProfile={profile} />
           )}
 
           {activeTab === "workshop_report" && (

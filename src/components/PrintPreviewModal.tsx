@@ -34,7 +34,8 @@ import { HolidaysCalendar } from "./HolidaysCalendar";
 import { CertificatesGenerator } from "./CertificatesGenerator";
 import { CumulativePortfolio } from "./CumulativePortfolio";
 import { WorkshopReport } from "./WorkshopReport";
-import { ClipboardList } from "lucide-react";
+import { DailyDiaryLog } from "./DailyDiaryLog";
+import { ClipboardList, BookOpen } from "lucide-react";
 
 interface PrintPreviewModalProps {
   isOpen: boolean;
@@ -53,6 +54,14 @@ interface DocumentMeta {
 }
 
 const DOCUMENTS: DocumentMeta[] = [
+  {
+    key: "daily_log",
+    title: "المذكرة اليومية لأنشطة الدعم التربوي المكثف (TaRL)",
+    orientation: "portrait",
+    category: "التخطيط والتدبير اليومي",
+    icon: BookOpen,
+    filename: "المذكرة_اليومية_لأنشطة_الدعم_المكثف.pdf",
+  },
   {
     key: "timetable",
     title: "استعمال الزمن الأسبوعي (مدرسة الريادة)",
@@ -383,6 +392,10 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
             {/* Render Document Component */}
             <div className="w-full">
+              {selectedDocKey === "daily_log" && (
+                <DailyDiaryLog teacherProfile={teacherProfile} />
+              )}
+
               {selectedDocKey === "timetable" && (
                 <TimetableEditor teacherProfile={teacherProfile} />
               )}

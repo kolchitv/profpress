@@ -2143,36 +2143,44 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setGatewaySettings((prev) => ({
-                        ...prev,
-                        adSettings: {
-                          ...prev.adSettings,
-                          topAdCode: `<ins class="adsbygoogle"
+                      setGatewaySettings((prev) => {
+                        const snippet = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     crossorigin="anonymous"></script>
+<!-- respon inside education -->
+<ins class="adsbygoogle"
      style="display:block"
      data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
-     data-ad-slot="1234567890"
+     data-ad-slot="4039422419"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
-</script>`,
-                        },
-                      }))
+</script>`;
+                        return {
+                          ...prev,
+                          adSettings: {
+                            ...prev.adSettings,
+                            topAdCode: snippet,
+                            topBannerAdCode: snippet,
+                          },
+                        };
+                      })
                     }
                     className="text-[11px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-lg border border-amber-200 cursor-pointer self-start sm:self-auto transition"
                   >
-                    + نموذج شفرة أدسنس
+                    + شفرة إعلان 4039422419
                   </button>
                 </div>
 
                 <textarea
-                  value={gatewaySettings.adSettings.topAdCode}
+                  value={gatewaySettings.adSettings.topAdCode || gatewaySettings.adSettings.topBannerAdCode || ""}
                   onChange={(e) =>
                     setGatewaySettings((prev) => ({
                       ...prev,
                       adSettings: {
                         ...prev.adSettings,
                         topAdCode: e.target.value,
+                        topBannerAdCode: e.target.value,
                       },
                     }))
                   }
@@ -2204,36 +2212,44 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setGatewaySettings((prev) => ({
-                        ...prev,
-                        adSettings: {
-                          ...prev.adSettings,
-                          middleAdCode: `<ins class="adsbygoogle"
-     style="display:block; text-align:center;"
-     data-ad-layout="in-article"
-     data-ad-format="fluid"
+                      setGatewaySettings((prev) => {
+                        const snippet = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     crossorigin="anonymous"></script>
+<!-- respon inside education -->
+<ins class="adsbygoogle"
+     style="display:block"
      data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
-     data-ad-slot="9876543210"></ins>
+     data-ad-slot="4039422419"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
-</script>`,
-                        },
-                      }))
+</script>`;
+                        return {
+                          ...prev,
+                          adSettings: {
+                            ...prev.adSettings,
+                            middleAdCode: snippet,
+                            middleBannerAdCode: snippet,
+                          },
+                        };
+                      })
                     }
                     className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-200 cursor-pointer self-start sm:self-auto transition"
                   >
-                    + نموذج شفرة أدسنس
+                    + شفرة إعلان 4039422419
                   </button>
                 </div>
 
                 <textarea
-                  value={gatewaySettings.adSettings.middleAdCode}
+                  value={gatewaySettings.adSettings.middleAdCode || gatewaySettings.adSettings.middleBannerAdCode || ""}
                   onChange={(e) =>
                     setGatewaySettings((prev) => ({
                       ...prev,
                       adSettings: {
                         ...prev.adSettings,
                         middleAdCode: e.target.value,
+                        middleBannerAdCode: e.target.value,
                       },
                     }))
                   }
@@ -2265,36 +2281,44 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setGatewaySettings((prev) => ({
-                        ...prev,
-                        adSettings: {
-                          ...prev.adSettings,
-                          bottomAdCode: `<ins class="adsbygoogle"
+                      setGatewaySettings((prev) => {
+                        const snippet = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     crossorigin="anonymous"></script>
+<!-- respon inside education -->
+<ins class="adsbygoogle"
      style="display:block"
      data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
-     data-ad-slot="5544332211"
+     data-ad-slot="4039422419"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
-</script>`,
-                        },
-                      }))
+</script>`;
+                        return {
+                          ...prev,
+                          adSettings: {
+                            ...prev.adSettings,
+                            bottomAdCode: snippet,
+                            bottomBannerAdCode: snippet,
+                          },
+                        };
+                      })
                     }
                     className="text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg border border-blue-200 cursor-pointer self-start sm:self-auto transition"
                   >
-                    + نموذج شفرة أدسنس
+                    + شفرة إعلان 4039422419
                   </button>
                 </div>
 
                 <textarea
-                  value={gatewaySettings.adSettings.bottomAdCode}
+                  value={gatewaySettings.adSettings.bottomAdCode || gatewaySettings.adSettings.bottomBannerAdCode || ""}
                   onChange={(e) =>
                     setGatewaySettings((prev) => ({
                       ...prev,
                       adSettings: {
                         ...prev.adSettings,
                         bottomAdCode: e.target.value,
+                        bottomBannerAdCode: e.target.value,
                       },
                     }))
                   }

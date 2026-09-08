@@ -7,6 +7,7 @@ export type TabKey =
   | "orientation_planning"
   | "explicit_teaching"
   | "pedagogical_docs"
+  | "daily_log"
   | "workshop_report"
   | "portfolio"
   | "timetable"
@@ -141,7 +142,11 @@ export interface AdSenseSettings {
   topBannerAdCode: string;
   middleBannerAdCode: string;
   bottomBannerAdCode: string;
+  topAdCode?: string;
+  middleAdCode?: string;
+  bottomAdCode?: string;
   showDemoAdsIfEmpty: boolean;
+  showPlaceholderAds?: boolean;
 }
 
 export interface DownloadGatewaySettings {
@@ -410,3 +415,184 @@ export interface PortfolioComponent {
   requiredForPioneer: boolean;
   notes?: string;
 }
+
+export interface DailyGroupActivity {
+  id: string;
+  groupName: string; // الفوج 1 / الفوج 2
+  objective: string; // الهدف
+  path: string; // المسار (المسار 1 / المسار 2 / مسار الكلمات / مسار الجمل)
+  levelBlock: string; // اللبنة (اللبنة 1 / 2 / 3)
+  sessionNumber: string; // الحصة (الحصة 1 / 2 / 3...)
+  startTime: string; // من
+  endTime: string; // إلى
+  activity1: string; // نشاط 1 (أيقونة المصباح: تهيؤ وانطلاق)
+  activity2: string; // نشاط 2 (أيقونة الكتاب: قراءة وفك تشفير / حساب ذهني)
+  activity3: string; // نشاط 3 (أيقونة الترس: أنشطة تطبيقية وممارسة مستقلة)
+  activity4: string; // نشاط 4 (أيقونة المجموعة: عمل تشاركي وإنتاج)
+  notes: string; // ملاحظات
+  percentageAchieved: string; // % نسبة التحقق والتحكم
+}
+
+export interface DailyLogDay {
+  id: string;
+  dayName: string; // الاثنين، الثلاثاء...
+  gregorianDate: string; // تاريخ اليوم
+  hijriDate: string; // الموافق لـ
+  group1: DailyGroupActivity;
+  group2: DailyGroupActivity;
+  directorSignatureDate?: string;
+  inspectorSignatureDate?: string;
+}
+
+export interface DailyLogBookConfig {
+  schoolYear: string;
+  title?: string;
+  subtitle?: string;
+  motto?: string;
+  templateType?: string;
+  showCover?: boolean;
+  showBasmala?: boolean;
+  showTeacherCard?: boolean;
+  showBackCover?: boolean;
+  totalDays?: number;
+  days: DailyLogDay[];
+}
+
+export interface DailyKickoffOperation {
+  id: string;
+  dayName: string;
+  dateStr: string;
+  tasks: string[];
+  notes?: string;
+  isDone?: boolean;
+}
+
+export interface DailyKickoffWeek {
+  id: string;
+  weekTitle: string;
+  dateRange: string;
+  operations: DailyKickoffOperation[];
+}
+
+export interface TripleSubjectDayActivity {
+  id: string;
+  dateStr: string;
+  hijriDateStr?: string;
+  arabic: {
+    path: string;
+    levelBlock: string;
+    sessionNumber: string;
+    startTime: string;
+    endTime: string;
+    objective: string;
+    opening: string; // افتتاح الحصة
+    routine: string; // نشاط اعتيادي
+    speakingVocab: string; // تحدث وإغناء المعجم
+    readingWriting: string; // أنشطة القراءة والكتابة
+    gameClosing: string; // لعبة واختتام الحصة
+    notes: string;
+  };
+  math: {
+    path: string;
+    levelBlock: string;
+    sessionNumber: string;
+    startTime: string;
+    endTime: string;
+    objective: string;
+    mentalMath: string; // حساب ذهني
+    numbers: string; // الأعداد
+    operationsProblems: string; // العمليات وحل المسائل
+    workbookActivity: string; // عمل فردي على الكراسة
+    game: string; // لعبة
+    notes: string;
+  };
+  french: {
+    parcours: string;
+    item: string;
+    seance: string;
+    du: string;
+    a: string;
+    objective: string;
+    rituel: string;
+    vocabulaire: string;
+    lectureEcriture: string;
+    pratiqueAutonome: string;
+    jeu: string;
+    observations: string;
+  };
+  generalNotes: string;
+}
+
+export interface Grade1PreparationDay {
+  id: string;
+  dateStr: string;
+  level: string; // المستوى: الأول
+  groupName: string; // الفوج
+  arabic: {
+    sessionNumber: string;
+    timing: string;
+    objective: string;
+    routine20min: string; // نشاط اعتيادي (20 د)
+    speakingVocab40min: string; // نشاط الاستماع والتحدث وإغناء المعجم (40 د)
+    preReading50min: string; // أنشطة ما قبل القراءة (50 د)
+    closingRitual20min: string; // طقس اختتام الحصة (20 د)
+    notes: string;
+  };
+  math: {
+    sessionNumber: string;
+    timing: string;
+    objective: string;
+    routine5min: string; // نشاط اعتيادي (5 د)
+    logicThinking25min: string; // أنشطة تنمية التفكير المنطقي (25 د)
+    countingSkills25min: string; // أنشطة التهيئة لمهارات العد والحساب (25 د)
+    games10min: string; // ألعاب (10 د)
+    notes: string;
+  };
+  french: {
+    seance: string;
+    horaire: string;
+    objectifs: string;
+    chansonAction5min: string; // Chanson action (5 min)
+    vocabulaire20min: string; // Vocabulaire (20 min)
+    chansonAlphabet5min: string; // Chanson de l'alphabet (5 min)
+    presentationLettre20min: string; // Présentation de la lettre (20 min)
+    jeu10min: string; // Jeu (10 min)
+    notesObservations: string;
+  };
+}
+
+export interface ExplicitTeachingRow {
+  id: string;
+  timeSlot: string; // الفترة الزمنية
+  group: string; // الفوج
+  subject: string; // المادة
+  topic: string; // الموضوع
+  session: string; // الحصة
+  duration: string; // المدة
+  percentageAchieved: string; // نسبة التحقق
+  mindMap: string; // الخطاطة الذهنية
+  isGroupChange?: boolean;
+  isBreak?: boolean;
+  breakDuration?: string;
+}
+
+export interface ExplicitTeachingDay {
+  id: string;
+  dateStr: string;
+  phase: string; // المرحلة
+  annualWeek: string; // الأسبوع السنوي
+  phaseWeek: string; // الأسبوع المرحلي
+  pedagogicalDay: string; // اليوم التربوي
+  rows: ExplicitTeachingRow[];
+  teacherNotes: string; // إطار خاص بالأستاذ(ة): المادة والتعثرات المرصودة / ملاحظات عامة
+}
+
+export type DailyLogModelId =
+  | "kickoff_procedures" // إجراءات بداية السنة الدراسية (PDF 1)
+  | "tarl_support" // مذكرة الدعم المكثف TaRL ثنائية الأفواج
+  | "comprehensive_pioneer" // دفتر المذكرة اليومية الشامل (المثمر 2026/2027 - 24 صفحة)
+  | "triple_subjects" // مذكرة المواد الثلاثية (عربية - رياضيات - فرنسية)
+  | "grade_1_prep" // مذكرة المستوى الأول (أنشطة التهيئة والاستئناس)
+  | "explicit_teaching"; // مذكرة التدريس الصريح (يوم واحد / يومان / التوقيت الوزاري)
+
+

@@ -10,6 +10,141 @@ export interface PdfExportOptions {
 }
 
 /**
+ * Singleton Canvas 2D context for normalizing modern CSS Color Level 4
+ * (oklch, oklab, lch, lab, color(...)) into standard RGB/RGBA/HEX strings
+ * that html2canvas can safely parse without throwing errors.
+ */
+let colorCanvasCtx: CanvasRenderingContext2D | null = null;
+
+function getColorCanvasCtx(): CanvasRenderingContext2D | null {
+  if (typeof document === "undefined") return null;
+  if (!colorCanvasCtx) {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      colorCanvasCtx = canvas.getContext("2d", { willReadFrequently: true });
+    } catch {
+      return null;
+    }
+  }
+  return colorCanvasCtx;
+}
+
+/**
+ * Converts any CSS string containing modern color functions (such as oklch or color)
+ * into standard hex (#rrggbb) or rgba(...) supported by html2canvas.
+ */
+export function convertModernColorsToStandard(cssString: string): string {
+  if (!cssString) return cssString;
+  if (
+    !cssString.includes("oklch") &&
+    !cssString.includes("oklab") &&
+    !cssString.includes("lch(") &&
+    !cssString.includes("lab(") &&
+    !cssString.includes("color(")
+  ) {
+    return cssString;
+  }
+
+  const ctx = getColorCanvasCtx();
+  const modernColorRegex = /(?:oklch|oklab|lch|lab|color)\([^)]+\)/gi;
+
+  return cssString.replace(modernColorRegex, (match) => {
+    if (ctx) {
+      try {
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.fillStyle = match;
+        if (ctx.fillStyle && ctx.fillStyle !== "rgba(0, 0, 0, 0)") {
+          return ctx.fillStyle;
+        }
+      } catch {
+        // Fallback below
+      }
+    }
+    // Safe generic fallback if canvas conversion is unavailable
+    return match.startsWith("oklch") ? "#10b981" : "#1e293b";
+  });
+}
+
+/**
+ * Properties that might contain colors or modern color functions.
+ */
+const COLOR_PROPERTIES = [
+  "color",
+  "background",
+  "background-color",
+  "background-image",
+  "border-color",
+  "border-top-color",
+  "border-right-color",
+  "border-bottom-color",
+  "border-left-color",
+  "outline-color",
+  "text-decoration-color",
+  "text-shadow",
+  "box-shadow",
+  "fill",
+  "stroke",
+  "caret-color",
+  "accent-color",
+  "stop-color",
+  "flood-color",
+  "lighting-color",
+  "filter",
+  "backdrop-filter",
+];
+
+/**
+ * Sanitizes all elements and styles in the cloned document for html2canvas
+ * to prevent any "unsupported color function oklch" errors.
+ */
+function sanitizeClonedDocumentForHtml2Canvas(clonedDoc: Document) {
+  // 1. Sanitize all <style> elements in the cloned document
+  const styleElements = clonedDoc.querySelectorAll("style");
+  styleElements.forEach((styleEl) => {
+    if (styleEl.textContent) {
+      styleEl.textContent = convertModernColorsToStandard(styleEl.textContent);
+    }
+  });
+
+  // 2. Sanitize inline and computed styles across all cloned elements
+  const allElements = clonedDoc.querySelectorAll("*");
+  allElements.forEach((node) => {
+    if (node instanceof HTMLElement || node instanceof SVGElement) {
+      // Clean inline style attribute if present
+      if (node.hasAttribute("style")) {
+        const inlineStyle = node.getAttribute("style");
+        if (inlineStyle) {
+          node.setAttribute("style", convertModernColorsToStandard(inlineStyle));
+        }
+      }
+
+      // Read computed style and enforce converted standard colors
+      try {
+        const computed = window.getComputedStyle(node);
+        for (const prop of COLOR_PROPERTIES) {
+          const val = computed.getPropertyValue(prop);
+          if (
+            val &&
+            (val.includes("oklch") ||
+              val.includes("oklab") ||
+              val.includes("lch(") ||
+              val.includes("lab(") ||
+              val.includes("color("))
+          ) {
+            const converted = convertModernColorsToStandard(val);
+            node.style.setProperty(prop, converted, "important");
+          }
+        }
+      } catch {
+        // Ignore disconnected element style access
+      }
+    }
+  });
+}
+
+/**
  * High-resolution A4 PDF generator tailored for Moroccan Educational Documents.
  * Guarantees exact font rendering (Cairo, Amiri, Arabic RTL ligatures) and official colors.
  */
@@ -79,6 +214,9 @@ export async function generatePdfFromElement(
       logging: false,
       scrollX: 0,
       scrollY: 0,
+      onclone: (clonedDoc) => {
+        sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
+      },
       ignoreElements: (el) => {
         return (
           el.classList.contains("no-print") ||
@@ -237,6 +375,9 @@ export async function generateMultiPagePdfFromElements(
         logging: false,
         scrollX: 0,
         scrollY: 0,
+        onclone: (clonedDoc) => {
+          sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
+        },
         ignoreElements: (el) => {
           return (
             el.classList.contains("no-print") ||

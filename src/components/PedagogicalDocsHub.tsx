@@ -19,6 +19,7 @@ import {
   FileSpreadsheet,
   Presentation,
   ArrowRight,
+  BookOpen,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 
@@ -34,6 +35,21 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
   onOpenPrintPreview,
 }) => {
   const pedagogicalDocuments = [
+    {
+      key: "daily_log" as TabKey,
+      title: "المذكرة اليومية لأنشطة الدعم التربوي المكثف (TaRL & الريادة)",
+      badge: "نموذج 2026/2027 الحصري",
+      badgeColor: "bg-amber-100 text-amber-900 border-amber-300 font-bold",
+      icon: BookOpen,
+      iconBg: "bg-emerald-700 text-white",
+      description:
+        "النموذج الرسمي الشامل لدفتر المذكرة اليومية لأنشطة الدعم المكثف: الغلاف الخارجي، صفحة البسملة والزخرفة الملكية، البطاقة الشخصية، وصفحات التخطيط اليومي ثنائية الأفواج مع خانات الأنشطة الأربعة ومصادقة الإدارة والتفتيش.",
+      features: [
+        "كتيب متكامل من 10 صفحات (غلاف، بسملة، بطاقة شخصية، جذاذات يومية، غلاف خلفي)",
+        "تخطيط ثنائي الفوجين (المسار، اللبنة، الحصة، الأهداف، والأنشطة الأربعة)",
+        "إمكانية تخصيص وتعديل أيام وأنشطة الدعم وطباعة ورقية مباشرة مقاس A4",
+      ],
+    },
     {
       key: "positioning_grids" as TabKey,
       title: "شبكة تفريغ روائز الموضعة (TaRL) - شتنبر 2026",

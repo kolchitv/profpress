@@ -3,6 +3,19 @@ import { DownloadGatewaySettings } from "../types";
 export const DOWNLOAD_GATEWAY_STORAGE_KEY = "profpress_download_gateway_settings";
 export const DOWNLOAD_GATEWAY_EVENT = "profpress_download_gateway_updated";
 
+export const OFFICIAL_ADSENSE_CODE = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2606934361036411"
+     crossorigin="anonymous"></script>
+<!-- respon inside education -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-2606934361036411"
+     data-ad-slot="4039422419"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`;
+
 export const DEFAULT_DOWNLOAD_GATEWAY_SETTINGS: DownloadGatewaySettings = {
   isEnabled: true,
   countdownSeconds: 10,
@@ -14,10 +27,13 @@ export const DEFAULT_DOWNLOAD_GATEWAY_SETTINGS: DownloadGatewaySettings = {
     isEnabled: true,
     publisherId: "ca-pub-2606934361036411",
     autoAdsEnabled: true,
-    topBannerAdCode: "",
-    middleBannerAdCode: "",
-    bottomBannerAdCode: "",
-    showDemoAdsIfEmpty: true,
+    topBannerAdCode: OFFICIAL_ADSENSE_CODE,
+    middleBannerAdCode: OFFICIAL_ADSENSE_CODE,
+    bottomBannerAdCode: OFFICIAL_ADSENSE_CODE,
+    topAdCode: OFFICIAL_ADSENSE_CODE,
+    middleAdCode: OFFICIAL_ADSENSE_CODE,
+    bottomAdCode: OFFICIAL_ADSENSE_CODE,
+    showDemoAdsIfEmpty: false,
   },
 };
 
@@ -47,7 +63,7 @@ export function getDownloadGatewaySettings(): DownloadGatewaySettings {
             ? parsed.adSettings.isEnabled
             : true,
         publisherId:
-          typeof parsed.adSettings?.publisherId === "string"
+          typeof parsed.adSettings?.publisherId === "string" && parsed.adSettings.publisherId.trim()
             ? parsed.adSettings.publisherId.trim()
             : "ca-pub-2606934361036411",
         autoAdsEnabled:
@@ -55,21 +71,30 @@ export function getDownloadGatewaySettings(): DownloadGatewaySettings {
             ? parsed.adSettings.autoAdsEnabled
             : true,
         topBannerAdCode:
-          typeof parsed.adSettings?.topBannerAdCode === "string"
+          typeof parsed.adSettings?.topBannerAdCode === "string" && parsed.adSettings.topBannerAdCode
             ? parsed.adSettings.topBannerAdCode
-            : "",
+            : OFFICIAL_ADSENSE_CODE,
         middleBannerAdCode:
-          typeof parsed.adSettings?.middleBannerAdCode === "string"
+          typeof parsed.adSettings?.middleBannerAdCode === "string" && parsed.adSettings.middleBannerAdCode
             ? parsed.adSettings.middleBannerAdCode
-            : "",
+            : OFFICIAL_ADSENSE_CODE,
         bottomBannerAdCode:
-          typeof parsed.adSettings?.bottomBannerAdCode === "string"
+          typeof parsed.adSettings?.bottomBannerAdCode === "string" && parsed.adSettings.bottomBannerAdCode
             ? parsed.adSettings.bottomBannerAdCode
-            : "",
-        showDemoAdsIfEmpty:
-          typeof parsed.adSettings?.showDemoAdsIfEmpty === "boolean"
-            ? parsed.adSettings.showDemoAdsIfEmpty
-            : true,
+            : OFFICIAL_ADSENSE_CODE,
+        topAdCode:
+          typeof parsed.adSettings?.topAdCode === "string" && parsed.adSettings.topAdCode
+            ? parsed.adSettings.topAdCode
+            : OFFICIAL_ADSENSE_CODE,
+        middleAdCode:
+          typeof parsed.adSettings?.middleAdCode === "string" && parsed.adSettings.middleAdCode
+            ? parsed.adSettings.middleAdCode
+            : OFFICIAL_ADSENSE_CODE,
+        bottomAdCode:
+          typeof parsed.adSettings?.bottomAdCode === "string" && parsed.adSettings.bottomAdCode
+            ? parsed.adSettings.bottomAdCode
+            : OFFICIAL_ADSENSE_CODE,
+        showDemoAdsIfEmpty: false,
       },
     };
   } catch (e) {

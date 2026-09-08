@@ -29,6 +29,7 @@ import {
   LayoutDashboard,
   LogOut,
   ShieldCheck,
+  BookOpen,
 } from "lucide-react";
 import { TabKey, AdminSession } from "../types";
 
@@ -74,6 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Pedagogical documents list consolidated under "وثائق تربوية"
   const pedagogicalDocs = [
+    { key: "daily_log" as TabKey, label: "المذكرة اليومية (الدعم المكثف)", icon: BookOpen, badge: "جديد 10 صفحات" },
     { key: "positioning_grids" as TabKey, label: "روائز الموضعة TaRL", icon: FileSpreadsheet, badge: "شتنبر 2026" },
     { key: "workshop_report" as TabKey, label: "تقرير الورشات", icon: ClipboardList, badge: "جديد 3P" },
     { key: "portfolio" as TabKey, label: "الملف التراكمي", icon: FolderKanban, badge: "الريادة" },

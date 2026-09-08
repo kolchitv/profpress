@@ -409,6 +409,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Documents & Generators List (Core platform offerings)
   const teacherDocuments = [
     {
+      id: "daily_log",
+      tab: "daily_log" as TabKey,
+      title: "المذكرة اليومية لأنشطة الدعم التربوي المكثف (10 صفحات)",
+      category: "التخطيط والتدبير اليومي",
+      cycle: ["primary", "middle"],
+      badge: "نموذج 2026/2027 الحصري",
+      badgeColor: "bg-amber-100 text-amber-900 border-amber-300 font-bold",
+      description:
+        "دفتر متكامل من 10 صفحات يضم الغلاف الخارجي، صفحة البسملة والزخرفة الملكية، البطاقة الشخصية للأستاذ، وجذاذات التخطيط اليومي ثنائية الأفواج (أهداف، مسارات، لبنات، وأنشطة تفريدية).",
+      icon: BookOpen,
+      iconColor: "text-emerald-700",
+      iconBg: "bg-emerald-50",
+    },
+    {
       id: "workshop_report",
       tab: "workshop_report" as TabKey,
       title: "تقرير ورشات الريادة (3 صفحات A4)",
