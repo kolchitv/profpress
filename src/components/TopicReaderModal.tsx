@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   Printer,
@@ -21,8 +21,20 @@ import {
   Check,
   AlertTriangle,
   Trash2,
+  ShieldCheck,
+  FileSpreadsheet,
+  HardDrive,
+  Presentation,
+  Archive,
+  Zap,
 } from "lucide-react";
-import { TopicItem } from "../types";
+import { TopicItem, DownloadLinkItem } from "../types";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { AdSenseZone } from "./AdSenseZone";
+import {
+  getDownloadGatewaySettings,
+  DOWNLOAD_GATEWAY_EVENT,
+} from "../utils/downloadGatewaySettings";
 
 interface TopicReaderModalProps {
   topic: TopicItem | null;
@@ -46,6 +58,47 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
   if (!isOpen || !topic) return null;
 
   const [copied, setCopied] = useState(false);
+  const [gatewaySettings, setGatewaySettings] = useState(getDownloadGatewaySettings);
+  const [gatewayFile, setGatewayFile] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    type?: string;
+    size?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+    type: "pdf",
+  });
+
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setGatewaySettings(getDownloadGatewaySettings());
+    };
+    window.addEventListener(DOWNLOAD_GATEWAY_EVENT, handleSettingsUpdate);
+    return () => {
+      window.removeEventListener(DOWNLOAD_GATEWAY_EVENT, handleSettingsUpdate);
+    };
+  }, []);
+
+  const handleTriggerDownload = (title: string, url: string, type = "pdf", size?: string) => {
+    if (gatewaySettings.isEnabled) {
+      setGatewayFile({
+        isOpen: true,
+        title,
+        url: url || "#",
+        type,
+        size,
+      });
+    } else {
+      if (!url || url === "#") {
+        window.print();
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    }
+  };
 
   // Icon mapping
   const renderNatureIcon = () => {
@@ -209,31 +262,115 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
             {topic.content}
           </div>
 
-          {/* Download Box */}
-          {topic.downloadLabel && (
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-              <div className="space-y-1 text-center sm:text-right">
-                <span className="font-bold text-xs sm:text-sm text-emerald-950 block font-cairo">
-                  {topic.downloadLabel}
-                </span>
-                <span className="text-[11px] text-emerald-700">
-                  ملف رسمي جاهز للطباعة والاستعمال المدرسي
-                </span>
+          {/* In-Article AdSense Banner */}
+          <AdSenseZone
+            zone="middle"
+            adSettings={gatewaySettings.adSettings}
+            title="إعلان وسط المقال (In-Article)"
+          />
+
+          {/* Download Box (Primary and Multi-attachments) */}
+          {(topic.downloadLabel || (topic.downloads && topic.downloads.length > 0)) && (
+            <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-300 rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-emerald-200/70">
+                <div className="space-y-0.5">
+                  <span className="font-black text-xs sm:text-sm text-emerald-950 flex items-center gap-1.5 font-cairo">
+                    <Download className="w-4 h-4 text-emerald-700" />
+                    <span>الملفات والوثائق المرفقة للتحميل المباشر</span>
+                  </span>
+                  <span className="text-[11px] text-emerald-700 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>ملفات رسمية معتمدة ومفحوصة - تحميل آمن عبر البوابة</span>
+                  </span>
+                </div>
+
+                {gatewaySettings.isEnabled && (
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full self-start sm:self-auto flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-amber-600" />
+                    <span>بوابة التحميل الآمن نشطة</span>
+                  </span>
+                )}
               </div>
-              <a
-                href={topic.downloadUrl || "#"}
-                download
-                onClick={(e) => {
-                  if (!topic.downloadUrl || topic.downloadUrl === "#") {
-                    e.preventDefault();
-                    window.print();
-                  }
-                }}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition cursor-pointer shrink-0"
-              >
-                <Download className="w-4 h-4" />
-                <span>تحميل أو طباعة الوثيقة</span>
-              </a>
+
+              {/* Primary Download Button */}
+              {topic.downloadLabel && (
+                <div className="bg-white border border-emerald-200/80 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs hover:border-emerald-300 transition">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] bg-emerald-700 text-white font-black px-2 py-0.2 rounded font-mono">
+                        PDF
+                      </span>
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 font-cairo">
+                        {topic.downloadLabel}
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      انقر للتحميل المباشر الآمن أو حفظ نسخة رسمية
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleTriggerDownload(
+                        topic.downloadLabel || "ملف التحميل الرسمي",
+                        topic.downloadUrl || "#",
+                        "pdf",
+                        "4.5 MB"
+                      )
+                    }
+                    className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm transition cursor-pointer shrink-0"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>تحميل الوثيقة الآن</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Additional Download Attachments */}
+              {topic.downloads && topic.downloads.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <span className="text-xs font-bold text-slate-700 block">
+                    مرفقات إضافية خاصة بالموضوع ({topic.downloads.length}):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {topic.downloads.map((dl) => (
+                      <div
+                        key={dl.id}
+                        className="bg-white border border-slate-200 hover:border-teal-300 rounded-xl p-3 flex items-center justify-between gap-2 transition shadow-2xs"
+                      >
+                        <div className="space-y-0.5 min-w-0">
+                          <span className="text-xs font-bold text-slate-800 block truncate font-cairo">
+                            {dl.label}
+                          </span>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                            <span className="uppercase text-slate-600 font-bold">
+                              {dl.fileType || "PDF"}
+                            </span>
+                            {dl.fileSize && <span>• {dl.fileSize}</span>}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleTriggerDownload(
+                              dl.label,
+                              dl.url,
+                              dl.fileType || "pdf",
+                              dl.fileSize
+                            )
+                          }
+                          className="bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-[11px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 shrink-0 transition cursor-pointer"
+                        >
+                          <Download className="w-3.5 h-3.5 text-teal-700" />
+                          <span>تحميل</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -347,6 +484,19 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Safe Download & AdSense Gateway Modal */}
+      {gatewayFile.isOpen && (
+        <DownloadGatewayModal
+          isOpen={gatewayFile.isOpen}
+          onClose={() => setGatewayFile((prev) => ({ ...prev, isOpen: false }))}
+          fileTitle={gatewayFile.title}
+          downloadUrl={gatewayFile.url}
+          fileType={gatewayFile.type}
+          fileSize={gatewayFile.size}
+          sourceTopicTitle={topic.title}
+        />
+      )}
     </div>
   );
 };

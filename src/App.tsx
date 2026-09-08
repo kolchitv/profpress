@@ -17,6 +17,7 @@ import { AnnouncementsPage } from "./components/AnnouncementsPage";
 import { TeachingCompetitionPage } from "./components/TeachingCompetitionPage";
 import { InspectionCompetitionPage } from "./components/InspectionCompetitionPage";
 import { OrientationPlanningPage } from "./components/OrientationPlanningPage";
+import { ExplicitTeachingPage } from "./components/ExplicitTeachingPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
@@ -243,6 +244,10 @@ export default function App() {
 
           {activeTab === "orientation_planning" && (
             <OrientationPlanningPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {activeTab === "explicit_teaching" && (
+            <ExplicitTeachingPage onNavigateToTab={setActiveTab} />
           )}
 
           {activeTab === "pedagogical_docs" && (

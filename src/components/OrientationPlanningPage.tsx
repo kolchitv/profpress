@@ -13,6 +13,8 @@ import {
 import { TabKey, AdminSession } from "../types";
 import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
 import { QuickResourceEditorModal } from "./QuickResourceEditorModal";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { getDownloadGatewaySettings } from "../utils/downloadGatewaySettings";
 import {
   Folder,
   Megaphone,
@@ -118,6 +120,19 @@ export const OrientationPlanningPage: React.FC<Props> = ({ onNavigateToTab }) =>
   const [themeModalTab, setThemeModalTab] = useState<"summary" | "files" | "qcm">("summary");
   const [qcmAnswers, setQcmAnswers] = useState<Record<number, number>>({});
   const [showQcmResults, setShowQcmResults] = useState(false);
+
+  // Safe Download Gateway state for exams & files
+  const [gatewayDownload, setGatewayDownload] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    type?: string;
+    size?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+  });
 
   // Listen to Admin Session changes
   useEffect(() => {
@@ -831,15 +846,27 @@ export const OrientationPlanningPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </div>
 
             <div className="flex flex-col gap-2.5 pt-2">
-              <a
-                href={selectedSession.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-sm shadow flex items-center justify-center gap-2 transition-colors"
+              <button
+                type="button"
+                onClick={() => {
+                  const settings = getDownloadGatewaySettings();
+                  if (settings.isEnabled) {
+                    setGatewayDownload({
+                      isOpen: true,
+                      title: `${selectedSession.title} - دورة ${selectedSession.year}`,
+                      url: selectedSession.downloadUrl || "#",
+                      type: "pdf",
+                      size: selectedSession.size || "3.5 MB",
+                    });
+                  } else {
+                    window.open(selectedSession.downloadUrl, "_blank", "noopener,noreferrer");
+                  }
+                }}
+                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-sm shadow flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4" />
-                تحميل نموذج الامتحان مع التصحيح (PDF)
-              </a>
+                <span>تحميل نموذج الامتحان مع التصحيح (PDF)</span>
+              </button>
 
               {selectedSession.driveUrl && (
                 <a
@@ -1460,6 +1487,19 @@ export const OrientationPlanningPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Safe Download & AdSense Gateway Modal */}
+      {gatewayDownload.isOpen && (
+        <DownloadGatewayModal
+          isOpen={gatewayDownload.isOpen}
+          onClose={() => setGatewayDownload((prev) => ({ ...prev, isOpen: false }))}
+          fileTitle={gatewayDownload.title}
+          downloadUrl={gatewayDownload.url}
+          fileType={gatewayDownload.type}
+          fileSize={gatewayDownload.size}
+          sourceTopicTitle="مركز مباريات التوجيه والتخطيط التربوي COPE"
+        />
       )}
     </div>
   );

@@ -17,6 +17,8 @@ import {
   CheckCircle2,
   FileCheck2,
   FileSpreadsheet,
+  Presentation,
+  ArrowRight,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 
@@ -241,6 +243,37 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
             بنك الأدوات والمولدات الرسمية المتكاملة: تقرير ورشات الريادة 3P، الملف التراكمي، استعمال الزمن، البطاقة الشخصية، ميثاق القسم، واجهات الملفات، شبكات مسار، العطل، الشواهد التقديرية، ومولد الملاحظات — جاهزة للمعاينة والطباعة الفورية بصيغة A4.
           </p>
         </div>
+      </div>
+
+      {/* Explicit Teaching Featured Banner */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-blue-500/10 border border-amber-500/30 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-sm">
+            <Presentation className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-black bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-300">
+                مدارس الريادة
+              </span>
+              <h3 className="text-base font-black text-slate-900">
+                دروس وموارد التعليم الصريح بالسلك الابتدائي (Enseignement Explicite)
+              </h3>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              عروض PPT تفاعلية جاهزة للمسلاط الضوئي، كراسات التلميذ، ودلائل الأستاذ لجميع مستويات الابتدائي (1AEP إلى 6AEP).
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigateToTab?.("explicit_teaching")}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 shrink-0 shadow-xs"
+        >
+          <span>تصفح فضاء التعليم الصريح</span>
+          <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+        </button>
       </div>
 
       {/* Grid of All Consolidated Pedagogical Documents */}

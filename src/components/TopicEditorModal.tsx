@@ -22,9 +22,25 @@ import {
   Sparkles,
   Link as LinkIcon,
   CheckCircle2,
+  Plus,
+  Trash2,
+  ExternalLink,
+  HardDrive,
+  FileSpreadsheet,
+  Presentation,
+  Archive,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
-import { TopicCategory, TopicItem, SeoMetadata } from "../types";
+import {
+  TopicCategory,
+  TopicItem,
+  SeoMetadata,
+  DownloadLinkItem,
+  FileTypeOption,
+} from "../types";
 import { RankMathSeoBox } from "./RankMathSeoBox";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
 
 interface TopicEditorModalProps {
   isOpen: boolean;
@@ -51,10 +67,40 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
   const [summary, setSummary] = useState(initialTopic?.summary || "");
   const [content, setContent] = useState(initialTopic?.content || "");
   const [tagsInput, setTagsInput] = useState(initialTopic?.tags?.join("، ") || "");
+  
+  // Primary Download state
   const [downloadLabel, setDownloadLabel] = useState(
     initialTopic?.downloadLabel || "تحميل المذكرة الرسمية بصيغة PDF"
   );
-  const [downloadUrl, setDownloadUrl] = useState(initialTopic?.downloadUrl || "#");
+  const [downloadUrl, setDownloadUrl] = useState(
+    initialTopic?.downloadUrl && initialTopic.downloadUrl !== "#"
+      ? initialTopic.downloadUrl
+      : ""
+  );
+  const [fileType, setFileType] = useState<FileTypeOption>("pdf");
+  const [fileSize, setFileSize] = useState<string>("3.5 MB");
+
+  // Additional multi-file downloads
+  const [downloads, setDownloads] = useState<DownloadLinkItem[]>(() => {
+    if (initialTopic?.downloads && initialTopic.downloads.length > 0) {
+      return initialTopic.downloads;
+    }
+    return [];
+  });
+
+  // State for testing the Download Gateway Modal from inside editor
+  const [previewGatewayFile, setPreviewGatewayFile] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    type: FileTypeOption | string;
+    size?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+    type: "pdf",
+  });
 
   // SEO State
   const [seo, setSeo] = useState<SeoMetadata>(
@@ -134,6 +180,7 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
       tags: tags.length > 0 ? tags : ["المستجدات", "التربية والتكوين"],
       downloadUrl: downloadUrl.trim() || "#",
       downloadLabel: downloadLabel.trim() || "تحميل المرفق الرسمي (PDF)",
+      downloads: downloads.filter((d) => d.label.trim() && d.url.trim()),
       seo: {
         focusKeyword: seo.focusKeyword || title.slice(0, 30),
         seoTitle: seo.seoTitle || title,
@@ -152,6 +199,25 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
 
     onSave(savedTopic);
     onClose();
+  };
+
+  const handleAddExtraDownload = () => {
+    const newItem: DownloadLinkItem = {
+      id: `dl-${Date.now()}`,
+      label: `مرفق إضافي #${downloads.length + 1} (PDF)`,
+      url: "",
+      fileType: "pdf",
+      fileSize: "2.5 MB",
+    };
+    setDownloads([...downloads, newItem]);
+  };
+
+  const handleUpdateExtraDownload = (id: string, updates: Partial<DownloadLinkItem>) => {
+    setDownloads(downloads.map((d) => (d.id === id ? { ...d, ...updates } : d)));
+  };
+
+  const handleRemoveExtraDownload = (id: string) => {
+    setDownloads(downloads.filter((d) => d.id !== id));
   };
 
   return (
@@ -450,22 +516,250 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
                 />
               </div>
 
-              {/* Downloads & Tags */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-                    <Download className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>عنوان ملف التحميل المرفق (PDF):</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={downloadLabel}
-                    onChange={(e) => setDownloadLabel(e.target.value)}
-                    placeholder="تحميل المذكرة الرسمية بصيغة PDF"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
-                  />
+              {/* DOWNLOAD LINKS & ATTACHMENTS SECTION */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                      <Download className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black text-slate-800 font-cairo flex items-center gap-1.5">
+                        <span>روابط وملفات التحميل المرفقة</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                          مدعوم بإعلانات أدسنس
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        ضع روابط الملفات (Google Drive، Mediafire، PDF مباشر...). سيتم تحويل الزوار عبر بوابة الانتظار الآمنة مع شفرات إعلانات أدسنس.
+                      </p>
+                    </div>
+                  </div>
+
+                  {downloadUrl && downloadUrl !== "#" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewGatewayFile({
+                          isOpen: true,
+                          title: downloadLabel || "ملف التحميل المرفق",
+                          url: downloadUrl,
+                          type: fileType,
+                          size: fileSize,
+                        })
+                      }
+                      className="text-[11px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl border border-indigo-200 flex items-center gap-1.5 transition cursor-pointer self-start sm:self-auto"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>معاينة بوابة التحميل والأدسنس</span>
+                    </button>
+                  )}
                 </div>
 
+                {/* Primary Download Box */}
+                <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-3 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-700 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      <span>الملف الأساسي للتحميل (Primary Attachment):</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400">الرابط الرئيسي للموضوع</span>
+                  </div>
+
+                  {/* URL Input with Quick Helpers */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                      <span className="flex items-center gap-1">
+                        <LinkIcon className="w-3 h-3 text-emerald-600" />
+                        <span>رابط التحميل المباشر (URL أو Google Drive أو Mediafire):</span>
+                      </span>
+                      {downloadUrl && (
+                        <a
+                          href={downloadUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[10px] text-teal-600 hover:underline flex items-center gap-0.5"
+                        >
+                          <span>فحص الرابط</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      )}
+                    </label>
+                    <input
+                      type="url"
+                      value={downloadUrl}
+                      onChange={(e) => setDownloadUrl(e.target.value)}
+                      placeholder="https://drive.google.com/file/d/... أو https://www.mediafire.com/... أو رابط مباشر PDF"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs font-mono text-slate-800 outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white transition"
+                      dir="ltr"
+                    />
+
+                    {/* Quick URL Helpers */}
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                      <span className="text-[10px] text-slate-400 font-medium">نماذج سريعة:</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDownloadUrl("https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view?usp=sharing")
+                        }
+                        className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono cursor-pointer"
+                      >
+                        + Google Drive
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDownloadUrl("https://www.mediafire.com/file/example-document.pdf/file")
+                        }
+                        className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono cursor-pointer"
+                      >
+                        + Mediafire
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDownloadUrl("https://www.men.gov.ma/Ar/Documents/moudakkira-2026.pdf")
+                        }
+                        className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono cursor-pointer"
+                      >
+                        + بوابة men.gov.ma
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Label, Type and Size */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-1">
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        عنوان زر التحميل:
+                      </label>
+                      <input
+                        type="text"
+                        value={downloadLabel}
+                        onChange={(e) => setDownloadLabel(e.target.value)}
+                        placeholder="تحميل المذكرة الرسمية بصيغة PDF"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        صيغة الملف:
+                      </label>
+                      <select
+                        value={fileType}
+                        onChange={(e) => setFileType(e.target.value as FileTypeOption)}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium cursor-pointer"
+                      >
+                        <option value="pdf">وثيقة PDF رسمية</option>
+                        <option value="word">مستند Word (DOCX)</option>
+                        <option value="excel">جدول Excel (XLSX)</option>
+                        <option value="pptx">عرض تقديمي PowerPoint</option>
+                        <option value="drive">رابط Google Drive</option>
+                        <option value="mediafire">رابط Mediafire</option>
+                        <option value="zip">أرشيف مضغوط ZIP / RAR</option>
+                        <option value="other">صيغة أخرى</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        حجم الملف (تقريبي):
+                      </label>
+                      <input
+                        type="text"
+                        value={fileSize}
+                        onChange={(e) => setFileSize(e.target.value)}
+                        placeholder="مثال: 4.5 MB"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Multi-Files Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                      <Plus className="w-3.5 h-3.5 text-blue-600" />
+                      <span>مرفقات وروابط إضافية لنفس الموضوع ({downloads.length}):</span>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={handleAddExtraDownload}
+                      className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-xl border border-emerald-300 flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>+ إضافة رابط تحميل آخر</span>
+                    </button>
+                  </div>
+
+                  {downloads.length > 0 && (
+                    <div className="space-y-2">
+                      {downloads.map((dl, idx) => (
+                        <div
+                          key={dl.id}
+                          className="bg-white border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center gap-2.5 shadow-2xs"
+                        >
+                          <span className="text-xs font-black text-slate-400 font-mono shrink-0">
+                            #{idx + 1}
+                          </span>
+
+                          <input
+                            type="text"
+                            value={dl.label}
+                            onChange={(e) =>
+                              handleUpdateExtraDownload(dl.id, { label: e.target.value })
+                            }
+                            placeholder="عنوان الملف (مثال: نموذج طلب الطعن Word)"
+                            className="w-full sm:w-1/3 bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs font-medium"
+                          />
+
+                          <input
+                            type="url"
+                            value={dl.url}
+                            onChange={(e) =>
+                              handleUpdateExtraDownload(dl.id, { url: e.target.value })
+                            }
+                            placeholder="رابط التحميل URL"
+                            className="w-full sm:flex-1 bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs font-mono"
+                            dir="ltr"
+                          />
+
+                          <select
+                            value={dl.fileType || "pdf"}
+                            onChange={(e) =>
+                              handleUpdateExtraDownload(dl.id, {
+                                fileType: e.target.value as FileTypeOption,
+                              })
+                            }
+                            className="w-full sm:w-28 bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs font-medium cursor-pointer"
+                          >
+                            <option value="pdf">PDF</option>
+                            <option value="word">Word</option>
+                            <option value="excel">Excel</option>
+                            <option value="pptx">PowerPoint</option>
+                            <option value="drive">Drive</option>
+                            <option value="zip">ZIP</option>
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExtraDownload(dl.id)}
+                            className="text-rose-600 hover:text-rose-800 p-1.5 hover:bg-rose-50 rounded-lg transition cursor-pointer self-end sm:self-center"
+                            title="حذف هذا المرفق"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Tags Field */}
                 <div>
                   <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
                     <Tag className="w-3.5 h-3.5 text-blue-600" />
@@ -475,7 +769,7 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
                     type="text"
                     value={tagsInput}
                     onChange={(e) => setTagsInput(e.target.value)}
-                    placeholder="الحركة الانتقالية، مذكرات، الابتدائي، الريادة"
+                    placeholder="الحركة الانتقالية، مذكرات، الابتدائي، مؤسسات الريادة"
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
                   />
                 </div>
@@ -538,15 +832,60 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
                 {content || "نص المقال الكامل سيظهر هنا عند كتابته..."}
               </div>
 
-              {downloadLabel && (
-                <div className="pt-3 border-t border-slate-200">
-                  <button
-                    type="button"
-                    className="bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-xs"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>{downloadLabel}</span>
-                  </button>
+              {/* Downloads in Preview */}
+              {(downloadUrl || downloads.length > 0) && (
+                <div className="pt-4 border-t border-slate-200 space-y-2">
+                  <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5 mb-2">
+                    <Download className="w-4 h-4 text-emerald-600" />
+                    <span>الملفات المرفقة المتاحة للتحميل عبر بوابة الإعلانات:</span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {downloadUrl && downloadUrl !== "#" && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewGatewayFile({
+                            isOpen: true,
+                            title: downloadLabel || "الملف الرئيسي المرفق",
+                            url: downloadUrl,
+                            type: fileType,
+                            size: fileSize,
+                          })
+                        }
+                        className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-black text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm hover:from-emerald-700 hover:to-teal-800 transition cursor-pointer"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>{downloadLabel || "تحميل المرفق الرسمي (PDF)"}</span>
+                        <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+                          {fileType.toUpperCase()}
+                        </span>
+                      </button>
+                    )}
+
+                    {downloads.map((dl) => (
+                      <button
+                        key={dl.id}
+                        type="button"
+                        onClick={() =>
+                          setPreviewGatewayFile({
+                            isOpen: true,
+                            title: dl.label,
+                            url: dl.url,
+                            type: dl.fileType || "pdf",
+                            size: dl.fileSize,
+                          })
+                        }
+                        className="bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-2xs transition cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>{dl.label}</span>
+                        <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-mono">
+                          {(dl.fileType || "pdf").toUpperCase()}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -581,6 +920,19 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Gateway Preview Modal */}
+      {previewGatewayFile.isOpen && (
+        <DownloadGatewayModal
+          isOpen={previewGatewayFile.isOpen}
+          onClose={() => setPreviewGatewayFile((prev) => ({ ...prev, isOpen: false }))}
+          fileTitle={previewGatewayFile.title}
+          downloadUrl={previewGatewayFile.url}
+          fileType={previewGatewayFile.type}
+          fileSize={previewGatewayFile.size}
+          sourceTopicTitle={title}
+        />
+      )}
     </div>
   );
 };

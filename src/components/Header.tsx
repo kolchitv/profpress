@@ -20,6 +20,7 @@ import {
   PenTool,
   GraduationCap,
   Compass,
+  Presentation,
   Files,
   CheckCircle2,
   PhoneCall,
@@ -324,6 +325,27 @@ export const Header: React.FC<HeaderProps> = ({
             <span>التوجيه والتخطيط</span>
             <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full font-bold">
               COPE
+            </span>
+          </button>
+
+          {/* 4.3 دروس التعليم الصريح */}
+          <button
+            key="explicit_teaching"
+            id="nav-tab-explicit-teaching"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("explicit_teaching");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "explicit_teaching"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Presentation className={`w-4 h-4 ${activeTab === "explicit_teaching" ? "text-amber-300" : "text-amber-600"}`} />
+            <span>التعليم الصريح</span>
+            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
+              الريادة
             </span>
           </button>
 

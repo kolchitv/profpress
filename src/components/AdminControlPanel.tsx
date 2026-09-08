@@ -46,8 +46,18 @@ import {
   Database,
   BookOpen,
   Upload,
+  Megaphone,
+  Zap,
 } from "lucide-react";
-import { TopicItem, AdminSession, VisitorPermissions, TopicProposal, TopicCategory, CustomCodeSettings } from "../types";
+import {
+  TopicItem,
+  AdminSession,
+  VisitorPermissions,
+  TopicProposal,
+  TopicCategory,
+  CustomCodeSettings,
+  DownloadGatewaySettings,
+} from "../types";
 import { analyzeRankMathSeo } from "../utils/rankMathSeo";
 import {
   getAdminCredentials,
@@ -64,6 +74,13 @@ import {
   SCRIPT_PRESETS,
   ScriptPreset,
 } from "../utils/customScripts";
+import {
+  getDownloadGatewaySettings,
+  saveDownloadGatewaySettings,
+  DEFAULT_DOWNLOAD_GATEWAY_SETTINGS,
+} from "../utils/downloadGatewaySettings";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { AdSenseZone } from "./AdSenseZone";
 
 interface AdminControlPanelProps {
   isOpen?: boolean;
@@ -93,6 +110,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   const [activeTab, setActiveTab] = useState<
     | "topics"
     | "seo"
+    | "adsense_gateway"
     | "permissions"
     | "monitoring"
     | "competition_subjects"
@@ -103,6 +121,31 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedSitemap, setCopiedSitemap] = useState(false);
   const [showEmailHeader, setShowEmailHeader] = useState(false);
+
+  // Google AdSense & Download Gateway Settings State
+  const [gatewaySettings, setGatewaySettings] = useState<DownloadGatewaySettings>(
+    getDownloadGatewaySettings
+  );
+  const [gatewaySaveMsg, setGatewaySaveMsg] = useState<string | null>(null);
+  const [showGatewayPreview, setShowGatewayPreview] = useState(false);
+
+  const handleSaveGatewaySettings = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const ok = saveDownloadGatewaySettings(gatewaySettings);
+    if (ok) {
+      setGatewaySaveMsg("تم حفظ وتطبيق إعدادات إعلانات أدسنس وبوابة التحميل فوراً!");
+      setTimeout(() => setGatewaySaveMsg(null), 3500);
+    }
+  };
+
+  const handleResetGatewaySettings = () => {
+    if (window.confirm("هل أنت متأكد من استعادة الإعدادات الافتراضية لبوابة التحميل وأدسنس؟")) {
+      setGatewaySettings(DEFAULT_DOWNLOAD_GATEWAY_SETTINGS);
+      saveDownloadGatewaySettings(DEFAULT_DOWNLOAD_GATEWAY_SETTINGS);
+      setGatewaySaveMsg("تمت استعادة الإعدادات الافتراضية بنجاح.");
+      setTimeout(() => setGatewaySaveMsg(null), 3000);
+    }
+  };
 
   // Backup & Restore states
   const [backupMsg, setBackupMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -641,6 +684,22 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
           {customCode.isEnabled && (customCode.headerCode.trim() || customCode.bodyStartCode.trim() || customCode.footerCode.trim()) ? (
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="شفرات نشطة"></span>
           ) : null}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("adsense_gateway")}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+            activeTab === "adsense_gateway"
+              ? "bg-gradient-to-r from-amber-600 to-teal-700 text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          <Megaphone className="w-4 h-4 text-amber-300" />
+          <span>إعلانات أدسنس وبوابة التحميل</span>
+          {gatewaySettings.adSettings.isEnabled && (
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="بوابة الإعلانات نشطة"></span>
+          )}
         </button>
 
         <button
@@ -1649,6 +1708,665 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
           </form>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* TAB: GOOGLE ADSENSE & DOWNLOAD GATEWAY CONFIGURATION */}
+      {/* ========================================================================= */}
+      {activeTab === "adsense_gateway" && (
+        <div className="space-y-6">
+          {/* Notification Banner */}
+          {gatewaySaveMsg && (
+            <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs sm:text-sm p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span className="font-bold">{gatewaySaveMsg}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setGatewaySaveMsg(null)}
+                className="text-emerald-700 hover:text-emerald-950 text-xs font-bold cursor-pointer"
+              >
+                إغلاق
+              </button>
+            </div>
+          )}
+
+          {/* Header Card */}
+          <div className="bg-gradient-to-r from-amber-900 via-stone-900 to-teal-950 text-white p-5 sm:p-6 rounded-3xl shadow-md space-y-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+                  <Megaphone className="w-6 h-6 text-amber-400" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg sm:text-xl font-black font-cairo">
+                      إدارة إعلانات Google AdSense وبوابة التحميل الآمن والتحويل
+                    </h2>
+                    <span className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full font-mono">
+                      v2.0 Monetize
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
+                    تحكم كامل في وضع شفرات إعلانات أدسنس أثناء انتظار تحميل المذكرات والملفات أو تحويل الروابط، مع ضبط مدة العداد التنازلي وخيارات التحويل التلقائي لتحقيق أقصى ربحية ممكنة مع الحفاظ على تجربة مستخدم ممتازة.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowGatewayPreview(true)}
+                  className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition cursor-pointer border border-white/20"
+                >
+                  <Eye className="w-4 h-4 text-amber-400" />
+                  <span>معاينة بوابة التحميل الآن</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveGatewaySettings}
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>حفظ وتطبيق</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveGatewaySettings} className="space-y-6">
+            {/* Section 1: Master Switches */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Sliders className="w-5 h-5 text-teal-700" />
+                <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
+                  1. المفاتيح الرئيسية للتحكم في البوابة والإعلانات
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Toggle 1: Gateway Active */}
+                <div
+                  onClick={() =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      isEnabled: !prev.isEnabled,
+                    }))
+                  }
+                  className={`p-4 rounded-2xl border transition cursor-pointer flex items-start gap-3 ${
+                    gatewaySettings.isEnabled
+                      ? "bg-emerald-50/60 border-emerald-300 ring-1 ring-emerald-300"
+                      : "bg-slate-50 border-slate-200 opacity-80"
+                  }`}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition ${
+                      gatewaySettings.isEnabled
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-300 text-slate-500"
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-black text-xs text-slate-900 block font-cairo">
+                      تفعيل بوابة التحميل والانتظار
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      عند النقر على زر تحميل أي ملف، تفتح صفحة الانتظار والعداد لعرض الإعلانات بدلاً من التحميل الفوري المباشر.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle 2: AdSense Ads */}
+                <div
+                  onClick={() =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      adSettings: {
+                        ...prev.adSettings,
+                        isEnabled: !prev.adSettings.isEnabled,
+                      },
+                    }))
+                  }
+                  className={`p-4 rounded-2xl border transition cursor-pointer flex items-start gap-3 ${
+                    gatewaySettings.adSettings.isEnabled
+                      ? "bg-amber-50/60 border-amber-300 ring-1 ring-amber-300"
+                      : "bg-slate-50 border-slate-200 opacity-80"
+                  }`}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition ${
+                      gatewaySettings.adSettings.isEnabled
+                        ? "bg-amber-600 text-white"
+                        : "bg-slate-300 text-slate-500"
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-black text-xs text-slate-900 block font-cairo">
+                      تفعيل إعلانات Google AdSense
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      إظهار الوحدات الإعلانية في الأماكن المخصصة (أعلى وأسفل ووسط بوابة التحميل والمقالات).
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle 3: Auto-redirect */}
+                <div
+                  onClick={() =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      autoRedirect: !prev.autoRedirect,
+                    }))
+                  }
+                  className={`p-4 rounded-2xl border transition cursor-pointer flex items-start gap-3 ${
+                    gatewaySettings.autoRedirect
+                      ? "bg-teal-50/60 border-teal-300 ring-1 ring-teal-300"
+                      : "bg-slate-50 border-slate-200 opacity-80"
+                  }`}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition ${
+                      gatewaySettings.autoRedirect
+                        ? "bg-teal-700 text-white"
+                        : "bg-slate-300 text-slate-500"
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-black text-xs text-slate-900 block font-cairo">
+                      التحويل التلقائي عند انتهاء العداد
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      بدء تحميل الملف أو تحويل الزائر تلقائياً فور وصول العداد إلى الصفر دون الحاجة لنقر زر إضافي.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle 4: Show Placeholder Demo Ads */}
+                <div
+                  onClick={() =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      adSettings: {
+                        ...prev.adSettings,
+                        showPlaceholderAds: !prev.adSettings.showPlaceholderAds,
+                      },
+                    }))
+                  }
+                  className={`p-4 rounded-2xl border transition cursor-pointer flex items-start gap-3 ${
+                    gatewaySettings.adSettings.showPlaceholderAds
+                      ? "bg-blue-50/60 border-blue-300 ring-1 ring-blue-300"
+                      : "bg-slate-50 border-slate-200 opacity-80"
+                  }`}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition ${
+                      gatewaySettings.adSettings.showPlaceholderAds
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-300 text-slate-500"
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-black text-xs text-slate-900 block font-cairo">
+                      عرض شارات إعلانية تجريبية
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      عرض إعلانات توضيحية للمعاينة في حال لم تكن شفرات أدسنس الحقيقية مدخلة بعد.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle 5: Security Badge */}
+                <div
+                  onClick={() =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      showSecurityBadge: !prev.showSecurityBadge,
+                    }))
+                  }
+                  className={`p-4 rounded-2xl border transition cursor-pointer flex items-start gap-3 ${
+                    gatewaySettings.showSecurityBadge
+                      ? "bg-cyan-50/60 border-cyan-300 ring-1 ring-cyan-300"
+                      : "bg-slate-50 border-slate-200 opacity-80"
+                  }`}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition ${
+                      gatewaySettings.showSecurityBadge
+                        ? "bg-cyan-700 text-white"
+                        : "bg-slate-300 text-slate-500"
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-black text-xs text-slate-900 block font-cairo">
+                      شارة فحص الملف والأمان
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      إظهار علامة "ملف مفحوص وخالٍ من الفيروسات" لطمأنة الأساتذة وزيادة ثقة الزوار في المنصة.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: Publisher ID & Header Script */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Shield className="w-5 h-5 text-amber-600" />
+                <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
+                  2. معرّف حساب Google AdSense (Publisher ID)
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    معرّف الناشر (Publisher Client ID):
+                  </label>
+                  <input
+                    type="text"
+                    value={gatewaySettings.adSettings.publisherId}
+                    onChange={(e) =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        adSettings: {
+                          ...prev.adSettings,
+                          publisherId: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="ca-pub-2606934361036411"
+                    className="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20 outline-hidden"
+                    dir="ltr"
+                  />
+                  <span className="text-[10px] text-slate-500 block">
+                    تجد هذا المعرف في حسابك في Google AdSense تحت قسم: الحساب &gt; معلومات الحساب.
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    شفرة AdSense التلقائية في رأس الموقع (Auto Ads):
+                  </label>
+                  <div
+                    onClick={() =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        adSettings: {
+                          ...prev.adSettings,
+                          autoAdsEnabled: !prev.adSettings.autoAdsEnabled,
+                        },
+                      }))
+                    }
+                    className={`p-3 rounded-xl border transition cursor-pointer flex items-center gap-2.5 ${
+                      gatewaySettings.adSettings.autoAdsEnabled
+                        ? "bg-amber-50 border-amber-300"
+                        : "bg-slate-50 border-slate-200"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={gatewaySettings.adSettings.autoAdsEnabled}
+                      onChange={() => {}}
+                      className="accent-amber-600 rounded"
+                    />
+                    <span className="text-xs font-bold text-slate-800">
+                      حقن سكربت `adsbygoogle.js` تلقائياً في رأس الموقع عند التحميل
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 block">
+                    يقوم بحقن السكربت الرسمي المعتمد من جوجل لتمكين الإعلانات التلقائية ووحدات العرض.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Countdown Timer Configuration */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Clock className="w-5 h-5 text-teal-700" />
+                <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
+                  3. مدة العداد التنازلي والرسائل الإرشادية أثناء الانتظار
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    مدة الانتظار الحالية:{" "}
+                    <span className="text-teal-800 font-black font-mono text-sm">
+                      {gatewaySettings.countdownSeconds} ثانية
+                    </span>
+                  </label>
+
+                  {/* Quick Select Buttons */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[5, 8, 10, 15, 20, 30].map((sec) => (
+                      <button
+                        key={sec}
+                        type="button"
+                        onClick={() =>
+                          setGatewaySettings((prev) => ({
+                            ...prev,
+                            countdownSeconds: sec,
+                          }))
+                        }
+                        className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                          gatewaySettings.countdownSeconds === sec
+                            ? "bg-teal-700 text-white shadow-xs"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {sec} ثوانٍ
+                      </button>
+                    ))}
+                  </div>
+
+                  <input
+                    type="range"
+                    min={3}
+                    max={45}
+                    value={gatewaySettings.countdownSeconds}
+                    onChange={(e) =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        countdownSeconds: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full accent-teal-700 cursor-pointer"
+                  />
+                  <span className="text-[11px] text-slate-500 block">
+                    المدة الموصى بها هي بين 8 إلى 15 ثانية؛ كافية لمشاهدة الإعلانات والتحميل دون إزعاج القارئ.
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    رسالة التنبيه الإرشادية للزائر أثناء الانتظار:
+                  </label>
+                  <textarea
+                    value={gatewaySettings.customNoticeText || ""}
+                    onChange={(e) =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        customNoticeText: e.target.value,
+                      }))
+                    }
+                    rows={3}
+                    placeholder="جاري إعداد وتجهيز رابط التحميل الآمن للملف البيداغوجي المعتمد..."
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-3 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 outline-hidden font-cairo"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 4: The 3 Google AdSense Ad Units */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Code2 className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
+                    4. شفرات الوحدات الإعلانية الثلاث (Ad Units Code)
+                  </h3>
+                </div>
+                <span className="text-xs text-slate-500 font-mono">
+                  HTML / Script snippets
+                </span>
+              </div>
+
+              {/* Ad Unit 1: Top Banner */}
+              <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 font-black text-xs flex items-center justify-center">
+                      1
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 font-cairo">
+                        المنطقة الإعلانية 1: البانر العلوي (Top Leaderboard / Banner)
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        يظهر في أعلى شاشة الانتظار مباشرة قبل بطاقة العداد (موضع ممتاز للرؤية).
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        adSettings: {
+                          ...prev.adSettings,
+                          topAdCode: `<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     data-ad-slot="1234567890"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`,
+                        },
+                      }))
+                    }
+                    className="text-[11px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-lg border border-amber-200 cursor-pointer self-start sm:self-auto transition"
+                  >
+                    + نموذج شفرة أدسنس
+                  </button>
+                </div>
+
+                <textarea
+                  value={gatewaySettings.adSettings.topAdCode}
+                  onChange={(e) =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      adSettings: {
+                        ...prev.adSettings,
+                        topAdCode: e.target.value,
+                      },
+                    }))
+                  }
+                  rows={4}
+                  placeholder="<!-- الصق شفرة الوحدة الإعلانية العلوية من Google AdSense هنا -->"
+                  className="w-full bg-slate-900 text-amber-300 font-mono text-xs p-3.5 rounded-xl border border-slate-700 focus:border-amber-500 outline-hidden leading-relaxed shadow-inner"
+                  dir="ltr"
+                  spellCheck={false}
+                ></textarea>
+              </div>
+
+              {/* Ad Unit 2: Middle In-Card Ad */}
+              <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-900 font-black text-xs flex items-center justify-center">
+                      2
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 font-cairo">
+                        المنطقة الإعلانية 2: وسط بطاقة الانتظار والمقال (In-Card / In-Article)
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        يظهر داخل بطاقة العداد التنازلي بجوار زر التحميل ووسط المقال (أعلى نسبة نقرات CTR).
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        adSettings: {
+                          ...prev.adSettings,
+                          middleAdCode: `<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     data-ad-slot="9876543210"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`,
+                        },
+                      }))
+                    }
+                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-200 cursor-pointer self-start sm:self-auto transition"
+                  >
+                    + نموذج شفرة أدسنس
+                  </button>
+                </div>
+
+                <textarea
+                  value={gatewaySettings.adSettings.middleAdCode}
+                  onChange={(e) =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      adSettings: {
+                        ...prev.adSettings,
+                        middleAdCode: e.target.value,
+                      },
+                    }))
+                  }
+                  rows={4}
+                  placeholder="<!-- الصق شفرة الوحدة الإعلانية الوسطى (مستطيل متوسط 300x250 أو متجاوب) هنا -->"
+                  className="w-full bg-slate-900 text-amber-300 font-mono text-xs p-3.5 rounded-xl border border-slate-700 focus:border-emerald-500 outline-hidden leading-relaxed shadow-inner"
+                  dir="ltr"
+                  spellCheck={false}
+                ></textarea>
+              </div>
+
+              {/* Ad Unit 3: Bottom Banner */}
+              <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-900 font-black text-xs flex items-center justify-center">
+                      3
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 font-cairo">
+                        المنطقة الإعلانية 3: البانر السفلي (Bottom Footer Banner)
+                      </h4>
+                      <span className="text-[11px] text-slate-500">
+                        يظهر أسفل بطاقة التحميل والشروط والأمان.
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGatewaySettings((prev) => ({
+                        ...prev,
+                        adSettings: {
+                          ...prev.adSettings,
+                          bottomAdCode: `<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
+     data-ad-slot="5544332211"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`,
+                        },
+                      }))
+                    }
+                    className="text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg border border-blue-200 cursor-pointer self-start sm:self-auto transition"
+                  >
+                    + نموذج شفرة أدسنس
+                  </button>
+                </div>
+
+                <textarea
+                  value={gatewaySettings.adSettings.bottomAdCode}
+                  onChange={(e) =>
+                    setGatewaySettings((prev) => ({
+                      ...prev,
+                      adSettings: {
+                        ...prev.adSettings,
+                        bottomAdCode: e.target.value,
+                      },
+                    }))
+                  }
+                  rows={4}
+                  placeholder="<!-- الصق شفرة الوحدة الإعلانية السفلية هنا -->"
+                  className="w-full bg-slate-900 text-amber-300 font-mono text-xs p-3.5 rounded-xl border border-slate-700 focus:border-blue-500 outline-hidden leading-relaxed shadow-inner"
+                  dir="ltr"
+                  spellCheck={false}
+                ></textarea>
+              </div>
+            </div>
+
+            {/* Section 5: AdSense Policy Guidelines Notice */}
+            <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 sm:p-5 space-y-2 text-xs text-amber-950">
+              <div className="flex items-center gap-2 font-black font-cairo">
+                <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+                <span>إرشادات الامتثال الصارم لسياسات Google AdSense للحفاظ على حسابك:</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1.5 text-amber-900 text-[11px] leading-relaxed pr-2">
+                <li>
+                  <strong>عدم تشجيع النقرات:</strong> يمنع تماماً كتابة أي عبارات تحث الزوار على النقر على الإعلانات (مثل "انقر هنا لدعمنا" أو "اضغط على الإعلان لتحميل الملف").
+                </li>
+                <li>
+                  <strong>وسم الإعلان الإلزامي:</strong> تقوم بوابتنا تلقائياً بوضع علامة "إعلان / Annonce" واضحة وشفافة فوق كل وحدة إعلانية للامتثال الصارم لسياسات جوجل.
+                </li>
+                <li>
+                  <strong>المسافة الفاصلة:</strong> تم تصميم المسافات بين أزرار التحميل والإعلانات وفق معايير جوجل لتجنب النقرات غير المقصودة (Accidental clicks).
+                </li>
+              </ul>
+            </div>
+
+            {/* Bottom Save / Action Bar */}
+            <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-600">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>
+                  الحفظ يتم فورياً ويتم تفعيل التغييرات على جميع أزرار التحميل في المنصة.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetGatewaySettings}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs transition cursor-pointer"
+                >
+                  استعادة الافتراضي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowGatewayPreview(true)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <Eye className="w-3.5 h-3.5 text-amber-600" />
+                  <span>معاينة حية</span>
+                </button>
+                <button
+                  type="submit"
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl transition shadow-xs flex items-center gap-2 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>حفظ وتطبيق إعدادات الإعلانات والتحميل</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: ACCOUNT & SECURITY */}
+      {/* ========================================================================= */}
       {activeTab === "account" && (
         <div className="space-y-6">
           {/* Success / Error Banners */}
@@ -2221,6 +2939,19 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Gateway Live Preview Modal for Admin */}
+      {showGatewayPreview && (
+        <DownloadGatewayModal
+          isOpen={showGatewayPreview}
+          onClose={() => setShowGatewayPreview(false)}
+          fileTitle="دليل أنشطة الدعم المؤسساتي والتقويم التشخيصي 2026 (معاينة تجريبية)"
+          downloadUrl="https://www.profpress.net/download/sample-doc.pdf"
+          fileType="pdf"
+          fileSize="3.8 MB"
+          sourceTopicTitle="دليل بيداغوجي رسمي لمدارس الريادة"
+        />
       )}
     </div>
   );

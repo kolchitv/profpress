@@ -5,6 +5,7 @@ export type TabKey =
   | "competitions"
   | "inspection_competition"
   | "orientation_planning"
+  | "explicit_teaching"
   | "pedagogical_docs"
   | "workshop_report"
   | "portfolio"
@@ -113,6 +114,45 @@ export interface SeoMetadata {
   ogImage?: string;
 }
 
+export type FileTypeOption =
+  | "pdf"
+  | "word"
+  | "excel"
+  | "pptx"
+  | "drive"
+  | "mediafire"
+  | "zip"
+  | "other";
+
+export interface DownloadLinkItem {
+  id: string;
+  label: string;
+  url: string;
+  fileType?: FileTypeOption;
+  fileSize?: string;
+  note?: string;
+  directDownload?: boolean;
+}
+
+export interface AdSenseSettings {
+  isEnabled: boolean;
+  publisherId: string;
+  autoAdsEnabled: boolean;
+  topBannerAdCode: string;
+  middleBannerAdCode: string;
+  bottomBannerAdCode: string;
+  showDemoAdsIfEmpty: boolean;
+}
+
+export interface DownloadGatewaySettings {
+  isEnabled: boolean;
+  countdownSeconds: number;
+  autoRedirect: boolean;
+  safeCheckBadge: boolean;
+  customNoticeText: string;
+  adSettings: AdSenseSettings;
+}
+
 export interface TopicItem {
   id: string;
   title: string;
@@ -128,6 +168,7 @@ export interface TopicItem {
   tags: string[];
   downloadUrl?: string;
   downloadLabel?: string;
+  downloads?: DownloadLinkItem[];
   seo: SeoMetadata;
   viewsCount?: number;
   readTimeMinutes?: number;
