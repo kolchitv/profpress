@@ -26,7 +26,15 @@ import {
   SubmitTopicModal,
 } from "./components/FooterModals";
 import { Footer } from "./components/Footer";
-import { TabKey, TeacherProfile, GradeLevelId } from "./types";
+import { AdminLoginModal } from "./components/AdminLoginModal";
+import { AdminControlPanel } from "./components/AdminControlPanel";
+import {
+  getStoredAdminSession,
+  clearAdminSession,
+  ADMIN_SESSION_EVENT,
+} from "./utils/adminAuth";
+import { INITIAL_TOPICS } from "./data/announcementsData";
+import { TabKey, TeacherProfile, GradeLevelId, AdminSession, TopicItem } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import { applyCustomScripts, getCustomCodeSettings, CUSTOM_CODE_EVENT } from "./utils/customScripts";
 import {
@@ -68,6 +76,34 @@ export default function App() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [tempProfile, setTempProfile] = useState<TeacherProfile>(profile);
 
+  // Admin Session State (kolchitv@gmail.com)
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(getStoredAdminSession);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isAdminControlPanelOpen, setIsAdminControlPanelOpen] = useState(false);
+
+  // Synchronize topics for AdminControlPanel
+  const [topics, setTopics] = useState<TopicItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("yallataalim_announcements_v1");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return INITIAL_TOPICS;
+  });
+
+  const handleSaveTopics = (updated: TopicItem[]) => {
+    setTopics(updated);
+    try {
+      localStorage.setItem("yallataalim_announcements_v1", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Sync profile changes to localStorage
   const handleUpdateProfile = (newProfile: TeacherProfile) => {
     setProfile(newProfile);
@@ -83,6 +119,16 @@ export default function App() {
     handleUpdateProfile(tempProfile);
     setIsProfileModalOpen(false);
   };
+
+  // Listen to Admin Session Changes across components
+  useEffect(() => {
+    const handleSessionChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setAdminSession(customEvent.detail !== undefined ? customEvent.detail : getStoredAdminSession());
+    };
+    window.addEventListener(ADMIN_SESSION_EVENT, handleSessionChange);
+    return () => window.removeEventListener(ADMIN_SESSION_EVENT, handleSessionChange);
+  }, []);
 
   // Initialize and listen to custom script injections (Header, Body, Footer)
   useEffect(() => {
@@ -112,6 +158,10 @@ export default function App() {
         onPrintCurrent={() => window.print()}
         onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
         onOpenContactModal={() => setIsContactModalOpen(true)}
+        adminSession={adminSession}
+        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+        onOpenAdminControlPanel={() => setIsAdminControlPanelOpen(true)}
+        onLogoutAdmin={() => clearAdminSession()}
       />
 
       {/* Main Container */}
@@ -454,6 +504,47 @@ export default function App() {
         isOpen={isSubmitTopicModalOpen}
         onClose={() => setIsSubmitTopicModalOpen(false)}
       />
+
+      {/* Admin Login Modal (Accessible from top bar) */}
+      <AdminLoginModal
+        isOpen={isAdminLoginOpen}
+        onClose={() => setIsAdminLoginOpen(false)}
+        onLoginSuccess={(session) => {
+          setAdminSession(session);
+          setIsAdminLoginOpen(false);
+        }}
+      />
+
+      {/* Admin Control Panel (Site monitoring, analytics, SEO, and topics) */}
+      {adminSession && (
+        <AdminControlPanel
+          isOpen={isAdminControlPanelOpen}
+          onClose={() => setIsAdminControlPanelOpen(false)}
+          topics={topics}
+          adminSession={adminSession}
+          onEditTopic={() => {
+            setIsAdminControlPanelOpen(false);
+            setActiveTab("news");
+          }}
+          onAddNewTopic={() => {
+            setIsAdminControlPanelOpen(false);
+            setActiveTab("news");
+          }}
+          onDeleteTopic={(id) => {
+            handleSaveTopics(topics.filter((t) => t.id !== id));
+          }}
+          onToggleUrgent={(id) => {
+            handleSaveTopics(
+              topics.map((t) => (t.id === id ? { ...t, isUrgent: !t.isUrgent } : t))
+            );
+          }}
+          onSaveTopics={handleSaveTopics}
+          onLogout={() => {
+            clearAdminSession();
+            setIsAdminControlPanelOpen(false);
+          }}
+        />
+      )}
 
       {/* Floating Quick Contact Widget (Hidden in Print) */}
       <div className="no-print fixed bottom-5 left-5 z-40 flex items-center gap-2">

@@ -5,9 +5,13 @@ import {
   CompetitionSubject,
   CompetitionSubAction,
   QuickResourceCard,
+  CompetitionDownloadFile,
+  getDefaultDownloadFiles,
 } from "../data/teachingCompetitionData";
 import { TabKey, AdminSession } from "../types";
-import { canUserDeleteArticles } from "../utils/adminAuth";
+import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
+import { CompetitionTopicEditorModal } from "./CompetitionTopicEditorModal";
+import { QuickResourceEditorModal } from "./QuickResourceEditorModal";
 import {
   FileText,
   Megaphone,
@@ -49,6 +53,11 @@ import {
   AlertCircle,
   Calendar,
   Share2,
+  FileDown,
+  Image as ImageIcon,
+  Lock,
+  ShieldCheck,
+  LayoutDashboard,
 } from "lucide-react";
 
 interface Props {
@@ -78,8 +87,31 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
   } | null>(null);
 
   const [activeQuickResourceModal, setActiveQuickResourceModal] = useState<QuickResourceCard | null>(null);
+  const [editingQuickResource, setEditingQuickResource] = useState<QuickResourceCard | null>(null);
   const [editingSubject, setEditingSubject] = useState<CompetitionSubject | null>(null);
   const [isNewSubject, setIsNewSubject] = useState(false);
+
+  // Topic & Downloads Editor Modal State
+  const [topicEditorState, setTopicEditorState] = useState<{
+    isOpen: boolean;
+    subject: CompetitionSubject | null;
+    action: CompetitionSubAction | null;
+  }>({
+    isOpen: false,
+    subject: null,
+    action: null,
+  });
+
+  // Action Modal active tab ('summary' or 'article')
+  const [actionModalTab, setActionModalTab] = useState<"summary" | "article">("summary");
+
+  // Inline Quick Add/Edit Download file state inside ActiveActionModal
+  const [isAddingQuickDownload, setIsAddingQuickDownload] = useState(false);
+  const [editingQuickDownloadId, setEditingQuickDownloadId] = useState<string | null>(null);
+  const [quickDownloadTitle, setQuickDownloadTitle] = useState("");
+  const [quickDownloadUrl, setQuickDownloadUrl] = useState("");
+  const [quickDownloadSize, setQuickDownloadSize] = useState("1.2 MB");
+  const [quickDownloadYear, setQuickDownloadYear] = useState("2024");
 
   // QCM Interactive State
   const [currentQcmIndex, setCurrentQcmIndex] = useState(0);
@@ -88,16 +120,28 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Admin Session & Manager Privilege check (kolchitv@gmail.com)
-  const [adminSession] = useState<AdminSession | null>(() => {
-    try {
-      const saved = localStorage.getItem("profpress_admin_session");
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(getStoredAdminSession);
 
-  const isManager = adminSession?.isAdmin && canUserDeleteArticles(adminSession);
+  // Listen to Admin Session Changes from Header or Login Modal
+  useEffect(() => {
+    const handleSessionUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setAdminSession(customEvent.detail !== undefined ? customEvent.detail : getStoredAdminSession());
+    };
+    window.addEventListener(ADMIN_SESSION_EVENT, handleSessionUpdate);
+    return () => window.removeEventListener(ADMIN_SESSION_EVENT, handleSessionUpdate);
+  }, []);
+
+  const isAdmin = Boolean(adminSession?.isAdmin);
+  const isManager = Boolean(isAdmin && canUserDeleteArticles(adminSession!));
+  const isEditActive = isAdmin && editMode;
+
+  // Automatically disable editMode if logged out
+  useEffect(() => {
+    if (!isAdmin && editMode) {
+      setEditMode(false);
+    }
+  }, [isAdmin, editMode]);
 
   // Save to LocalStorage whenever data changes
   const handleSaveData = (newData: TeachingCompetitionPageData) => {
@@ -108,6 +152,21 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
       console.error("Failed to save competition data", e);
     }
     showToast("تم حفظ التعديلات بنجاح!");
+  };
+
+  // Handler for saving edited Quick Resource Card (written topic, images, download links)
+  const handleSaveQuickResourceCard = (updatedCard: QuickResourceCard) => {
+    const updatedQuickResources = data.quickResources.map((card) =>
+      card.id === updatedCard.id ? updatedCard : card
+    );
+    handleSaveData({
+      ...data,
+      quickResources: updatedQuickResources,
+    });
+    if (activeQuickResourceModal?.id === updatedCard.id) {
+      setActiveQuickResourceModal(updatedCard);
+    }
+    showToast(`تم حفظ وتحديث بطاقة "${updatedCard.title}" بنجاح!`);
   };
 
   const showToast = (msg: string) => {
@@ -320,6 +379,165 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
     setCurrentQcmIndex(0);
     setSelectedAnswers({});
     setShowQcmResults(false);
+    setActionModalTab("summary");
+    setIsAddingQuickDownload(false);
+    setEditingQuickDownloadId(null);
+  };
+
+  // Handler to save topic action from CompetitionTopicEditorModal
+  const handleSaveTopicAction = (savedAction: CompetitionSubAction) => {
+    if (!topicEditorState.subject) return;
+    const subjectId = topicEditorState.subject.id;
+
+    const updatedSubjects = data.subjects.map((sub) => {
+      if (sub.id !== subjectId) return sub;
+
+      const existingIndex = sub.actions.findIndex((a) => a.id === savedAction.id);
+      let updatedActions: CompetitionSubAction[];
+      if (existingIndex >= 0) {
+        updatedActions = [...sub.actions];
+        updatedActions[existingIndex] = savedAction;
+      } else {
+        updatedActions = [...sub.actions, savedAction];
+      }
+
+      return {
+        ...sub,
+        actions: updatedActions,
+      };
+    });
+
+    handleSaveData({ ...data, subjects: updatedSubjects });
+
+    if (activeActionModal && activeActionModal.action.id === savedAction.id) {
+      const currentSubject = updatedSubjects.find((s) => s.id === subjectId) || activeActionModal.subject;
+      setActiveActionModal({
+        subject: currentSubject,
+        action: savedAction,
+      });
+    }
+
+    setTopicEditorState({ isOpen: false, subject: null, action: null });
+    showToast("تم حفظ ونشر الموضوع وروابط التحميل بنجاح!");
+  };
+
+  // Quick download handlers inside ActiveActionModal
+  const handleStartEditQuickDownload = (file: CompetitionDownloadFile) => {
+    setEditingQuickDownloadId(file.id);
+    setIsAddingQuickDownload(true);
+    setQuickDownloadTitle(file.title);
+    setQuickDownloadUrl(file.url);
+    setQuickDownloadSize(file.size || "1.2 MB");
+    setQuickDownloadYear(file.year || "2024");
+  };
+
+  const handleCancelQuickDownload = () => {
+    setIsAddingQuickDownload(false);
+    setEditingQuickDownloadId(null);
+    setQuickDownloadTitle("");
+    setQuickDownloadUrl("");
+    setQuickDownloadSize("1.2 MB");
+    setQuickDownloadYear("2024");
+  };
+
+  const handleSaveQuickDownload = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeActionModal || !quickDownloadTitle.trim() || !quickDownloadUrl.trim()) return;
+
+    const currentFiles =
+      activeActionModal.action.downloadFiles && activeActionModal.action.downloadFiles.length > 0
+        ? activeActionModal.action.downloadFiles
+        : getDefaultDownloadFiles(
+            activeActionModal.action.type,
+            activeActionModal.subject.title,
+            activeActionModal.action.title
+          );
+
+    let updatedFiles: CompetitionDownloadFile[];
+    if (editingQuickDownloadId) {
+      updatedFiles = currentFiles.map((f) =>
+        f.id === editingQuickDownloadId
+          ? {
+              ...f,
+              title: quickDownloadTitle.trim(),
+              url: quickDownloadUrl.trim(),
+              size: quickDownloadSize.trim() || "PDF",
+              year: quickDownloadYear.trim() || "محين",
+            }
+          : f
+      );
+    } else {
+      const newFile: CompetitionDownloadFile = {
+        id: `file_${Date.now()}`,
+        title: quickDownloadTitle.trim(),
+        url: quickDownloadUrl.trim(),
+        size: quickDownloadSize.trim() || "PDF",
+        year: quickDownloadYear.trim() || "محين",
+      };
+      updatedFiles = [...currentFiles, newFile];
+    }
+
+    const updatedAction: CompetitionSubAction = {
+      ...activeActionModal.action,
+      downloadFiles: updatedFiles,
+    };
+
+    const updatedSubjects = data.subjects.map((sub) => {
+      if (sub.id !== activeActionModal.subject.id) return sub;
+      return {
+        ...sub,
+        actions: sub.actions.map((act) => (act.id === updatedAction.id ? updatedAction : act)),
+      };
+    });
+
+    handleSaveData({ ...data, subjects: updatedSubjects });
+    setActiveActionModal({
+      subject: activeActionModal.subject,
+      action: updatedAction,
+    });
+
+    handleCancelQuickDownload();
+    showToast("تم تحديث روابط التحميل بنجاح!");
+  };
+
+  const handleDeleteQuickDownload = (fileId: string) => {
+    if (!activeActionModal) return;
+    if (!window.confirm("هل أنت متأكد من حذف رابط التحميل هذا؟")) return;
+
+    const currentFiles =
+      activeActionModal.action.downloadFiles && activeActionModal.action.downloadFiles.length > 0
+        ? activeActionModal.action.downloadFiles
+        : getDefaultDownloadFiles(
+            activeActionModal.action.type,
+            activeActionModal.subject.title,
+            activeActionModal.action.title
+          );
+
+    const updatedFiles = currentFiles.filter((f) => f.id !== fileId);
+
+    const updatedAction: CompetitionSubAction = {
+      ...activeActionModal.action,
+      downloadFiles: updatedFiles,
+    };
+
+    const updatedSubjects = data.subjects.map((sub) => {
+      if (sub.id !== activeActionModal.subject.id) return sub;
+      return {
+        ...sub,
+        actions: sub.actions.map((act) => (act.id === updatedAction.id ? updatedAction : act)),
+      };
+    });
+
+    handleSaveData({ ...data, subjects: updatedSubjects });
+    setActiveActionModal({
+      subject: activeActionModal.subject,
+      action: updatedAction,
+    });
+
+    if (editingQuickDownloadId === fileId) {
+      handleCancelQuickDownload();
+    }
+    showToast("تم حذف رابط التحميل بنجاح");
   };
 
   // Handler for saving an edited subject
@@ -414,32 +632,41 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </p>
           </div>
 
-          {/* Controls: Admin / Content Management Mode */}
-          <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
-            <button
-              onClick={() => setEditMode(!editMode)}
-              className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-xs cursor-pointer ${
-                editMode
-                  ? "bg-amber-500 hover:bg-amber-600 text-white ring-2 ring-amber-300"
-                  : "bg-slate-900 hover:bg-slate-800 text-white"
-              }`}
-              title="تفعيل وضع التحكم والتعديل في محتوى الصفحة"
-            >
-              <Settings className="w-4 h-4" />
-              <span>{editMode ? "إنهاء وضع التحكم ✕" : "لوحة التحكم في المحتوى ⚙️"}</span>
-            </button>
+          {/* Controls: Admin / Content Management Mode (Only visible to authenticated Manager/Admin) */}
+          {isAdmin && (
+            <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+              <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-black shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <span>المدير: {adminSession?.adminName || adminSession?.adminEmail}</span>
+              </div>
 
-            {editMode && (
               <button
-                onClick={handleResetDefaults}
-                className="bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                title="استعادة التقسيم والمحتوى الافتراضي"
+                id="competition-toggle-edit-mode-btn"
+                onClick={() => setEditMode(!editMode)}
+                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-xs cursor-pointer ${
+                  editMode
+                    ? "bg-amber-500 hover:bg-amber-600 text-white ring-2 ring-amber-300"
+                    : "bg-slate-900 hover:bg-slate-800 text-white"
+                }`}
+                title="تفعيل وضع التحكم والتعديل في محتوى الصفحة"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>استعادة الافتراضي</span>
+                <Settings className="w-4 h-4" />
+                <span>{editMode ? "إنهاء التحرير ✕" : "تفعيل التعديل ✍️"}</span>
               </button>
-            )}
-          </div>
+
+              {editMode && (
+                <button
+                  onClick={handleResetDefaults}
+                  className="bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                  title="استعادة التقسيم والمحتوى الافتراضي"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>استعادة الافتراضي</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Top 4 Dashed Resource Cards (النموذج الموضح بالصورة) */}
@@ -452,6 +679,22 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                 onClick={() => setActiveQuickResourceModal(card)}
                 className={`border-2 border-dashed rounded-2xl p-4 transition-all duration-200 cursor-pointer flex items-center gap-3.5 group relative ${style.container}`}
               >
+                {/* Admin Quick Edit Button on Card */}
+                {isEditActive && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingQuickResource(card);
+                    }}
+                    className="absolute top-2 left-2 z-10 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-xs transition cursor-pointer border border-white/60"
+                    title="تعديل محتوى وروابط وصور هذه البطاقة"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    <span>تعديل</span>
+                  </button>
+                )}
+
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-xs ${style.iconBox}`}>
                   {renderIcon(card.iconName, "w-6 h-6")}
                 </div>
@@ -519,8 +762,8 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
         </div>
       </div>
 
-      {/* Edit Mode Notice Banner */}
-      {editMode && (
+      {/* Edit Mode Notice Banner (Only shown if isEditActive) */}
+      {isEditActive && (
         <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-5 h-5 text-amber-600 shrink-0" />
@@ -598,7 +841,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       <h3 className="font-black text-base md:text-lg">{sub.title}</h3>
                     </div>
 
-                    {editMode && (
+                    {isEditActive && (
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => {
@@ -652,6 +895,29 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                         </div>
                       ))}
                     </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        {sub.actions.length} محاور وموارد متوفرة
+                      </span>
+                      {isEditActive && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setTopicEditorState({
+                              isOpen: true,
+                              subject: sub,
+                              action: null,
+                            });
+                          }}
+                          className="text-xs font-bold text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                          title={`إضافة موضوع أو ملفات تحميل جديدة لمادة ${sub.title}`}
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ إضافة موضوع / ملفات تحميل</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -681,7 +947,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
               </div>
             </div>
 
-            {editMode && (
+            {isEditActive && (
               <button
                 onClick={() => handleStartAddSubject("secondary")}
                 className="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1.5 self-start md:self-auto cursor-pointer transition"
@@ -715,7 +981,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       <h3 className="font-black text-base md:text-lg">{sub.title}</h3>
                     </div>
 
-                    {editMode && (
+                    {isEditActive && (
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => {
@@ -768,6 +1034,29 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                         </div>
                       ))}
                     </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        {sub.actions.length} محاور وموارد متوفرة
+                      </span>
+                      {isEditActive && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setTopicEditorState({
+                              isOpen: true,
+                              subject: sub,
+                              action: null,
+                            });
+                          }}
+                          className="text-xs font-bold text-blue-800 hover:text-blue-950 hover:bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                          title={`إضافة موضوع أو ملفات تحميل جديدة لمادة ${sub.title}`}
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ إضافة موضوع / ملفات تحميل</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -787,7 +1076,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                 <Layers className="w-5 h-5 text-purple-700" />
                 <h2 className="text-xl font-black text-slate-900">تخصصات أخرى</h2>
               </div>
-              {editMode && (
+              {isEditActive && (
                 <button
                   onClick={() => handleStartAddSubject("other")}
                   className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer"
@@ -826,7 +1115,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       ))}
                     </div>
 
-                    {editMode && (
+                    {isEditActive && (
                       <div className="pt-2 border-t border-slate-200/60 flex items-center justify-center gap-2">
                         <button
                           onClick={() => {
@@ -882,7 +1171,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                   {renderIcon(activeActionModal.action.iconName, "w-5 h-5")}
                 </div>
                 <div>
-                  <h3 className="font-black text-lg text-slate-900">
+                  <h3 className="font-black text-base sm:text-lg text-slate-900">
                     {activeActionModal.action.title} - {activeActionModal.subject.title}
                   </h3>
                   <p className="text-xs text-slate-600 font-medium">
@@ -890,12 +1179,37 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setActiveActionModal(null)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopicEditorState({
+                        isOpen: true,
+                        subject: activeActionModal.subject,
+                        action: activeActionModal.action,
+                      });
+                    }}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                    title="تعديل هذا الموضوع أو تحرير المقال وروابط التحميل (خاص بالمدير)"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-blue-600" />
+                    <span className="hidden sm:inline">محرر الموضوع والمرفقات</span>
+                    <span className="sm:hidden">تعديل</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setActiveActionModal(null);
+                    setIsAddingQuickDownload(false);
+                    setEditingQuickDownloadId(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* If action is QCM, show interactive Quiz simulator */}
@@ -1018,71 +1332,385 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
               </div>
             )}
 
-            {/* For other non-QCM action types (Knowledge, Didactics, Exams, Summaries) */}
-            {activeActionModal.action.type !== "qcm" && (
-              <div className="space-y-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-                    <BookOpen className="w-4 h-4 text-blue-700" />
-                    <span>الملخص التوجيهي والمحاور الأساسية:</span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                    {activeActionModal.action.contentSummary ||
-                      "يتضمن هذا الركن المحاور المحددة في الأطر المرجعية والتوصيفات الرسمية للاختبار الكتابي والشفوي، مع منهجيات التخطيط والتدبير والتقويم المعتمدة في المراكز الجهوية لمهن التربية والتكوين."}
-                  </p>
-                </div>
+            {/* For other non-QCM action types (Knowledge, Didactics, Exams, Summaries, Custom) */}
+            {activeActionModal.action.type !== "qcm" && (() => {
+              const activeFiles: CompetitionDownloadFile[] =
+                activeActionModal.action.downloadFiles && activeActionModal.action.downloadFiles.length > 0
+                  ? activeActionModal.action.downloadFiles
+                  : getDefaultDownloadFiles(
+                      activeActionModal.action.type,
+                      activeActionModal.subject.title,
+                      activeActionModal.action.title
+                    );
 
-                {/* List of Previous Exams / Official Downloads */}
-                <div className="space-y-2">
-                  <h4 className="font-black text-xs text-slate-700">الملفات ونماذج الامتحانات المتاحة للتحميل:</h4>
-                  <div className="space-y-2">
-                    {[
-                      { title: "موضوع الدورة العادية 2024 مع عناصر الإجابة الرسمية", size: "1.2 MB", year: "2024" },
-                      { title: "موضوع الدورة الاستدراكية 2023 مع سلم التنقيط", size: "980 KB", year: "2023" },
-                      { title: "دليل الديداكتيك والتوصيفات الرسمية المعتمدة", size: "2.4 MB", year: "وزاري" },
-                    ].map((file, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3 text-xs hover:border-blue-300 transition"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <FileText className="w-4 h-4 text-blue-600 shrink-0" />
-                          <span className="font-bold text-slate-800">{file.title}</span>
+              return (
+                <div className="space-y-4">
+                  {/* Tab Selector: Summary & Downloads vs Full Article */}
+                  <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => setActionModalTab("summary")}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+                        actionModalTab === "summary"
+                          ? "bg-blue-800 text-white shadow-2xs"
+                          : "text-slate-600 hover:text-slate-900 bg-slate-100"
+                      }`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>الملخص التوجيهي وروابط التحميل ({activeFiles.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActionModalTab("article")}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+                        actionModalTab === "article"
+                          ? "bg-blue-800 text-white shadow-2xs"
+                          : "text-slate-600 hover:text-slate-900 bg-slate-100"
+                      }`}
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>قراءة الموضوع كاملاً (المحتوى التحريري)</span>
+                      {activeActionModal.action.articleContent && (
+                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* TAB A: SUMMARY & DOWNLOADS */}
+                  {actionModalTab === "summary" && (
+                    <div className="space-y-4">
+                      {/* Summary Box */}
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-slate-800 font-bold text-xs sm:text-sm">
+                            <BookOpen className="w-4 h-4 text-blue-700" />
+                            <span>الملخص التوجيهي والمحاور الأساسية:</span>
+                          </div>
+                          {activeActionModal.action.author && (
+                            <span className="text-[11px] text-slate-500 font-medium">
+                              المؤلف: {activeActionModal.action.author}
+                            </span>
+                          )}
                         </div>
-                        <a
-                          href="https://www.profpress.net/p/concours-de-lenseignement.html"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg flex items-center gap-1 shrink-0 transition"
-                        >
-                          <Download className="w-3 h-3" />
-                          <span>تحميل ({file.size})</span>
-                        </a>
+                        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                          {activeActionModal.action.contentSummary ||
+                            "يتضمن هذا الركن المحاور المحددة في الأطر المرجعية والتوصيفات الرسمية للاختبار الكتابي والشفوي، مع منهجيات التخطيط والتدبير والتقويم المعتمدة في المراكز الجهوية لمهن التربية والتكوين."}
+                        </p>
                       </div>
-                    ))}
+
+                      {/* Download Files Section with Edit / Add controls */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-black text-xs sm:text-sm text-slate-800 flex items-center gap-1.5">
+                            <Download className="w-4 h-4 text-blue-700" />
+                            <span>الملفات ونماذج الامتحانات المتاحة للتحميل ({activeFiles.length}):</span>
+                          </h4>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsAddingQuickDownload(true);
+                                setEditingQuickDownloadId(null);
+                                setQuickDownloadTitle("");
+                                setQuickDownloadUrl("");
+                                setQuickDownloadSize("1.5 MB");
+                                setQuickDownloadYear("2024");
+                              }}
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                              title="إضافة رابط تحميل جديد (خاص بالمدير)"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ إضافة رابط تحميل</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Inline Form to Add / Edit Download File */}
+                        {isAddingQuickDownload && (
+                          <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 space-y-3 animate-in fade-in">
+                            <div className="flex items-center justify-between border-b border-blue-200/60 pb-2">
+                              <span className="text-xs font-black text-blue-950">
+                                {editingQuickDownloadId ? "تعديل رابط التحميل المحدد" : "إضافة رابط تحميل أو نموذج امتحان جديد"}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={handleCancelQuickDownload}
+                                className="text-xs text-slate-500 hover:text-slate-800 font-bold cursor-pointer"
+                              >
+                                إلغاء ✕
+                              </button>
+                            </div>
+
+                            <form onSubmit={handleSaveQuickDownload} className="space-y-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                    عنوان الملف / نموذج الامتحان
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={quickDownloadTitle}
+                                    onChange={(e) => setQuickDownloadTitle(e.target.value)}
+                                    placeholder="مثال: موضوع الدورة العادية 2024 مع عناصر الإجابة"
+                                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-900 outline-hidden focus:border-blue-600"
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                    رابط التحميل المباشر أو الصفحة
+                                  </label>
+                                  <input
+                                    type="url"
+                                    value={quickDownloadUrl}
+                                    onChange={(e) => setQuickDownloadUrl(e.target.value)}
+                                    placeholder="https://... رابط جوجل درايف أو بروف بريس"
+                                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-900 outline-hidden focus:border-blue-600"
+                                    required
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                    الحجم أو الصيغة
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={quickDownloadSize}
+                                    onChange={(e) => setQuickDownloadSize(e.target.value)}
+                                    placeholder="1.2 MB أو PDF"
+                                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-900 outline-hidden focus:border-blue-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                    الدورة / السنة
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={quickDownloadYear}
+                                    onChange={(e) => setQuickDownloadYear(e.target.value)}
+                                    placeholder="2024 أو وزاري"
+                                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-900 outline-hidden focus:border-blue-600"
+                                  />
+                                </div>
+                                <div className="flex items-end">
+                                  <button
+                                    type="submit"
+                                    className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer"
+                                  >
+                                    <Save className="w-3.5 h-3.5" />
+                                    <span>{editingQuickDownloadId ? "حفظ التعديل" : "إضافة الرابط"}</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        )}
+
+                        {/* Files List */}
+                        {activeFiles.length === 0 ? (
+                          <div className="bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-6 text-center text-slate-500 text-xs">
+                            لا توجد ملفات تحميل حالياً. اضغط على زر "+ إضافة رابط تحميل" لإضافة أول رابط.
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {activeFiles.map((file, idx) => (
+                              <div
+                                key={file.id || idx}
+                                className={`bg-white border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-blue-300 transition ${
+                                  editingQuickDownloadId === file.id
+                                    ? "border-blue-500 bg-blue-50/40 ring-1 ring-blue-300"
+                                    : "border-slate-200"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                                    <FileDown className="w-4 h-4" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-slate-800 block truncate">{file.title}</span>
+                                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                                      {file.year && (
+                                        <span className="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded-md font-bold">
+                                          {file.year}
+                                        </span>
+                                      )}
+                                      <span>الحجم: {file.size || "PDF"}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                                  <a
+                                    href={file.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                    <span>تحميل ({file.size || "PDF"})</span>
+                                  </a>
+
+                                  {isAdmin && (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleStartEditQuickDownload(file)}
+                                        className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                                        title="تعديل هذا الرابط (خاص بالمدير)"
+                                      >
+                                        <Edit3 className="w-3.5 h-3.5" />
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteQuickDownload(file.id)}
+                                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                                        title="حذف هذا الرابط (خاص بالمدير)"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB B: FULL AUTHORED ARTICLE */}
+                  {actionModalTab === "article" && (
+                    <div className="space-y-4">
+                      {/* Meta Info */}
+                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs text-slate-600">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-800">
+                            {activeActionModal.action.author || "فريق التحرير البيداغوجي - بروف بريس"}
+                          </span>
+                          {activeActionModal.action.lastUpdated && (
+                            <>
+                              <span className="text-slate-300">•</span>
+                              <span>تم التحديث: {activeActionModal.action.lastUpdated}</span>
+                            </>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setTopicEditorState({
+                              isOpen: true,
+                              subject: activeActionModal.subject,
+                              action: activeActionModal.action,
+                            });
+                          }}
+                          className="text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1 text-[11px] cursor-pointer"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          <span>تعديل المقال</span>
+                        </button>
+                      </div>
+
+                      {/* Article Content Display */}
+                      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed">
+                        {activeActionModal.action.articleContent ? (
+                          <div className="space-y-3 whitespace-pre-line font-medium leading-relaxed">
+                            {activeActionModal.action.articleContent}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6 space-y-3">
+                            <p className="text-slate-500 text-xs">
+                              لم يتم تحرير مقال تفصيلي لهذا الموضوع بعد. يمكنك كتابة موضوع بيداغوجي كامل وتنسيقه بسهولة مثل نموذج المستجدات!
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setTopicEditorState({
+                                  isOpen: true,
+                                  subject: activeActionModal.subject,
+                                  action: activeActionModal.action,
+                                });
+                              }}
+                              className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-4 py-2 rounded-xl inline-flex items-center gap-2 transition cursor-pointer"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span>كتابة وتحرير الموضوع الآن</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Attached Downloads Reminder */}
+                      {activeFiles.length > 0 && (
+                        <div className="bg-blue-50/60 border border-blue-200 rounded-xl p-3.5 flex items-center justify-between text-xs">
+                          <span className="text-blue-950 font-bold">
+                            يحتوي هذا الموضوع على {activeFiles.length} ملفات ونماذج قابلة للتحميل.
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActionModalTab("summary")}
+                            className="text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1"
+                          >
+                            <Download className="w-3 h-3" />
+                            <span>عرض روابط التحميل</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* External link & Footer Controls */}
+                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+                    <a
+                      href={
+                        activeActionModal.action.externalUrl ||
+                        "https://www.profpress.net/p/concours-de-lenseignement.html"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-700 hover:text-blue-800 text-xs font-bold flex items-center gap-1.5"
+                    >
+                      <span>تصفح الموضوع الكامل والمرفقات على Profpress.net</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTopicEditorState({
+                            isOpen: true,
+                            subject: activeActionModal.subject,
+                            action: activeActionModal.action,
+                          });
+                        }}
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-blue-700" />
+                        <span>محرر الموضوع الشامل</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveActionModal(null);
+                          setIsAddingQuickDownload(false);
+                          setEditingQuickDownloadId(null);
+                        }}
+                        className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer"
+                      >
+                        إغلاق
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                {/* External link to Profpress full article */}
-                <div className="pt-2 flex items-center justify-between border-t border-slate-100">
-                  <a
-                    href="https://www.profpress.net/p/concours-de-lenseignement.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-700 hover:text-blue-800 text-xs font-bold flex items-center gap-1.5"
-                  >
-                    <span>تصفح الموضوع الكامل والمرفقات على Profpress.net</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                  <button
-                    onClick={() => setActiveActionModal(null)}
-                    className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer"
-                  >
-                    إغلاق
-                  </button>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       )}
@@ -1092,100 +1720,261 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
       {/* ====================================================================== */}
       {activeQuickResourceModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4 text-right">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto space-y-5 text-right">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4 gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                  {renderIcon(activeQuickResourceModal.iconName, "w-5 h-5")}
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 shadow-xs">
+                  {renderIcon(activeQuickResourceModal.iconName, "w-6 h-6")}
                 </div>
                 <div>
-                  <h3 className="font-black text-lg text-slate-900">
-                    {activeQuickResourceModal.title}
-                  </h3>
-                  <p className="text-xs text-slate-600">{activeQuickResourceModal.subtitle}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-black text-lg sm:text-xl text-slate-900">
+                      {activeQuickResourceModal.title}
+                    </h3>
+                    {activeQuickResourceModal.lastUpdated && (
+                      <span className="text-[10px] bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded-full">
+                        تحديث: {activeQuickResourceModal.lastUpdated}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-600 mt-0.5 font-medium">
+                    {activeQuickResourceModal.subtitle}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => setActiveQuickResourceModal(null)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Admin edit button */}
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cardToEdit = activeQuickResourceModal;
+                      setActiveQuickResourceModal(null);
+                      setEditingQuickResource(cardToEdit);
+                    }}
+                    className="bg-amber-500 hover:bg-amber-600 text-white font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                    title="تعديل محتوى وروابط وصور هذه البطاقة"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">تحرير البطاقة</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveQuickResourceModal(null)}
+                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-slate-700 space-y-3 leading-relaxed">
-              {activeQuickResourceModal.id === "specs" && (
-                <div className="space-y-3">
-                  <p className="font-bold text-slate-900">
-                    تحدد التوصيفات الرسمية الصادرة عن المركز الوطني للامتحانات المجالات الرئيسية للاختبارات ووزن كل مكون:
-                  </p>
-                  <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
-                    <li>توصيفات السلك الابتدائي (اللغة العربية، الفرنسية، الرياضيات، النشاط العلمي، وعلوم التربية).</li>
-                    <li>توصيفات التعليم الثانوي بسلكيه الإعدادي والتأهيلي حسب مادة التخصص.</li>
-                    <li>معاملات المواد: التخصص وديداكتيك التخصص (المعامل الأكبر) مع علوم التربية.</li>
-                  </ul>
+            {/* Images Gallery if available */}
+            {activeQuickResourceModal.images && activeQuickResourceModal.images.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
+                  <ImageIcon className="w-4 h-4 text-blue-600" />
+                  <span>الصور والوثائق البصرية التوضيحية:</span>
                 </div>
-              )}
-
-              {activeQuickResourceModal.id === "news" && (
-                <div className="space-y-3">
-                  <p className="font-bold text-slate-900">
-                    آخر الإعلانات والمذكرات التنظيمية الصادرة عن وزارة التربية الوطنية:
-                  </p>
-                  <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
-                    <li>تاريخ فتح بوابة الترشيح الإلكتروني عبر المنظومة المخصصة.</li>
-                    <li>توزيع المناصب المفتوحة حسب الأكاديميات الجهوية والتخصصات.</li>
-                    <li>جدولة إجراء الاختبارات الكتابية وإعلان لوائح المقبولين لاجتياز الاختبارات الشفوية.</li>
-                  </ul>
+                <div className={`grid gap-3 ${activeQuickResourceModal.images.length > 1 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
+                  {activeQuickResourceModal.images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="group bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-xs"
+                    >
+                      <div className="relative aspect-video sm:aspect-4/3 overflow-hidden bg-slate-100">
+                        <img
+                          src={img.url}
+                          alt={img.caption || activeQuickResourceModal.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          referrerPolicy="no-referrer"
+                        />
+                        <a
+                          href={img.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute bottom-2 left-2 bg-slate-900/80 hover:bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-xs flex items-center gap-1"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>عرض بالحجم الكامل</span>
+                        </a>
+                      </div>
+                      {img.caption && (
+                        <div className="p-2.5 text-xs text-slate-600 font-medium bg-white border-t border-slate-100">
+                          {img.caption}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {activeQuickResourceModal.id === "registration" && (
-                <div className="space-y-3">
-                  <p className="font-bold text-slate-900">
-                    شروط الترشيح والوثائق المكونة لملف إيداع الترشيح:
-                  </p>
-                  <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
-                    <li>شهادة الإجازة في التربية أو الإجازة في الدراسات الأساسية أو ما يعادلها.</li>
-                    <li>نسخة مصادق عليها من البطاقة الوطنية للتعريف الإلكترونية (CNIE).</li>
-                    <li>بيان النقط المحصل عليها خلال سنوات الإجازة لمسابقة الانتقاء الأولي.</li>
-                    <li>وصل التسجيل الإلكتروني المسحوب من بوابة التوظيف الرسمية.</li>
-                  </ul>
+            {/* Written Topic / Main Text Content */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 text-xs sm:text-sm text-slate-800 leading-relaxed space-y-3">
+              {activeQuickResourceModal.writtenContent ? (
+                <div className="space-y-3 whitespace-pre-line font-medium text-slate-700">
+                  {activeQuickResourceModal.writtenContent}
                 </div>
-              )}
-
-              {activeQuickResourceModal.id === "interview" && (
+              ) : (
+                /* Fallback defaults if no writtenContent is present */
                 <div className="space-y-3">
-                  <p className="font-bold text-slate-900">
-                    دليل الاستعداد للاختبار الشفوي والمقابلة مع لجنة التحكيم:
-                  </p>
-                  <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
-                    <li>محاكاة وضعية تعلمية (وضعية تدريسية مدتها 15-20 دقيقة).</li>
-                    <li>معايير التقييم: سلامة اللغة، هندام الأستاذ، التمكن من المادة العلمية، والاتزان النفسي.</li>
-                    <li>أسئلة في علوم التربية ومستجدات المنظومة التعليمية ومواقف حل النزاعات الصفية.</li>
-                  </ul>
+                  {activeQuickResourceModal.id === "specs" && (
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900">
+                        تحدد التوصيفات الرسمية الصادرة عن المركز الوطني للامتحانات المجالات الرئيسية للاختبارات ووزن كل مكون:
+                      </p>
+                      <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
+                        <li>توصيفات السلك الابتدائي (اللغة العربية، الفرنسية، الرياضيات، النشاط العلمي، وعلوم التربية).</li>
+                        <li>توصيفات التعليم الثانوي بسلكيه الإعدادي والتأهيلي حسب مادة التخصص.</li>
+                        <li>معاملات المواد: التخصص وديداكتيك التخصص (المعامل الأكبر) مع علوم التربية.</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  {activeQuickResourceModal.id === "news" && (
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900">
+                        آخر الإعلانات والمذكرات التنظيمية الصادرة عن وزارة التربية الوطنية:
+                      </p>
+                      <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
+                        <li>تاريخ فتح بوابة الترشيح الإلكتروني عبر المنظومة المخصصة.</li>
+                        <li>توزيع المناصب المفتوحة حسب الأكاديميات الجهوية والتخصصات.</li>
+                        <li>جدولة إجراء الاختبارات الكتابية وإعلان لوائح المقبولين لاجتياز الاختبارات الشفوية.</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  {activeQuickResourceModal.id === "registration" && (
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900">
+                        شروط الترشيح والوثائق المكونة لملف إيداع الترشيح:
+                      </p>
+                      <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
+                        <li>شهادة الإجازة في التربية أو الإجازة في الدراسات الأساسية أو ما يعادلها.</li>
+                        <li>نسخة مصادق عليها من البطاقة الوطنية للتعريف الإلكترونية (CNIE).</li>
+                        <li>بيان النقط المحصل عليها خلال سنوات الإجازة لمسابقة الانتقاء الأولي.</li>
+                        <li>وصل التسجيل الإلكتروني المسحوب من بوابة التوظيف الرسمية.</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  {activeQuickResourceModal.id === "interview" && (
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900">
+                        دليل الاستعداد للاختبار الشفوي والمقابلة مع لجنة التحكيم:
+                      </p>
+                      <ul className="list-disc pr-5 space-y-1.5 text-slate-600">
+                        <li>محاكاة وضعية تعلمية (وضعية تدريسية مدتها 15-20 دقيقة).</li>
+                        <li>معايير التقييم: سلامة اللغة، هندام الأستاذ، التمكن من المادة العلمية، والاتزان النفسي.</li>
+                        <li>أسئلة في علوم التربية ومستجدات المنظومة التعليمية ومواقف حل النزاعات الصفية.</li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+            {/* Attached Download Files & Links */}
+            {activeQuickResourceModal.downloadLinks && activeQuickResourceModal.downloadLinks.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-slate-900">
+                    <FileDown className="w-4 h-4 text-emerald-600" />
+                    <span>الملفات وروابط التحميل المباشرة:</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-bold">
+                    {activeQuickResourceModal.downloadLinks.length} ملفات جاهزة للتحميل
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2">
+                  {activeQuickResourceModal.downloadLinks.map((link) => (
+                    <div
+                      key={link.id}
+                      className="bg-white border border-slate-200 hover:border-blue-400 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs hover:shadow-xs transition"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-black text-xs sm:text-sm text-slate-900 truncate">
+                            {link.title}
+                          </h4>
+                          <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                            {link.size && <span>الحجم: {link.size}</span>}
+                            {link.year && <span>• السنة: {link.year}</span>}
+                            {link.note && <span className="text-slate-400">• {link.note}</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 shadow-2xs"
+                        download
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>تحميل</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Modal Footer */}
+            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
               <a
                 href={activeQuickResourceModal.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition"
+                className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow-xs"
               >
                 <span>الانتقال للمصدر الرسمي ↗</span>
               </a>
-              <button
-                onClick={() => setActiveQuickResourceModal(null)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl"
-              >
-                إغلاق
-              </button>
+
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cardToEdit = activeQuickResourceModal;
+                      setActiveQuickResourceModal(null);
+                      setEditingQuickResource(cardToEdit);
+                    }}
+                    className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                    <span>تعديل المرفقات والروابط</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveQuickResourceModal(null)}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer"
+                >
+                  إغلاق
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* ====================================================================== */}
+      {/* Quick Resource Editor Modal (خاص بالمدير لتحرير البطاقات الأربع)       */}
+      {/* ====================================================================== */}
+      {editingQuickResource && (
+        <QuickResourceEditorModal
+          isOpen={Boolean(editingQuickResource)}
+          card={editingQuickResource}
+          onClose={() => setEditingQuickResource(null)}
+          onSave={handleSaveQuickResourceCard}
+        />
       )}
 
       {/* ====================================================================== */}
@@ -1401,6 +2190,19 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </form>
           </div>
         </div>
+      )}
+
+      {/* ====================================================================== */}
+      {/* MODAL 4: Competition Topic & Downloads Editor (محرر مواضيع وروابط التحميل) */}
+      {/* ====================================================================== */}
+      {topicEditorState.isOpen && topicEditorState.subject && (
+        <CompetitionTopicEditorModal
+          isOpen={topicEditorState.isOpen}
+          onClose={() => setTopicEditorState({ isOpen: false, subject: null, action: null })}
+          subject={topicEditorState.subject}
+          initialAction={topicEditorState.action}
+          onSaveAction={handleSaveTopicAction}
+        />
       )}
     </div>
   );

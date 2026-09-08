@@ -23,8 +23,12 @@ import {
   CheckCircle2,
   PhoneCall,
   FileSpreadsheet,
+  Lock,
+  LayoutDashboard,
+  LogOut,
+  ShieldCheck,
 } from "lucide-react";
-import { TabKey } from "../types";
+import { TabKey, AdminSession } from "../types";
 
 interface HeaderProps {
   activeTab: TabKey;
@@ -32,6 +36,10 @@ interface HeaderProps {
   onPrintCurrent: () => void;
   onOpenPrintPreview: () => void;
   onOpenContactModal?: () => void;
+  adminSession?: AdminSession | null;
+  onOpenAdminLogin?: () => void;
+  onOpenAdminControlPanel?: () => void;
+  onLogoutAdmin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -40,6 +48,10 @@ export const Header: React.FC<HeaderProps> = ({
   onPrintCurrent,
   onOpenPrintPreview,
   onOpenContactModal,
+  adminSession,
+  onOpenAdminLogin,
+  onOpenAdminControlPanel,
+  onLogoutAdmin,
 }) => {
   const [isDocsDropdownOpen, setIsDocsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -98,6 +110,40 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Admin Access / Control Panel */}
+            {adminSession?.isAdmin ? (
+              <div className="flex items-center gap-1 bg-emerald-950/80 border border-emerald-500/50 rounded-lg p-0.5 shadow-xs">
+                <button
+                  id="header-admin-dashboard-btn"
+                  onClick={onOpenAdminControlPanel}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  title="فتح لوحة تحكم الموقع، الإحصائيات، تحسين السيو، وإدارة المحتوى"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                  <LayoutDashboard className="w-3.5 h-3.5 text-emerald-100" />
+                  <span>لوحة التحكم والسيو</span>
+                </button>
+                <button
+                  id="header-admin-logout-btn"
+                  onClick={onLogoutAdmin}
+                  className="text-emerald-300 hover:text-white hover:bg-emerald-800/60 p-1 rounded-md text-xs transition cursor-pointer"
+                  title="تسجيل خروج المدير"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                id="header-admin-login-btn"
+                onClick={onOpenAdminLogin}
+                className="bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/40 font-bold px-2.5 py-1 rounded-md text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                title="دخول مدير المنصة لإتاحة لوحات التحرير ومراقبة الموقع وتحسين السيو"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-300" />
+                <span>دخول المدير</span>
+              </button>
+            )}
+
             <button
               id="header-contact-quick-btn"
               onClick={() => onSelectTab("contact")}
@@ -373,6 +419,23 @@ export const Header: React.FC<HeaderProps> = ({
             <PhoneCall className={`w-4 h-4 ${activeTab === "contact" ? "text-amber-300" : "text-emerald-600"}`} />
             <span>الاتصال والملاحظات</span>
           </button>
+
+          {/* 7. لوحة تحكم وسيو خاصة بالمدير (تظهر فقط عند تسجيل دخول المدير) */}
+          {adminSession?.isAdmin && (
+            <button
+              key="admin-panel"
+              id="nav-tab-admin-panel"
+              onClick={onOpenAdminControlPanel}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-black whitespace-nowrap transition cursor-pointer shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs border border-emerald-500 mr-auto"
+              title="لوحة تحكم الموقع والإحصائيات والسيو"
+            >
+              <LayoutDashboard className="w-4 h-4 text-emerald-200" />
+              <span>لوحة التحكم والسيو</span>
+              <span className="text-[10px] bg-emerald-900/60 text-emerald-100 px-1.5 py-0.2 rounded-full font-bold">
+                المدير
+              </span>
+            </button>
+          )}
         </nav>
 
         {/* Secondary Sub-Bar for quick document switching when inside any pedagogical doc */}

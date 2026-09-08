@@ -1,3 +1,12 @@
+export interface CompetitionDownloadFile {
+  id: string;
+  title: string;
+  size?: string;
+  year?: string;
+  url: string;
+  isExternal?: boolean;
+}
+
 export interface CompetitionSubAction {
   id: string;
   title: string;
@@ -7,12 +16,108 @@ export interface CompetitionSubAction {
   pdfUrl?: string;
   externalUrl?: string;
   contentSummary?: string;
+  articleContent?: string;
+  author?: string;
+  lastUpdated?: string;
+  highlights?: string[];
+  downloadFiles?: CompetitionDownloadFile[];
   qcmQuestions?: {
     question: string;
     options: string[];
     correctIndex: number;
     explanation: string;
   }[];
+}
+
+export function getDefaultDownloadFiles(
+  actionType: string,
+  subjectTitle: string,
+  actionTitle: string
+): CompetitionDownloadFile[] {
+  if (actionType === "exams") {
+    return [
+      {
+        id: "f1",
+        title: `موضوع الدورة العادية 2024 مع عناصر الإجابة الرسمية - ${subjectTitle}`,
+        size: "1.2 MB",
+        year: "2024",
+        url: "https://www.profpress.net/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
+      },
+      {
+        id: "f2",
+        title: `موضوع الدورة الاستدراكية 2023 مع سلم التنقيط - ${subjectTitle}`,
+        size: "980 KB",
+        year: "2023",
+        url: "https://www.profpress.net/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
+      },
+      {
+        id: "f3",
+        title: `دليل الديداكتيك والتوصيفات الرسمية المعتمدة - ${subjectTitle}`,
+        size: "2.4 MB",
+        year: "وزاري",
+        url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+      },
+    ];
+  }
+  if (actionType === "summaries") {
+    return [
+      {
+        id: "f1",
+        title: "موضوع الدورة العادية 2024 مع عناصر الإجابة الرسمية",
+        size: "1.2 MB",
+        year: "2024",
+        url: "https://www.profpress.net/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
+      },
+      {
+        id: "f2",
+        title: "موضوع الدورة الاستدراكية 2023 مع سلم التنقيط",
+        size: "980 KB",
+        year: "2023",
+        url: "https://www.profpress.net/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
+      },
+      {
+        id: "f3",
+        title: "دليل الديداكتيك والتوصيفات الرسمية المعتمدة",
+        size: "2.4 MB",
+        year: "وزاري",
+        url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+      },
+    ];
+  }
+  if (actionType === "didactics") {
+    return [
+      {
+        id: "f1",
+        title: `دليل الديداكتيك والتوصيفات الرسمية المعتمدة - ${subjectTitle}`,
+        size: "2.4 MB",
+        year: "وزاري",
+        url: "https://www.profpress.net/search/label/%D8%AF%D9%8A%D8%AF%D8%A7%D9%83%D8%AA%D9%8A%D9%83",
+      },
+      {
+        id: "f2",
+        title: `جذاذات نموذجية وتخطيط وضعيات التقويم في ${subjectTitle}`,
+        size: "1.6 MB",
+        year: "بيداغوجي",
+        url: "https://www.profpress.net/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
+      },
+    ];
+  }
+  return [
+    {
+      id: "f1",
+      title: `الملف التوجيهي والملخص الشامل - ${actionTitle}`,
+      size: "1.8 MB",
+      year: "2024",
+      url: "https://www.profpress.net/p/concours-de-lenseignement.html",
+    },
+    {
+      id: "f2",
+      title: `خطاطات ذهنية وبطاقات المراجعة السريعة`,
+      size: "1.1 MB",
+      year: "محين",
+      url: "https://www.profpress.net/p/concours-de-lenseignement.html",
+    },
+  ];
 }
 
 export interface CompetitionSubject {
@@ -25,6 +130,19 @@ export interface CompetitionSubject {
   actions: CompetitionSubAction[];
 }
 
+export interface QuickResourceImage {
+  id: string;
+  url: string;
+  caption?: string;
+}
+
+export interface QuickResourceLink {
+  id: string;
+  title: string;
+  url: string;
+  size?: string;
+}
+
 export interface QuickResourceCard {
   id: string;
   title: string;
@@ -32,6 +150,11 @@ export interface QuickResourceCard {
   iconName: string;
   color: "teal" | "orange" | "blue" | "purple";
   url: string;
+  writtenContent?: string;
+  images?: QuickResourceImage[];
+  downloadLinks?: QuickResourceLink[];
+  author?: string;
+  lastUpdated?: string;
 }
 
 export interface TeachingCompetitionPageData {
@@ -58,6 +181,53 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       iconName: "FileText",
       color: "teal",
       url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+      author: "المركز الوطني للتقويم والامتحانات والتوجيه",
+      lastUpdated: "شتنبر 2026",
+      writtenContent: `تعتبر التوصيفات الرسمية الصادرة عن المركز الوطني للامتحانات المرجع الأساسي لتأطير وبناء مواضيع مباريات توظيف الأطر النظامية للأكاديميات الجهوية لمهن التربية والتكوين.
+
+أولاً: أهداف التوصيفات المرجعية:
+1. تحديد المجالات والمحاور المعرفية والديداكتيكية المستهدفة بالاختبار بدقة متناهية.
+2. تحديد الأوزان النسبية والمعاملات المخصصة لكل مادة ومجال فرعي لتوجيه جهود المترشح.
+3. تفادي التشتت وتوجيه الاستعداد نحو المستجدات البيداغوجية والوثائق الرسمية المعتمدة.
+
+ثانياً: مكونات الاختبارات بالسلك الابتدائي (التخصص المزدوج):
+- اللغة العربية وديداكتيكها (المعامل 3)
+- اللغة الفرنسية وديداكتيكها (المعامل 3)
+- الرياضيات وديداكتيكها (المعامل 3)
+- النشاط العلمي وديداكتيكه (المعامل 2)
+- علوم التربية ومستجدات المنظومة (المعامل 2)
+
+ثالثاً: مكونات الاختبارات بالسلك الثانوي (الإعدادي والتأهيلي):
+- اختبار في مادة التخصص الأكاديمي (المعامل 3).
+- اختبار في ديداكتيك مادة التخصص ومنهجيات التدريس (المعامل 2).
+- اختبار في علوم التربية وعلم النفس التربوي والتشريع المدرسي (المعامل 1).`,
+      images: [
+        {
+          id: "img-specs-1",
+          url: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=900&auto=format&fit=crop&q=80",
+          caption: "توزيع الأطر المرجعية ومجالات التقويم للامتحانات المهنية ومباريات التوظيف",
+        },
+      ],
+      downloadLinks: [
+        {
+          id: "link-specs-1",
+          title: "التوصيف الرسمي الشامل لمباراة الابتدائي المزدوج (ملف كامل PDF)",
+          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          size: "2.8 MB",
+        },
+        {
+          id: "link-specs-2",
+          title: "الأطر المرجعية لتوصيفات التعليم الثانوي (بسلكيه الإعدادي والتأهيلي)",
+          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          size: "3.4 MB",
+        },
+        {
+          id: "link-specs-3",
+          title: "دليل معايير وشبكات التنقيط المعتمدة في تصحيح الاختبارات الكتابية",
+          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          size: "1.5 MB",
+        },
+      ],
     },
     {
       id: "news",
@@ -66,6 +236,39 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       iconName: "Megaphone",
       color: "orange",
       url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+      author: "مديرية الموارد البشرية وتكوين الأطر",
+      lastUpdated: "دورة 2026",
+      writtenContent: `متابعة حصرية لكافة المذكرات التنظيمية، والقرارات الوزارية الصادرة عن وزارة التربية الوطنية والتعليم الأولي والرياضة بخصوص مباريات التوظيف:
+
+1. الإعلان عن فتح باب الترشيحات رسمياً عبر البوابة المخصصة لمباريات التعليم.
+2. توزيع المقاعد والمناصب الشاغرة بحسب الأكاديميات الجهوية للتربية والتكوين (AREF).
+3. شروط الترشيح والانتقاء الأولي المعتمد (معايير الميزة وعدد سنوات الحصول على الإجازة).
+4. الجدولة الزمنية الرسمية:
+   - فترة التسجيل والمصادقة على الترشيحات الإلكترونية.
+   - موعد إجراء الاختبارات الكتابية بمراكز الامتحانات.
+   - تاريخ إعلان النتائج الكتابية ولوائح المقبولين لاجتياز الاختبارات الشفوية.
+   - إجراء المقابلات الشفوية وإعلان النتائج النهائية ولوائح الانتظار.`,
+      images: [
+        {
+          id: "img-news-1",
+          url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=900&auto=format&fit=crop&q=80",
+          caption: "الجدولة الزمنية الرسمية لمباريات التعليم وتوزيع المقاعد حسب الجهات",
+        },
+      ],
+      downloadLinks: [
+        {
+          id: "link-news-1",
+          title: "المذكرة الوزارية المنظمة لمباراة توظيف الأساتذة أطر الأكاديميات 2026",
+          url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+          size: "1.9 MB",
+        },
+        {
+          id: "link-news-2",
+          title: "جدول توزيع المناصب المفتوحة حسب كل أكاديمية جهوية والتخصصات",
+          url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+          size: "850 KB",
+        },
+      ],
     },
     {
       id: "registration",
@@ -74,6 +277,43 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       iconName: "Folder",
       color: "blue",
       url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+      author: "قسم تدبير المسار المهني - بروف بريس",
+      lastUpdated: "دليل التسجيل الإلكتروني",
+      writtenContent: `دليل شامل ومبسط لتجهيز ملف الترشيح لمباراة التعليم دون أي نقص لتفادي إلغاء الملف أثناء عملية التدقيق الإداري:
+
+أولاً: الشروط النظامية للترشح:
+- التوفر على الجنسية المغربية والتمتع بالحقوق الوطنية والمدنية.
+- ألا يتجاوز سن المترشح السن القانوني المحدد في المذكرة الوزارية عند تاريخ إجراء المباراة.
+- الحصول على شهادة الإجازة في التربية، أو الإجازة في الدراسات الأساسية أو المهنية أو ما يعادلها.
+- ألا يكون المترشح مقيداً في السجل التأديبي أو محكوماً عليه بعقوبة مخلة بالشرف.
+
+ثانياً: الوثائق المكونة للملف الرقمي:
+1. وصل الترشيح الإلكتروني المستخرج من المنظومة والموقع من طرف المترشح.
+2. نسخة واضحة من البطاقة الوطنية للتعريف الإلكترونية (CNIE).
+3. نسخة من شهادة الإجازة أو الشهادة المعترف بمعادلتها لها.
+4. نسخة من كشوف النقط المحصل عليها في سنوات الإجازة.
+5. استمارة الترشيح مصادق عليها والالتزام التام بضوابط التكوين بالمركز الجهوي.`,
+      images: [
+        {
+          id: "img-reg-1",
+          url: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=900&auto=format&fit=crop&q=80",
+          caption: "نموذج بطاقة ملف الترشيح وتجهيز الوثائق الإدارية المطلوبة",
+        },
+      ],
+      downloadLinks: [
+        {
+          id: "link-reg-1",
+          title: "استمارة الترشيح الخطية ونموذج الالتزام بالمصادقة (جاهز للطباعة)",
+          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+          size: "650 KB",
+        },
+        {
+          id: "link-reg-2",
+          title: "دليل خطوات التسجيل والمصادقة في البوابة الإلكترونية للمباريات خطوة بخطوة",
+          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+          size: "2.1 MB",
+        },
+      ],
     },
     {
       id: "interview",
@@ -82,6 +322,42 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       iconName: "MessageSquare",
       color: "purple",
       url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+      author: "لجنة التكوين والتأهيل المهني - بروف بريس",
+      lastUpdated: "دليل المقابلة 2026",
+      writtenContent: `الاستعداد للاختبار الشفوي يتطلب خطة منهجية دقيقة توازن بين التمكن المعرفي وحسن التواصل وإدارة المواقف الصفية:
+
+أولاً: سيناريو الاختبار الشفوي ومراحله:
+1. سحب موضوع الوضعية التعليمية التعلمية (قرعة موضوع في الديداكتيك).
+2. التحضير في قاعة مخصصة (ساعة كاملة لتحضير جذاذة ومحاكاة مقطع دراسي).
+3. العرض أمام لجنة التحكيم (15 إلى 20 دقيقة لمحاكاة تقديم الدرس على السبورة).
+4. مناقشة اللجنة (20 دقيقة من الأسئلة المتنوعة حول خياراتك الديداكتيكية والمعرفية).
+
+ثانياً: أهم شبكات ومعايير التنقيط:
+- الهندام والمظهر اللائق بأستاذ الغد والاتزان الانفعالي وثبات الصوت.
+- سلامة اللغة المعتمدة في التدريس (الفصحى أو الفرنسية حسب التخصص) ووضوح المخارج.
+- القدرة على التفاعل مع السبورة وتوظيف الوسائل البيداغوجية الحديثة.
+- الإلمام بالمستجدات التربوية ونظريات التعلم وتشريعات الوظيفة العمومية وأخلاقيات المهنة.`,
+      images: [
+        {
+          id: "img-oral-1",
+          url: "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=900&auto=format&fit=crop&q=80",
+          caption: "محاكاة وضعية ديدكتيكية وتقديم مقطع تعلمي أمام لجنة المقابلة الشفوية",
+        },
+      ],
+      downloadLinks: [
+        {
+          id: "link-oral-1",
+          title: "بنك الأسئلة الشائعة في المقابلات الشفوية مع الإجابات النموذجية المقترحة",
+          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+          size: "3.1 MB",
+        },
+        {
+          id: "link-oral-2",
+          title: "شبكة تنقيط وتقييم المترشحين الرسمية المعتمدة لدى لجان التحكيم",
+          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+          size: "920 KB",
+        },
+      ],
     },
   ],
   primaryNotice: "يجتاز المترشحون اختبارين: مواد التخصص وديداكتيكها، وعلوم التربية.",

@@ -172,11 +172,7 @@ export function authenticateWithGoogle(
   };
 
   // Save session to localStorage
-  try {
-    localStorage.setItem("profpress_admin_session", JSON.stringify(session));
-  } catch (e) {
-    console.error(e);
-  }
+  saveAdminSession(session);
 
   return {
     success: true,
@@ -234,15 +230,51 @@ export function verifyAdminLogin(
     lastLogin: new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }),
   };
 
-  try {
-    localStorage.setItem("profpress_admin_session", JSON.stringify(session));
-  } catch (e) {
-    console.error(e);
-  }
+  saveAdminSession(session);
 
   return {
     success: true,
     credentials: creds,
     session,
   };
+}
+
+export const ADMIN_SESSION_STORAGE_KEY = "profpress_admin_session";
+export const ADMIN_SESSION_EVENT = "profpress-admin-session-change";
+
+export function getStoredAdminSession(): AdminSession | null {
+  try {
+    const saved = localStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object" && parsed.isAdmin) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error("Failed to load admin session", e);
+  }
+  return null;
+}
+
+export function saveAdminSession(session: AdminSession): void {
+  try {
+    localStorage.setItem(ADMIN_SESSION_STORAGE_KEY, JSON.stringify(session));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(ADMIN_SESSION_EVENT, { detail: session }));
+    }
+  } catch (e) {
+    console.error("Failed to save admin session", e);
+  }
+}
+
+export function clearAdminSession(): void {
+  try {
+    localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(ADMIN_SESSION_EVENT, { detail: null }));
+    }
+  } catch (e) {
+    console.error("Failed to clear admin session", e);
+  }
 }
