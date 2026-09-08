@@ -20,6 +20,7 @@ import {
   Copy,
   Check,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 import { TopicItem } from "../types";
 
@@ -30,6 +31,7 @@ interface TopicReaderModalProps {
   onEdit: (topic: TopicItem) => void;
   onDelete?: (topicId: string) => void;
   isAdmin?: boolean;
+  isManager?: boolean;
 }
 
 export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
@@ -39,6 +41,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
   onEdit,
   onDelete,
   isAdmin = false,
+  isManager = false,
 }) => {
   if (!isOpen || !topic) return null;
 
@@ -108,7 +111,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      `📌 ${topic.title}\n\n${topic.summary}\n\nاقرأ المزيد على منصة يلا تعليم / بروف بريس:\n${window.location.href}`
+      `📌 ${topic.title}\n\n${topic.summary}\n\nاقرأ المزيد على منصة بروف بريس (ProfPress):\n${window.location.href}`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   };
@@ -308,6 +311,23 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {isManager && onDelete && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("هل أنت متأكد من حذف هذا المقال نهائياً من الموقع؟")) {
+                    onDelete(topic.id);
+                    onClose();
+                  }
+                }}
+                className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer transition"
+                title="صلاحية حصرية لمدير الموقع (kolchitv@gmail.com)"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>حذف المقال</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => onEdit(topic)}

@@ -33,6 +33,7 @@ import { TopicEditorModal } from "./TopicEditorModal";
 import { TopicReaderModal } from "./TopicReaderModal";
 import { AdminControlPanel } from "./AdminControlPanel";
 import { AdminLoginModal } from "./AdminLoginModal";
+import { canUserDeleteArticles, isManagerEmail } from "../utils/adminAuth";
 
 interface AnnouncementsPageProps {
   onNavigateToTab?: (tab: TabKey) => void;
@@ -124,6 +125,9 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<TopicItem | null>(null);
   const [readingTopic, setReadingTopic] = useState<TopicItem | null>(null);
+
+  // Check if current user is the manager (kolchitv@gmail.com)
+  const isManager = adminSession.isAdmin && canUserDeleteArticles(adminSession);
 
   // Filter categories
   const filterOptions = [
@@ -247,14 +251,18 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
     }
   };
 
-  // Delete handler
+  // Delete handler - Reserved strictly for the manager (kolchitv@gmail.com)
   const handleDeleteTopic = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!adminSession.isAdmin) {
       setIsLoginModalOpen(true);
       return;
     }
-    if (window.confirm("هل أنت متأكد من حذف هذا الموضوع؟")) {
+    if (!isManager) {
+      alert("عذراً، صلاحية حذف المقالات والمواضيع مقتصرة حصرياً على مدير الموقع (kolchitv@gmail.com).");
+      return;
+    }
+    if (window.confirm("هل أنت متأكد من حذف هذا الموضوع نهائياً من الموقع؟")) {
       const updated = topics.filter((t) => t.id !== id);
       saveTopics(updated);
       if (readingTopic?.id === id) setReadingTopic(null);
@@ -391,32 +399,38 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           </div>
 
           {/* ========================================================================= */}
-          {/* 2. WHATSAPP CHANNEL BANNER (Matching Screenshot 3) */}
+          {/* 2. FACEBOOK CHANNEL & PAGE BANNER (ProfPress on Facebook) */}
           {/* ========================================================================= */}
-          <div className="bg-[#edf7ee] border border-[#cbe7d0] rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-2xs">
-            {/* Right side: WhatsApp Icon + Text */}
+          <div className="bg-gradient-to-r from-blue-50 via-indigo-50/60 to-blue-50 border border-blue-200 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-2xs">
+            {/* Right side: Facebook Icon + Text */}
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center shrink-0 shadow-2xs">
-                <MessageCircle className="w-6 h-6 fill-white" />
+              <div className="w-11 h-11 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                {/* Official Facebook F SVG */}
+                <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
               </div>
               <div className="space-y-0.5">
-                <h3 className="font-bold text-xs sm:text-sm text-slate-900 font-cairo">
-                  قناة يلا تعليم على واتساب
+                <h3 className="font-bold text-xs sm:text-sm text-blue-950 font-cairo flex items-center gap-2">
+                  <span>قناة وصفحة بروف بريس على الفايسبوك</span>
+                  <span className="text-[10px] bg-[#1877F2] text-white px-2 py-0.5 rounded-full font-bold">
+                    Facebook
+                  </span>
                 </h3>
-                <p className="text-[11px] sm:text-xs text-slate-600">
-                  انضم ليصلك جديد المذكرات والإعلانات فور صدورها
+                <p className="text-[11px] sm:text-xs text-blue-800">
+                  انضم إلى صفحة بروف بريس الرسمية لمتابعة جديد المذكرات، ومستجدات التعليم، والوثائق فور صدورها
                 </p>
               </div>
             </div>
 
-            {/* Left side: Join Button */}
+            {/* Left side: Follow Button */}
             <a
-              href="https://whatsapp.com/channel/0029Va8yq3wAInPffxY80I0g"
+              href="https://facebook.com/profpress.net"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs sm:text-sm px-5 py-2 rounded-xl transition shadow-2xs shrink-0 flex items-center gap-1.5"
+              className="bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl transition shadow-2xs shrink-0 flex items-center gap-1.5"
             >
-              <span>انضمام</span>
+              <span>متابعة الصفحة</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -571,14 +585,17 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          <button
-                            type="button"
-                            onClick={(e) => handleDeleteTopic(topic.id, e)}
-                            className="p-1.5 text-slate-400 hover:text-rose-700 rounded-lg hover:bg-rose-50 transition cursor-pointer"
-                            title="حذف الموضوع"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {/* ONLY MANAGER (kolchitv@gmail.com) CAN DELETE */}
+                          {isManager && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteTopic(topic.id, e)}
+                              className="p-1.5 text-slate-400 hover:text-rose-700 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                              title="حذف الموضوع (صلاحية خاصة بمدير الموقع kolchitv@gmail.com)"
+                            >
+                              <Trash2 className="w-4 h-4 text-rose-600" />
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -678,6 +695,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           isOpen={Boolean(readingTopic)}
           onClose={() => setReadingTopic(null)}
           isAdmin={adminSession.isAdmin}
+          isManager={isManager}
           onEdit={(topic) => {
             if (!adminSession.isAdmin) {
               setIsLoginModalOpen(true);

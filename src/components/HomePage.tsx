@@ -102,6 +102,7 @@ export const PROFPRESS_LINKS = {
 interface PortalCategory {
   id: string;
   title: string;
+  targetTab?: TabKey;
   icon: React.ComponentType<{ className?: string }>;
   iconColor: string;
   iconBg: string;
@@ -178,6 +179,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: "news",
       title: "مستجدات",
+      targetTab: "news",
       icon: Zap,
       iconColor: "text-red-500",
       iconBg: "bg-red-50",
@@ -201,6 +203,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: "articles",
       title: "مقالات تربوية",
+      targetTab: "articles",
       icon: PenTool,
       iconColor: "text-orange-500",
       iconBg: "bg-orange-50",
@@ -223,6 +226,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: "recruitment",
       title: "مباراة التعليم",
+      targetTab: "competitions",
       icon: GraduationCap,
       iconColor: "text-blue-500",
       iconBg: "bg-blue-50",
@@ -239,11 +243,14 @@ export const HomePage: React.FC<HomePageProps> = ({
           "بنك أسئلة ونماذج امتحانات سابقة مصححة للابتدائي والتخصصات الثانوية.",
         ],
         tips: "خصص 60% من وقت المراجعة لديداكتيك المواد الثلاث الأساسية وتدبير وضعيات التقويم والدعم.",
+        actionLabel: "فتح صفحة مباراة التعليم",
+        targetTab: "competitions",
       },
     },
     {
       id: "inspection",
       title: "مباراة التفتيش",
+      targetTab: "competitions",
       icon: ShieldCheck,
       iconColor: "text-emerald-500",
       iconBg: "bg-emerald-50",
@@ -266,6 +273,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: "orientation",
       title: "مباراة التوجيه",
+      targetTab: "orientation",
       icon: Compass,
       iconColor: "text-purple-500",
       iconBg: "bg-purple-50",
@@ -288,6 +296,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: "license",
       title: "الرخصة المهنية",
+      targetTab: "portfolio",
       icon: UserCheck,
       iconColor: "text-amber-500",
       iconBg: "bg-amber-50",
@@ -654,10 +663,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-blue-50",
       subtext: "أطر مرجعية ودليل الاختبارات",
       externalUrl: PROFPRESS_LINKS.recruitment,
-      action: () => {
-        const cat = portalCategories.find((c) => c.id === "recruitment");
-        if (cat) setActiveCategoryModal(cat);
-      },
+      action: () => onNavigateToTab("competitions"),
     },
     {
       id: "periodic_dist",
@@ -687,10 +693,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-rose-50",
       subtext: "النمذجة، الممارسة الموجهة والمستقلة",
       externalUrl: PROFPRESS_LINKS.explicitTeaching,
-      action: () => {
-        const cat = portalCategories.find((c) => c.id === "articles");
-        if (cat) setActiveCategoryModal(cat);
-      },
+      action: () => onNavigateToTab("articles"),
     },
     {
       id: "gpa_calc",
@@ -848,48 +851,44 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
           {portalCategories.map((item) => {
             const Icon = item.icon;
-            const isInternalTab = item.id === "news" || item.id === "articles";
-
-            if (isInternalTab) {
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onNavigateToTab(item.id as TabKey)}
-                  className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
-                  title={`تصفح صفحة ${item.title} مع المحرر الداخلي ومساعد السيو Rank Math`}
-                >
-                  <div
-                    className={`w-13 h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
-                  >
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo flex items-center justify-center gap-1.5">
-                    <span>{item.title}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="داخلي" />
-                  </span>
-                </button>
-              );
-            }
+            const target: TabKey =
+              item.targetTab ||
+              (item.id === "news"
+                ? "news"
+                : item.id === "articles"
+                ? "articles"
+                : item.id === "recruitment"
+                ? "competitions"
+                : item.id === "inspection"
+                ? "competitions"
+                : item.id === "orientation"
+                ? "orientation"
+                : "portfolio");
 
             return (
-              <a
+              <button
                 key={item.id}
-                href={item.externalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
-                title={`فتح قسم ${item.title} على موقع Profpress.net`}
+                type="button"
+                onClick={() => onNavigateToTab(target)}
+                className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
+                title={`تصفح صفحة ${item.title}`}
               >
                 <div
                   className={`w-13 h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
                 >
                   <Icon className="w-6 h-6" />
                 </div>
-                <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo">
-                  {item.title}
+                <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo flex items-center justify-center gap-1.5">
+                  <span>{item.title}</span>
+                  {item.badge ? (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-blue-100 text-blue-800 font-bold">
+                      {item.badge}
+                    </span>
+                  ) : (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="صفحة داخلية" />
+                  )}
                 </span>
-              </a>
+              </button>
             );
           })}
         </div>
@@ -1049,7 +1048,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             return (
               <div
                 key={doc.id}
-                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group hover:border-blue-400 relative"
+                onClick={() => onNavigateToTab(doc.tab)}
+                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group hover:border-blue-400 relative cursor-pointer"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
@@ -1147,13 +1147,18 @@ export const HomePage: React.FC<HomePageProps> = ({
               {trendingItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <a
+                  <button
                     key={item.id}
-                    href={item.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-[#f8fafc] hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between transition cursor-pointer shadow-2xs hover:shadow-xs group"
-                    title={`فتح ${item.title} على موقع Profpress.net`}
+                    type="button"
+                    onClick={() => {
+                      if (item.action) {
+                        item.action();
+                      } else if (item.externalUrl) {
+                        window.open(item.externalUrl, "_blank");
+                      }
+                    }}
+                    className="w-full text-right bg-[#f8fafc] hover:bg-blue-50/80 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between transition cursor-pointer shadow-2xs hover:shadow-xs group"
+                    title={`فتح صفحة ${item.title}`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
@@ -1161,12 +1166,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                       >
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-900 font-cairo truncate">
-                        {item.title}
-                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-900 font-cairo block truncate">
+                          {item.title}
+                        </span>
+                        <span className="text-[10px] text-slate-500 block truncate">
+                          {item.subtext}
+                        </span>
+                      </div>
                     </div>
                     <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1 shrink-0" />
-                  </a>
+                  </button>
                 );
               })}
             </div>

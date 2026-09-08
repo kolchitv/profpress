@@ -139,6 +139,7 @@ export interface AdminSession {
   adminName: string;
   adminEmail: string;
   role: "super_admin" | "editor" | "visitor";
+  canDeleteTopics?: boolean;
   lastLogin?: string;
 }
 

@@ -51,6 +51,7 @@ import {
   updateAdminProfile,
   DEFAULT_ADMIN_EMAIL,
   AdminCredentials,
+  canUserDeleteArticles,
 } from "../utils/adminAuth";
 import {
   getCustomCodeSettings,
@@ -83,6 +84,9 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   const [activeTab, setActiveTab] = useState<"topics" | "seo" | "permissions" | "monitoring" | "custom_code" | "account">("topics");
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedSitemap, setCopiedSitemap] = useState(false);
+
+  // Check if current user is the platform manager (kolchitv@gmail.com)
+  const isManager = adminSession.isAdmin && canUserDeleteArticles(adminSession);
 
   // Custom Code Injection state (Header, Body, Footer)
   const [customCode, setCustomCode] = useState<CustomCodeSettings>(getCustomCodeSettings);
@@ -623,14 +627,23 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                           >
                             <AlertTriangle className="w-4 h-4" />
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => onDeleteTopic(topic.id)}
-                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                            title="حذف الموضوع"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {isManager ? (
+                            <button
+                              type="button"
+                              onClick={() => onDeleteTopic(topic.id)}
+                              className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                              title="حذف الموضوع (صلاحية خاصة بمدير الموقع kolchitv@gmail.com)"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <span
+                              className="p-1.5 text-slate-300 cursor-not-allowed"
+                              title="حذف المقال محصور حصرياً بمدير المنصة kolchitv@gmail.com"
+                            >
+                              <Trash2 className="w-4 h-4 opacity-40" />
+                            </span>
+                          )}
                         </div>
                       </td>
                     </tr>

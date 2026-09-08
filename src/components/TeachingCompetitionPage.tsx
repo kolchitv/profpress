@@ -6,7 +6,8 @@ import {
   CompetitionSubAction,
   QuickResourceCard,
 } from "../data/teachingCompetitionData";
-import { TabKey } from "../types";
+import { TabKey, AdminSession } from "../types";
+import { canUserDeleteArticles } from "../utils/adminAuth";
 import {
   FileText,
   Megaphone,
@@ -85,6 +86,18 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
   const [selectedAnswers, setSelectedAnswers] = useState<{ [qIdx: number]: number }>({});
   const [showQcmResults, setShowQcmResults] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Admin Session & Manager Privilege check (kolchitv@gmail.com)
+  const [adminSession] = useState<AdminSession | null>(() => {
+    try {
+      const saved = localStorage.getItem("profpress_admin_session");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const isManager = adminSession?.isAdmin && canUserDeleteArticles(adminSession);
 
   // Save to LocalStorage whenever data changes
   const handleSaveData = (newData: TeachingCompetitionPageData) => {
@@ -328,8 +341,12 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
     setEditingSubject(null);
   };
 
-  // Handler for deleting a subject
+  // Handler for deleting a subject (strictly restricted to manager kolchitv@gmail.com)
   const handleDeleteSubject = (id: string) => {
+    if (!isManager) {
+      alert("عذراً، صلاحية حذف المواد والتخصصات مقتصرة حصرياً على مدير المنصة الرئيسي (kolchitv@gmail.com).");
+      return;
+    }
     if (window.confirm("هل أنت متأكد من حذف هذه المادة من الصفحة؟")) {
       handleSaveData({
         ...data,
@@ -594,13 +611,22 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                           <Edit3 className="w-3.5 h-3.5 text-blue-600" />
                           <span>تعديل</span>
                         </button>
-                        <button
-                          onClick={() => handleDeleteSubject(sub.id)}
-                          className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
-                          title="حذف المادة"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {isManager ? (
+                          <button
+                            onClick={() => handleDeleteSubject(sub.id)}
+                            className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
+                            title="حذف المادة (صلاحية المدير kolchitv@gmail.com)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        ) : (
+                          <span
+                            className="p-1.5 text-slate-300 cursor-not-allowed opacity-40 inline-flex items-center"
+                            title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -702,13 +728,22 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                           <Edit3 className="w-3.5 h-3.5 text-blue-600" />
                           <span>تعديل</span>
                         </button>
-                        <button
-                          onClick={() => handleDeleteSubject(sub.id)}
-                          className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
-                          title="حذف المادة"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {isManager ? (
+                          <button
+                            onClick={() => handleDeleteSubject(sub.id)}
+                            className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
+                            title="حذف المادة (صلاحية المدير kolchitv@gmail.com)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        ) : (
+                          <span
+                            className="p-1.5 text-slate-300 cursor-not-allowed opacity-40 inline-flex items-center"
+                            title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -802,13 +837,28 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                         >
                           تعديل
                         </button>
-                        <span className="text-slate-300">•</span>
-                        <button
-                          onClick={() => handleDeleteSubject(sub.id)}
-                          className="text-rose-600 hover:text-rose-800 text-[11px] font-bold"
-                        >
-                          حذف
-                        </button>
+                        {isManager ? (
+                          <>
+                            <span className="text-slate-300">•</span>
+                            <button
+                              onClick={() => handleDeleteSubject(sub.id)}
+                              className="text-rose-600 hover:text-rose-800 text-[11px] font-bold cursor-pointer"
+                              title="حذف التخصص (صلاحية المدير kolchitv@gmail.com)"
+                            >
+                              حذف
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-slate-300">•</span>
+                            <span
+                              className="text-slate-300 text-[11px] cursor-not-allowed opacity-50"
+                              title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                            >
+                              حذف
+                            </span>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

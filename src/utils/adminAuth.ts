@@ -137,10 +137,61 @@ export function updateAdminProfile(
   return { success: true };
 }
 
+import { AdminSession } from "../types";
+
+export function isManagerEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  return clean === "kolchitv@gmail.com" || clean === DEFAULT_ADMIN_EMAIL.toLowerCase();
+}
+
+export function canUserDeleteArticles(session?: AdminSession | null): boolean {
+  if (!session || !session.isAdmin) return false;
+  return isManagerEmail(session.adminEmail) || session.role === "super_admin" || session.canDeleteTopics === true;
+}
+
+export function authenticateWithGoogle(
+  googleEmail: string,
+  displayName?: string
+): {
+  success: boolean;
+  isManager: boolean;
+  session: AdminSession;
+  message: string;
+} {
+  const cleanEmail = googleEmail.trim().toLowerCase();
+  const isManager = isManagerEmail(cleanEmail);
+
+  const session: AdminSession = {
+    isAdmin: true,
+    adminEmail: cleanEmail,
+    adminName: isManager ? "المدير العام (kolchitv)" : (displayName?.trim() || cleanEmail.split("@")[0]),
+    role: isManager ? "super_admin" : "editor",
+    canDeleteTopics: isManager,
+    lastLogin: new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }),
+  };
+
+  // Save session to localStorage
+  try {
+    localStorage.setItem("profpress_admin_session", JSON.stringify(session));
+  } catch (e) {
+    console.error(e);
+  }
+
+  return {
+    success: true,
+    isManager,
+    session,
+    message: isManager
+      ? "مرحباً بك يا مدير الموقع! تم تسجيل الدخول بصلاحيات الإدارة الكاملة وحذف المقالات."
+      : "تم تسجيل الدخول بنجاح كمحرر معتمد. (ملاحظة: صلاحية الحذف النهائي للمقالات محفوظة حصرياً لمدير الموقع kolchitv@gmail.com).",
+  };
+}
+
 export function verifyAdminLogin(
   identifier: string,
   enteredPass: string
-): { success: boolean; error?: string; credentials?: AdminCredentials } {
+): { success: boolean; error?: string; credentials?: AdminCredentials; session?: AdminSession } {
   const creds = getAdminCredentials();
   const cleanId = identifier.trim().toLowerCase();
   const targetEmail = creds.email.toLowerCase();
@@ -156,7 +207,7 @@ export function verifyAdminLogin(
   if (!isIdValid) {
     return {
       success: false,
-      error: `البريد أو اسم المستخدم غير معتمد. لوحة التحكم مربوطة حصرياً بالبريد: ${creds.email}`,
+      error: "البريد الإلكتروني أو اسم المستخدم غير معتمد. تأكد من إدخال بريدك المصرح له أو المتابعة بحساب Google.",
     };
   }
 
@@ -169,12 +220,29 @@ export function verifyAdminLogin(
   if (!isPassValid) {
     return {
       success: false,
-      error: "كلمة المرور غير صحيحة. يمكنك تغييرها أو إدخال كلمة المرور الصحيحة.",
+      error: "كلمة المرور غير صحيحة. يرجى التحقق منها وإعادة المحاولة.",
     };
+  }
+
+  const isManager = isManagerEmail(creds.email);
+  const session: AdminSession = {
+    isAdmin: true,
+    adminName: creds.adminName,
+    adminEmail: creds.email,
+    role: isManager ? "super_admin" : "editor",
+    canDeleteTopics: isManager,
+    lastLogin: new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }),
+  };
+
+  try {
+    localStorage.setItem("profpress_admin_session", JSON.stringify(session));
+  } catch (e) {
+    console.error(e);
   }
 
   return {
     success: true,
     credentials: creds,
+    session,
   };
 }
