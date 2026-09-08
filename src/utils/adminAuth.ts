@@ -139,6 +139,17 @@ export function updateAdminProfile(
 
 import { AdminSession } from "../types";
 
+export function getMaskedEmail(email?: string | null): string {
+  if (!email) return "••••••••@••••.•••";
+  const parts = email.split("@");
+  if (parts.length !== 2) return "••••••••";
+  const [name, domain] = parts;
+  if (name.length <= 2) return `${name}***@${domain}`;
+  const first = name.charAt(0);
+  const last = name.charAt(name.length - 1);
+  return `${first}${"*".repeat(Math.min(name.length - 2, 5))}${last}@${domain}`;
+}
+
 export function isManagerEmail(email?: string | null): boolean {
   if (!email) return false;
   const clean = email.trim().toLowerCase();
@@ -165,7 +176,7 @@ export function authenticateWithGoogle(
   const session: AdminSession = {
     isAdmin: true,
     adminEmail: cleanEmail,
-    adminName: isManager ? "المدير العام (kolchitv)" : (displayName?.trim() || cleanEmail.split("@")[0]),
+    adminName: isManager ? "المدير العام للمنصة" : (displayName?.trim() || cleanEmail.split("@")[0]),
     role: isManager ? "super_admin" : "editor",
     canDeleteTopics: isManager,
     lastLogin: new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }),
@@ -179,8 +190,8 @@ export function authenticateWithGoogle(
     isManager,
     session,
     message: isManager
-      ? "مرحباً بك يا مدير الموقع! تم تسجيل الدخول بصلاحيات الإدارة الكاملة وحذف المقالات."
-      : "تم تسجيل الدخول بنجاح كمحرر معتمد. (ملاحظة: صلاحية الحذف النهائي للمقالات محفوظة حصرياً لمدير الموقع kolchitv@gmail.com).",
+      ? "مرحباً بك يا مدير المنصة! تم تسجيل الدخول بصلاحيات الإدارة الكاملة."
+      : "تم تسجيل الدخول بنجاح كمحرر معتمد.",
   };
 }
 

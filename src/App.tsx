@@ -15,6 +15,8 @@ import { WorkshopReport } from "./components/WorkshopReport";
 import { HomePage } from "./components/HomePage";
 import { AnnouncementsPage } from "./components/AnnouncementsPage";
 import { TeachingCompetitionPage } from "./components/TeachingCompetitionPage";
+import { InspectionCompetitionPage } from "./components/InspectionCompetitionPage";
+import { OrientationPlanningPage } from "./components/OrientationPlanningPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
@@ -233,6 +235,14 @@ export default function App() {
 
           {activeTab === "competitions" && (
             <TeachingCompetitionPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {activeTab === "inspection_competition" && (
+            <InspectionCompetitionPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {activeTab === "orientation_planning" && (
+            <OrientationPlanningPage onNavigateToTab={setActiveTab} />
           )}
 
           {activeTab === "pedagogical_docs" && (

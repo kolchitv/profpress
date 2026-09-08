@@ -259,7 +259,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
       return;
     }
     if (!isManager) {
-      alert("عذراً، صلاحية حذف المقالات والمواضيع مقتصرة حصرياً على مدير الموقع (kolchitv@gmail.com).");
+      alert("عذراً، صلاحية حذف المقالات والمواضيع مقتصرة حصرياً على مدير المنصة الرئيسي.");
       return;
     }
     if (window.confirm("هل أنت متأكد من حذف هذا الموضوع نهائياً من الموقع؟")) {
@@ -591,7 +591,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
                               type="button"
                               onClick={(e) => handleDeleteTopic(topic.id, e)}
                               className="p-1.5 text-slate-400 hover:text-rose-700 rounded-lg hover:bg-rose-50 transition cursor-pointer"
-                              title="حذف الموضوع (صلاحية خاصة بمدير الموقع kolchitv@gmail.com)"
+                              title="حذف الموضوع (صلاحية خاصة بمدير المنصة الرئيسي)"
                             >
                               <Trash2 className="w-4 h-4 text-rose-600" />
                             </button>

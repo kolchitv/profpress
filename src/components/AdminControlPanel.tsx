@@ -42,6 +42,10 @@ import {
   Shield,
   RefreshCw,
   Save,
+  X,
+  Database,
+  BookOpen,
+  Upload,
 } from "lucide-react";
 import { TopicItem, AdminSession, VisitorPermissions, TopicProposal, TopicCategory, CustomCodeSettings } from "../types";
 import { analyzeRankMathSeo } from "../utils/rankMathSeo";
@@ -52,6 +56,7 @@ import {
   DEFAULT_ADMIN_EMAIL,
   AdminCredentials,
   canUserDeleteArticles,
+  getMaskedEmail,
 } from "../utils/adminAuth";
 import {
   getCustomCodeSettings,
@@ -61,6 +66,8 @@ import {
 } from "../utils/customScripts";
 
 interface AdminControlPanelProps {
+  isOpen?: boolean;
+  onClose?: () => void;
   topics: TopicItem[];
   adminSession: AdminSession;
   onEditTopic: (topic: TopicItem) => void;
@@ -72,6 +79,8 @@ interface AdminControlPanelProps {
 }
 
 export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
+  isOpen,
+  onClose,
   topics,
   adminSession,
   onEditTopic,
@@ -81,9 +90,38 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   onSaveTopics,
   onLogout,
 }) => {
-  const [activeTab, setActiveTab] = useState<"topics" | "seo" | "permissions" | "monitoring" | "custom_code" | "account">("topics");
+  const [activeTab, setActiveTab] = useState<
+    | "topics"
+    | "seo"
+    | "permissions"
+    | "monitoring"
+    | "competition_subjects"
+    | "custom_code"
+    | "backup"
+    | "account"
+  >("topics");
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedSitemap, setCopiedSitemap] = useState(false);
+  const [showEmailHeader, setShowEmailHeader] = useState(false);
+
+  // Backup & Restore states
+  const [backupMsg, setBackupMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Competition Subjects State for Manager
+  const [subjectsFilter, setSubjectsFilter] = useState<"all" | "primary" | "secondary" | "other">("all");
+  const [subjectsSearch, setSubjectsSearch] = useState("");
+
+  const getCompetitionDataFromStorage = () => {
+    try {
+      const saved = localStorage.getItem("profpress_teaching_competition_data");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  };
+
+  const [competitionData, setCompetitionData] = useState(getCompetitionDataFromStorage);
 
   // Check if current user is the platform manager (kolchitv@gmail.com)
   const isManager = adminSession.isAdmin && canUserDeleteArticles(adminSession);
@@ -304,8 +342,96 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
     setTimeout(() => setCopiedSitemap(false), 2500);
   };
 
-  return (
-    <div className="space-y-6 max-w-6xl mx-auto" dir="rtl">
+  const handleExportFullBackup = () => {
+    try {
+      const backupPayload = {
+        exportedAt: new Date().toISOString(),
+        version: "2026.1",
+        exportedBy: adminCreds.adminName,
+        topics: topics,
+        teachingCompetition: getCompetitionDataFromStorage(),
+        customCode: customCode,
+        visitorPermissions: permissions,
+        topicProposals: proposals,
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `profpress-complete-backup-${new Date().toISOString().split("T")[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      setBackupMsg({
+        type: "success",
+        text: "تم بنجاح تصدير النسخة الاحتياطية الكاملة لجميع مواضيع وبيانات المنصة وتحميلها على جهازك.",
+      });
+      setTimeout(() => setBackupMsg(null), 4500);
+    } catch (err) {
+      setBackupMsg({
+        type: "error",
+        text: "حدث خطأ أثناء تصدير النسخة الاحتياطية. يرجى إعادة المحاولة.",
+      });
+    }
+  };
+
+  const handleImportBackupFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const parsed = JSON.parse(content);
+
+        if (!parsed || typeof parsed !== "object") {
+          throw new Error("ملف غير صالح");
+        }
+
+        if (Array.isArray(parsed.topics)) {
+          onSaveTopics(parsed.topics);
+          localStorage.setItem("yalla_topics_data", JSON.stringify(parsed.topics));
+        }
+
+        if (parsed.teachingCompetition) {
+          localStorage.setItem("profpress_teaching_competition_data", JSON.stringify(parsed.teachingCompetition));
+          setCompetitionData(parsed.teachingCompetition);
+        }
+
+        if (parsed.customCode) {
+          saveCustomCodeSettings(parsed.customCode);
+          setCustomCode(parsed.customCode);
+        }
+
+        if (parsed.visitorPermissions) {
+          localStorage.setItem("yalla_visitor_permissions", JSON.stringify(parsed.visitorPermissions));
+          setPermissions(parsed.visitorPermissions);
+        }
+
+        setBackupMsg({
+          type: "success",
+          text: "تم بنجاح استرجاع وتحديث كافة مواضيع وبيانات الموقع من ملف النسخة الاحتياطية!",
+        });
+        setTimeout(() => setBackupMsg(null), 5000);
+      } catch (err) {
+        setBackupMsg({
+          type: "error",
+          text: "الملف المرفوع غير متوافق أو تالف. يرجى اختيار ملف JSON تم تصديره من المنصة سابقاً.",
+        });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  if (isOpen !== undefined && !isOpen) {
+    return null;
+  }
+
+  const panelContent = (
+    <div className="space-y-6 max-w-7xl mx-auto" dir="rtl">
       {/* Top Admin Header Bar */}
       <div className="bg-gradient-to-r from-slate-950 via-teal-950 to-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-teal-900/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
@@ -328,12 +454,21 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
               <span>مرحباً بك:</span>
               <strong className="text-white">{adminCreds.adminName}</strong>
               <span>•</span>
-              <span>البريد المربوط:</span>
-              <span className="font-mono font-bold text-amber-300 bg-white/10 px-2 py-0.5 rounded-md border border-white/15">
-                {adminCreds.email}
+              <span>البريد الإداري:</span>
+              <span className="font-mono font-bold text-amber-300 bg-white/10 px-2 py-0.5 rounded-md border border-white/15 flex items-center gap-1.5" dir="ltr">
+                <Shield className="w-3 h-3 text-emerald-400" />
+                <span>{showEmailHeader ? adminCreds.email : getMaskedEmail(adminCreds.email)}</span>
+                <button
+                  type="button"
+                  onClick={() => setShowEmailHeader(!showEmailHeader)}
+                  className="text-slate-400 hover:text-white p-0.5 cursor-pointer"
+                  title={showEmailHeader ? "إخفاء البريد" : "إظهار البريد"}
+                >
+                  {showEmailHeader ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                </button>
               </span>
               <span className="text-[10px] bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full font-bold">
-                موثق
+                موثق ومشفّر
               </span>
             </div>
           </div>
@@ -356,7 +491,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
             className="bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>كتابة ونشر موضوع جديد</span>
+            <span>كتابة موضوع جديد</span>
           </button>
 
           <button
@@ -366,6 +501,18 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
           >
             تسجيل الخروج
           </button>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-400/30 p-2 rounded-xl transition cursor-pointer flex items-center gap-1 text-xs"
+              title="إغلاق والعودة إلى الموقع"
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline">إغلاق</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -431,66 +578,66 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab("topics")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "topics"
               ? "bg-teal-700 text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <FileText className="w-4 h-4" />
-          <span>إدارة المواضيع والمقالات ({topics.length})</span>
+          <span>المواضيع والمقالات ({topics.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("competition_subjects")}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+            activeTab === "competition_subjects"
+              ? "bg-teal-700 text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          <span>مواد وتخصصات المباريات</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("seo")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "seo"
               ? "bg-teal-700 text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <Sparkles className="w-4 h-4 text-amber-400" />
-          <span>تحسين السيو الشامل (Rank Math Suite)</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("permissions")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
-            activeTab === "permissions"
-              ? "bg-teal-700 text-white shadow-xs"
-              : "text-slate-700 hover:bg-slate-100"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>صلاحيات الزوار والناشرين ({proposals.length} مقترحات)</span>
+          <span>تحسين السيو (Rank Math)</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("monitoring")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "monitoring"
               ? "bg-teal-700 text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <Activity className="w-4 h-4 text-emerald-400" />
-          <span>مراقبة أداء وزيارات الموقع (Live Analytics)</span>
+          <span>التحليلات الحية والزيارات</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("custom_code")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "custom_code"
               ? "bg-teal-700 text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <Code2 className="w-4 h-4 text-amber-300" />
-          <span>أكواد وسكربتات (Header, Body, Footer)</span>
+          <span>حقن الأكواد والسكربتات</span>
           {customCode.isEnabled && (customCode.headerCode.trim() || customCode.bodyStartCode.trim() || customCode.footerCode.trim()) ? (
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="شفرات نشطة"></span>
           ) : null}
@@ -498,18 +645,41 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
 
         <button
           type="button"
+          onClick={() => setActiveTab("backup")}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+            activeTab === "backup"
+              ? "bg-teal-700 text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          <Database className="w-4 h-4 text-cyan-300" />
+          <span>النسخ الاحتياطي والاسترجاع</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("permissions")}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+            activeTab === "permissions"
+              ? "bg-teal-700 text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          <span>الصلاحيات ({proposals.length})</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab("account")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
             activeTab === "account"
               ? "bg-amber-600 text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100"
           }`}
         >
           <KeyRound className="w-4 h-4 text-amber-300" />
-          <span>إعدادات الحساب وكلمة المرور</span>
-          <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold hidden md:inline">
-            حساب الإدارة
-          </span>
+          <span>أمان الحساب وكلمة المرور</span>
         </button>
       </div>
 
@@ -632,14 +802,14 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                               type="button"
                               onClick={() => onDeleteTopic(topic.id)}
                               className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                              title="حذف الموضوع (صلاحية خاصة بمدير الموقع kolchitv@gmail.com)"
+                              title="حذف الموضوع (صلاحية حصرية لمدير المنصة الرئيسي)"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           ) : (
                             <span
                               className="p-1.5 text-slate-300 cursor-not-allowed"
-                              title="حذف المقال محصور حصرياً بمدير المنصة kolchitv@gmail.com"
+                              title="حذف المقال محصور حصرياً بمدير المنصة الرئيسي"
                             >
                               <Trash2 className="w-4 h-4 opacity-40" />
                             </span>
@@ -1516,7 +1686,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-                    <span>كلمة المرور الحالية (الافتراضية: admin2026 أو الحالية):</span>
+                    <span>كلمة المرور الحالية:</span>
                   </label>
                   <input
                     type={showPass ? "text" : "password"}
@@ -1604,21 +1774,32 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                 </div>
 
                 <div className="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 flex items-center justify-between gap-2">
-                  <span className="font-mono text-xs sm:text-sm font-bold text-slate-900" dir="ltr">
-                    {adminCreds.email}
+                  <span className="font-mono text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5" dir="ltr">
+                    <Shield className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                    <span>{showEmailHeader ? adminCreds.email : getMaskedEmail(adminCreds.email)}</span>
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleCopyEmail}
-                    className="p-1.5 hover:bg-white text-slate-500 hover:text-slate-800 rounded-lg border border-transparent hover:border-slate-200 transition cursor-pointer"
-                    title="نسخ البريد"
-                  >
-                    {copiedEmail ? (
-                      <Check className="w-4 h-4 text-emerald-600" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailHeader(!showEmailHeader)}
+                      className="p-1.5 hover:bg-white text-slate-500 hover:text-slate-800 rounded-lg border border-transparent hover:border-slate-200 transition cursor-pointer"
+                      title={showEmailHeader ? "إخفاء البريد" : "إظهار البريد"}
+                    >
+                      {showEmailHeader ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopyEmail}
+                      className="p-1.5 hover:bg-white text-slate-500 hover:text-slate-800 rounded-lg border border-transparent hover:border-slate-200 transition cursor-pointer"
+                      title="نسخ البريد"
+                    >
+                      {copiedEmail ? (
+                        <Check className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-2 text-xs text-slate-600">
@@ -1670,6 +1851,390 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* TAB 7: COMPETITION SUBJECTS & SPECIALITIES MANAGEMENT */}
+      {/* ========================================================================= */}
+      {activeTab === "competition_subjects" && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>توصيفات ومواد مباريات التعليم</span>
+                </span>
+                <span className="text-xs text-slate-500 font-bold">
+                  إدارة المحتوى التخصصي والوثائق
+                </span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-black font-cairo text-slate-900 mt-1">
+                إدارة مواد وتخصصات مباريات التعليم (أطر التدريس والدعم)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                مراقبة شاملة لكافة تخصصات الابتدائي، الثانوي بسلكيه، والأطر التربوية مع توصيفاتها ومراجعها
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCompetitionData(getCompetitionDataFromStorage())}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                title="تحديث البيانات من الذاكرة"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>تحديث القائمة</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Filters and Search */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setSubjectsFilter("all")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  subjectsFilter === "all"
+                    ? "bg-teal-700 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                جميع الأسلاك والتخصصات
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubjectsFilter("primary")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  subjectsFilter === "primary"
+                    ? "bg-teal-700 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                سلك التعليم الابتدائي
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubjectsFilter("secondary")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  subjectsFilter === "secondary"
+                    ? "bg-teal-700 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                سلك التعليم الثانوي (إعدادي وتأهيلي)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubjectsFilter("other")}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  subjectsFilter === "other"
+                    ? "bg-teal-700 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                أطر الدعم والتخصصات الأخرى
+              </button>
+            </div>
+
+            <div className="relative min-w-[240px]">
+              <Search className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
+              <input
+                type="text"
+                value={subjectsSearch}
+                onChange={(e) => setSubjectsSearch(e.target.value)}
+                placeholder="بحث في المواد والتخصصات..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pr-9 pl-3 py-2 text-xs font-bold outline-hidden focus:ring-2 focus:ring-teal-600"
+              />
+            </div>
+          </div>
+
+          {/* Subjects Table & Overview */}
+          {(() => {
+            const rawPrimary = competitionData?.primarySubjects || [];
+            const rawSecondary = competitionData?.secondarySubjects || [];
+            const rawOther = competitionData?.otherSpecialties || [];
+
+            type SubjectWithCycle = {
+              id: string;
+              title: string;
+              cycleLabel: string;
+              cycleKey: "primary" | "secondary" | "other";
+              description?: string;
+              subActions?: any[];
+              downloads?: any[];
+            };
+
+            const combined: SubjectWithCycle[] = [
+              ...rawPrimary.map((s: any) => ({ ...s, cycleLabel: "الابتدائي", cycleKey: "primary" as const })),
+              ...rawSecondary.map((s: any) => ({ ...s, cycleLabel: "الثانوي", cycleKey: "secondary" as const })),
+              ...rawOther.map((s: any) => ({ ...s, cycleLabel: "أطر الدعم", cycleKey: "other" as const })),
+            ];
+
+            const filtered = combined.filter((s) => {
+              if (subjectsFilter !== "all" && s.cycleKey !== subjectsFilter) return false;
+              if (subjectsSearch.trim() && !s.title.toLowerCase().includes(subjectsSearch.toLowerCase())) {
+                return false;
+              }
+              return true;
+            });
+
+            return (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+                    <span className="text-xs font-bold text-slate-500">تخصصات الابتدائي</span>
+                    <div className="text-2xl font-black text-slate-900 font-cairo mt-1">
+                      {rawPrimary.length}{" "}
+                      <span className="text-xs text-slate-500 font-normal">تخصص (مزدوج + أمازيغية)</span>
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+                    <span className="text-xs font-bold text-slate-500">مواد التعليم الثانوي</span>
+                    <div className="text-2xl font-black text-slate-900 font-cairo mt-1">
+                      {rawSecondary.length}{" "}
+                      <span className="text-xs text-slate-500 font-normal">مادة تخصصية</span>
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+                    <span className="text-xs font-bold text-slate-500">أطر الدعم والتخصصات الأخرى</span>
+                    <div className="text-2xl font-black text-slate-900 font-cairo mt-1">
+                      {rawOther.length}{" "}
+                      <span className="text-xs text-slate-500 font-normal">تخصص ومجال</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table className="w-full text-right text-xs">
+                    <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                      <tr>
+                        <th className="p-3">السلك التعليمي</th>
+                        <th className="p-3">اسم المادة / التخصص</th>
+                        <th className="p-3">عدد التوصيفات والأقسام</th>
+                        <th className="p-3">وثائق التحميل</th>
+                        <th className="p-3">الحالة والصلاحية</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filtered.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-6 text-center text-slate-400 font-bold">
+                            لا توجد مواد مطابقة لمعايير البحث الحالية
+                          </td>
+                        </tr>
+                      ) : (
+                        filtered.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50 transition">
+                            <td className="p-3 whitespace-nowrap">
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                                  item.cycleKey === "primary"
+                                    ? "bg-amber-100 text-amber-900"
+                                    : item.cycleKey === "secondary"
+                                    ? "bg-blue-100 text-blue-900"
+                                    : "bg-purple-100 text-purple-900"
+                                }`}
+                              >
+                                {item.cycleLabel}
+                              </span>
+                            </td>
+                            <td className="p-3 font-bold font-cairo text-slate-900">
+                              <div>{item.title}</div>
+                              {item.description && (
+                                <div className="text-[11px] text-slate-500 truncate max-w-sm">
+                                  {item.description}
+                                </div>
+                              )}
+                            </td>
+                            <td className="p-3 text-slate-600 font-mono">
+                              {item.subActions?.length || 0} محور مخصص
+                            </td>
+                            <td className="p-3 text-slate-600 font-mono">
+                              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2 py-0.5 rounded-md font-bold text-[11px]">
+                                {item.downloads?.length || 0} ملف متاح
+                              </span>
+                            </td>
+                            <td className="p-3 whitespace-nowrap">
+                              <span className="text-emerald-700 font-bold text-[11px] flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>جاهز ومحدث</span>
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-teal-700" />
+                    <span>
+                      يمكن للمدير تعديل محتوى هذه المواد بالتفصيل وإضافة توصيفات وروابط مباشرة من تبويب "مباراة التعليم" عبر زر القلم الإداري.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 8: BACKUP & RESTORE DATA CENTER */}
+      {/* ========================================================================= */}
+      {activeTab === "backup" && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="bg-cyan-100 text-cyan-800 text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <Database className="w-3.5 h-3.5" />
+                  <span>مركز البيانات والأمان المتقدم</span>
+                </span>
+                <span className="text-xs text-slate-500 font-bold">
+                  نسخ احتياطي واسترجاع فوري
+                </span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-black font-cairo text-slate-900 mt-1">
+                النسخ الاحتياطي الشامل واسترجاع محتوى الموقع
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                تصدير كافة مقالات الموقع، بيانات مباريات التعليم، إعدادات السيو، والأكواد المحقونة في ملف واحد آمن
+              </p>
+            </div>
+          </div>
+
+          {backupMsg && (
+            <div
+              className={`p-4 rounded-2xl text-xs font-bold border flex items-center gap-2.5 ${
+                backupMsg.type === "success"
+                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                  : "bg-rose-50 text-rose-800 border-rose-200"
+              }`}
+            >
+              {backupMsg.type === "success" ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              )}
+              <span>{backupMsg.text}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Export Card */}
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-5 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center">
+                    <Download className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900 font-cairo">
+                      تصدير وحفظ نسخة احتياطية كاملة (JSON)
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      حفظ كافة المقالات والمواد التخصصية والأكواد على حاسوبك
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl p-3.5 border border-slate-200 text-xs space-y-2 text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span>عدد المقالات والمذكرات:</span>
+                    <strong className="font-mono text-slate-900">{topics.length} عنصر</strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>مواد وتوصيفات المباريات:</span>
+                    <strong className="font-mono text-slate-900">
+                      {(competitionData?.primarySubjects?.length || 0) +
+                        (competitionData?.secondarySubjects?.length || 0) +
+                        (competitionData?.otherSpecialties?.length || 0)}{" "}
+                      تخصص
+                    </strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>أكواد وسكربتات مخصصة:</span>
+                    <strong className="font-mono text-slate-900">
+                      {customCode.isEnabled ? "مفعلة ونشطة" : "معطلة"}
+                    </strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>حالة تشفير الجلسة:</span>
+                    <strong className="text-emerald-700 font-bold">مؤمنة بالكامل</strong>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleExportFullBackup}
+                className="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs sm:text-sm py-3 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>تحميل النسخة الاحتياطية الكاملة الآن</span>
+              </button>
+            </div>
+
+            {/* Import Card */}
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-5 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-800 flex items-center justify-center">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900 font-cairo">
+                      استرجاع واستيراد نسخة احتياطية
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      رفع ملف نسخة احتياطية سابقة واستعادة محتوى الموقع كاملاً
+                    </p>
+                  </div>
+                </div>
+
+                <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-white space-y-2">
+                  <Database className="w-8 h-8 text-slate-400 mx-auto" />
+                  <p className="text-xs text-slate-600 font-bold">
+                    اختر ملف النسخة الاحتياطية بصيغة JSON من جهازك
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    سيتم تحديث المقالات ومواد المباريات فوراً بعد فحص سلامة الملف
+                  </p>
+                </div>
+              </div>
+
+              <label className="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs sm:text-sm py-3 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer">
+                <Upload className="w-4 h-4" />
+                <span>اختيار واسترجاع ملف النسخة</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportBackupFile}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
+
+  if (isOpen !== undefined) {
+    return (
+      <div className="no-print fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-start justify-center p-2 sm:p-4 overflow-y-auto">
+        <div className="w-full max-w-7xl my-4 sm:my-8 bg-slate-100 rounded-3xl p-4 sm:p-6 shadow-2xl border border-slate-300 relative">
+          {panelContent}
+        </div>
+      </div>
+    );
+  }
+
+  return panelContent;
 };
+

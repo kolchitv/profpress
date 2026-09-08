@@ -3,6 +3,8 @@ export type TabKey =
   | "news"
   | "articles"
   | "competitions"
+  | "inspection_competition"
+  | "orientation_planning"
   | "pedagogical_docs"
   | "workshop_report"
   | "portfolio"

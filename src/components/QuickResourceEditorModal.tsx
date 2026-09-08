@@ -45,7 +45,7 @@ export const QuickResourceEditorModal: React.FC<QuickResourceEditorModalProps> =
   // Basic Info
   const [title, setTitle] = useState(card.title || "");
   const [subtitle, setSubtitle] = useState(card.subtitle || "");
-  const [color, setColor] = useState<"teal" | "orange" | "blue" | "purple">(card.color || "teal");
+  const [color, setColor] = useState<QuickResourceCard["color"]>(card.color || "teal");
   const [iconName, setIconName] = useState(card.iconName || "FileText");
   const [externalUrl, setExternalUrl] = useState(card.url || "");
   const [author, setAuthor] = useState(card.author || "إدارة بروف بريس");
@@ -294,6 +294,9 @@ export const QuickResourceEditorModal: React.FC<QuickResourceEditorModalProps> =
                     <option value="orange">برتقالي (Orange)</option>
                     <option value="blue">أزرق مائي (Blue)</option>
                     <option value="purple">بنفسجي (Purple)</option>
+                    <option value="indigo">نيلي / أزرق داكن (Indigo)</option>
+                    <option value="emerald">أخضر زمردي (Emerald)</option>
+                    <option value="rose">وردي / أحمر (Rose)</option>
                   </select>
                 </div>
 

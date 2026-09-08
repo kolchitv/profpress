@@ -321,7 +321,7 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
                   }
                 }}
                 className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer transition"
-                title="صلاحية حصرية لمدير الموقع (kolchitv@gmail.com)"
+                title="صلاحية حصرية لمدير المنصة الرئيسي"
               >
                 <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                 <span>حذف المقال</span>

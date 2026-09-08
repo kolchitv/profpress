@@ -559,10 +559,10 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
     setEditingSubject(null);
   };
 
-  // Handler for deleting a subject (strictly restricted to manager kolchitv@gmail.com)
+  // Handler for deleting a subject (strictly restricted to manager)
   const handleDeleteSubject = (id: string) => {
     if (!isManager) {
-      alert("عذراً، صلاحية حذف المواد والتخصصات مقتصرة حصرياً على مدير المنصة الرئيسي (kolchitv@gmail.com).");
+      alert("عذراً، صلاحية حذف المواد والتخصصات مقتصرة حصرياً على مدير المنصة الرئيسي.");
       return;
     }
     if (window.confirm("هل أنت متأكد من حذف هذه المادة من الصفحة؟")) {
@@ -858,14 +858,14 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                           <button
                             onClick={() => handleDeleteSubject(sub.id)}
                             className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
-                            title="حذف المادة (صلاحية المدير kolchitv@gmail.com)"
+                            title="حذف المادة (صلاحية مدير المنصة الرئيسي)"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         ) : (
                           <span
                             className="p-1.5 text-slate-300 cursor-not-allowed opacity-40 inline-flex items-center"
-                            title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                            title="الحذف مقتصر على مدير المنصة الرئيسي"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </span>
@@ -998,14 +998,14 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                           <button
                             onClick={() => handleDeleteSubject(sub.id)}
                             className="bg-white hover:bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-200 text-xs cursor-pointer"
-                            title="حذف المادة (صلاحية المدير kolchitv@gmail.com)"
+                            title="حذف المادة (صلاحية مدير المنصة الرئيسي)"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         ) : (
                           <span
                             className="p-1.5 text-slate-300 cursor-not-allowed opacity-40 inline-flex items-center"
-                            title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                            title="الحذف مقتصر على مدير المنصة الرئيسي"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </span>
@@ -1132,7 +1132,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                             <button
                               onClick={() => handleDeleteSubject(sub.id)}
                               className="text-rose-600 hover:text-rose-800 text-[11px] font-bold cursor-pointer"
-                              title="حذف التخصص (صلاحية المدير kolchitv@gmail.com)"
+                              title="حذف التخصص (صلاحية مدير المنصة الرئيسي)"
                             >
                               حذف
                             </button>
@@ -1142,7 +1142,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                             <span className="text-slate-300">•</span>
                             <span
                               className="text-slate-300 text-[11px] cursor-not-allowed opacity-50"
-                              title="الحذف مقتصر على مدير المنصة (kolchitv@gmail.com)"
+                              title="الحذف مقتصر على مدير المنصة الرئيسي"
                             >
                               حذف
                             </span>

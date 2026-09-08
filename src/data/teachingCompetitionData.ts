@@ -7,6 +7,13 @@ export interface CompetitionDownloadFile {
   isExternal?: boolean;
 }
 
+export interface CompetitionQCMQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
 export interface CompetitionSubAction {
   id: string;
   title: string;
@@ -21,12 +28,7 @@ export interface CompetitionSubAction {
   lastUpdated?: string;
   highlights?: string[];
   downloadFiles?: CompetitionDownloadFile[];
-  qcmQuestions?: {
-    question: string;
-    options: string[];
-    correctIndex: number;
-    explanation: string;
-  }[];
+  qcmQuestions?: CompetitionQCMQuestion[];
 }
 
 export function getDefaultDownloadFiles(
@@ -148,7 +150,7 @@ export interface QuickResourceCard {
   title: string;
   subtitle: string;
   iconName: string;
-  color: "teal" | "orange" | "blue" | "purple";
+  color: "teal" | "orange" | "blue" | "purple" | "indigo" | "emerald" | "rose";
   url: string;
   writtenContent?: string;
   images?: QuickResourceImage[];

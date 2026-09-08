@@ -19,6 +19,7 @@ import {
   Zap,
   PenTool,
   GraduationCap,
+  Compass,
   Files,
   CheckCircle2,
   PhoneCall,
@@ -282,6 +283,48 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <GraduationCap className={`w-4 h-4 ${activeTab === "competitions" ? "text-amber-300" : "text-blue-600"}`} />
             <span>مباراة التعليم</span>
+          </button>
+
+          {/* 4.1 مباراة التفتيش */}
+          <button
+            key="inspection_competition"
+            id="nav-tab-inspection-competition"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("inspection_competition");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "inspection_competition"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <UserCheck className={`w-4 h-4 ${activeTab === "inspection_competition" ? "text-amber-300" : "text-emerald-600"}`} />
+            <span>مباراة التفتيش</span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full font-bold">
+              CFIE
+            </span>
+          </button>
+
+          {/* 4.2 مباراة التوجيه والتخطيط */}
+          <button
+            key="orientation_planning"
+            id="nav-tab-orientation-planning"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("orientation_planning");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "orientation_planning"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Compass className={`w-4 h-4 ${activeTab === "orientation_planning" ? "text-amber-300" : "text-indigo-600"}`} />
+            <span>التوجيه والتخطيط</span>
+            <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full font-bold">
+              COPE
+            </span>
           </button>
 
           {/* 5. وثائق تربوية (تجميع جميع الوثائق) */}
