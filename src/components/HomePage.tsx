@@ -48,6 +48,7 @@ import {
   PhoneCall,
   Mail,
   MessageCircle,
+  Files,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 import { SmartToolsModal } from "./SmartToolsModal";
@@ -61,42 +62,42 @@ interface HomePageProps {
   onOpenContactModal?: () => void;
 }
 
-// Official Profpress.net Direct Links Catalog for Full Integration
+// Official Profpress Direct Links Catalog for Full Integration
 export const PROFPRESS_LINKS = {
-  main: "https://www.profpress.net/",
-  contact: "https://www.profpress.net/p/contact-us.html",
-  news: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
-  articles: "https://www.profpress.net/search/label/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA%20%D8%AA%D8%B1%D8%A8%D9%88%D9%8A%D8%A9",
-  recruitment: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
-  inspection: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%81%D8%AA%D9%8A%D8%B4",
-  orientation: "https://www.profpress.net/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%88%D8%AC%D9%8A%D9%87",
-  license: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B1%D8%AE%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A%D8%A9",
-  primary: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A7%D8%A8%D8%AA%D8%AF%D8%A7%D8%A6%D9%8A",
-  middle: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
-  high: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%88%D9%8A",
-  pioneers: "https://www.profpress.net/search/label/%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D8%B1%D8%A7%D8%A6%D8%AF%D8%A9",
-  periodic: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D9%85%D8%B1%D8%AD%D9%84%D9%8A%D8%A9",
-  annual: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D8%B3%D9%86%D9%88%D9%8A%D8%A9",
-  explicitTeaching: "https://www.profpress.net/p/lecons-explicites-primaire.html",
-  gpa: "https://www.profpress.net/search?q=%D8%AD%D8%B3%D8%A7%D8%A8+%D8%A7%D9%84%D9%85%D8%B9%D8%AF%D9%84+%D8%A7%D9%84%D8%B9%D8%A7%D9%85",
-  lessonPlans: "https://www.profpress.net/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
-  exams: "https://www.profpress.net/search/label/%D9%81%D8%B1%D9%88%D8%B6",
-  smartToolsAll: "https://www.profpress.net/search?q=%D8%A3%D8%AF%D9%88%D8%A7%D8%AA+%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
-  game: "https://www.profpress.net/search?q=%D9%84%D8%B9%D8%A8%D8%A9+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
-  promotion: "https://www.profpress.net/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AA%D8%B1%D9%82%D9%8A%D8%A9",
-  middleExam: "https://www.profpress.net/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9+%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
-  dictation: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%A5%D9%85%D9%84%D8%A7%D8%A1+%D8%A7%D9%84%D8%B0%D9%83%D9%8A",
-  arabicConjugate: "https://www.profpress.net/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
-  frenchConjugate: "https://www.profpress.net/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
-  vocalization: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%AA%D8%B4%D9%83%D9%8A%D9%84+%D9%88%D8%A7%D9%84%D8%A5%D8%B9%D8%B1%D8%A7%D8%A8",
-  remarksGen: "https://www.profpress.net/search?q=%D9%85%D9%88%D9%84%D8%AF+%D9%85%D9%84%D8%A7%D8%AD%D8%B8%D8%A7%D8%AA",
-  textToImage: "https://www.profpress.net/search?q=%D8%A7%D9%84%D9%86%D8%B5+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1%D8%A9",
-  dateConverter: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE",
-  colorPicker: "https://www.profpress.net/search?q=%D9%85%D8%AD%D8%AF%D8%AF+%D8%A7%D9%84%D8%A3%D9%84%D9%88%D8%A7%D9%86",
-  qrGen: "https://www.profpress.net/search?q=%D9%85%D9%88%D9%84%D8%AF+QR",
-  smartTranslator: "https://www.profpress.net/search?q=%D8%A7%D9%84%D8%AA%D8%B1%D8%AC%D9%85%D8%A9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
-  numberConverter: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%A3%D8%B1%D9%82%D8%A7%D9%85",
-  pdfToImages: "https://www.profpress.net/search?q=%D9%85%D8%AD%D9%88%D9%84+PDF+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1",
+  main: "https://profpressma.blogspot.com/",
+  contact: "https://profpressma.blogspot.com/p/contact-us.html",
+  news: "https://profpressma.blogspot.com/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+  articles: "https://profpressma.blogspot.com/search/label/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA%20%D8%AA%D8%B1%D8%A8%D9%88%D9%8A%D8%A9",
+  recruitment: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
+  inspection: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%81%D8%AA%D9%8A%D8%B4",
+  orientation: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%88%D8%AC%D9%8A%D9%87",
+  license: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%B1%D8%AE%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A%D8%A9",
+  primary: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A7%D8%A8%D8%AA%D8%AF%D8%A7%D8%A6%D9%8A",
+  middle: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
+  high: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%88%D9%8A",
+  pioneers: "https://profpressma.blogspot.com/search/label/%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D8%B1%D8%A7%D8%A6%D8%AF%D8%A9",
+  periodic: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D9%85%D8%B1%D8%AD%D9%84%D9%8A%D8%A9",
+  annual: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D9%88%D8%A7%D8%B2%D9%8A%D8%B9%20%D8%A7%D9%84%D8%B3%D9%86%D9%88%D9%8A%D8%A9",
+  explicitTeaching: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B5%D8%B1%D9%8A%D8%AD",
+  gpa: "https://profpressma.blogspot.com/search?q=%D8%AD%D8%B3%D8%A7%D8%A8+%D8%A7%D9%84%D9%85%D8%B9%D8%AF%D9%84+%D8%A7%D9%84%D8%B9%D8%A7%D9%85",
+  lessonPlans: "https://profpressma.blogspot.com/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
+  exams: "https://profpressma.blogspot.com/search/label/%D9%81%D8%B1%D9%88%D8%B6",
+  smartToolsAll: "https://profpressma.blogspot.com/search?q=%D8%A3%D8%AF%D9%88%D8%A7%D8%AA+%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
+  game: "https://profpressma.blogspot.com/search?q=%D9%84%D8%B9%D8%A8%D8%A9+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
+  promotion: "https://profpressma.blogspot.com/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AA%D8%B1%D9%82%D9%8A%D8%A9",
+  middleExam: "https://profpressma.blogspot.com/search?q=%D9%86%D9%82%D8%A7%D8%B7+%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9+%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
+  dictation: "https://profpressma.blogspot.com/search?q=%D8%A7%D9%84%D8%A5%D9%85%D9%84%D8%A7%D8%A1+%D8%A7%D9%84%D8%B0%D9%83%D9%8A",
+  arabicConjugate: "https://profpressma.blogspot.com/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
+  frenchConjugate: "https://profpressma.blogspot.com/search?q=%D8%AA%D8%B5%D8%B1%D9%8A%D9%81+%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A%D8%A9",
+  vocalization: "https://profpressma.blogspot.com/search?q=%D8%A7%D9%84%D8%AA%D8%B4%D9%83%D9%8A%D9%84+%D9%88%D8%A7%D9%84%D8%A5%D8%B9%D8%B1%D8%A7%D8%A8",
+  remarksGen: "https://profpressma.blogspot.com/search?q=%D9%85%D9%88%D9%84%D8%AF+%D9%85%D9%84%D8%A7%D8%AD%D8%B8%D8%A7%D8%AA",
+  textToImage: "https://profpressma.blogspot.com/search?q=%D8%A7%D9%84%D9%86%D8%B5+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1%D8%A9",
+  dateConverter: "https://profpressma.blogspot.com/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE",
+  colorPicker: "https://profpressma.blogspot.com/search?q=%D9%85%D8%AD%D8%AF%D8%AF+%D8%A7%D9%84%D8%A3%D9%84%D9%88%D8%A7%D9%86",
+  qrGen: "https://profpressma.blogspot.com/search?q=%D9%85%D9%88%D9%84%D8%AF+QR",
+  smartTranslator: "https://profpressma.blogspot.com/search?q=%D8%A7%D9%84%D8%AA%D8%B1%D8%AC%D9%85%D8%A9+%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9",
+  numberConverter: "https://profpressma.blogspot.com/search?q=%D9%85%D8%AD%D9%88%D9%84+%D8%A7%D9%84%D8%A3%D8%B1%D9%82%D8%A7%D9%85",
+  pdfToImages: "https://profpressma.blogspot.com/search?q=%D9%85%D8%AD%D9%88%D9%84+PDF+%D8%A5%D9%84%D9%89+%D8%B5%D9%88%D8%B1",
 };
 
 // Top Category Item Interface
@@ -111,7 +112,7 @@ interface PortalCategory {
   borderBottomColor: string;
   description: string;
   badge?: string;
-  externalUrl: string;
+  externalUrl?: string;
   content: {
     subtitle: string;
     highlights: string[];
@@ -321,6 +322,29 @@ export const HomePage: React.FC<HomePageProps> = ({
       },
     },
     {
+      id: "pedagogical_docs",
+      title: "الوثائق التربوية",
+      targetTab: "pedagogical_docs",
+      icon: Files,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-50",
+      borderHover: "hover:border-teal-400",
+      borderBottomColor: "border-b-teal-500",
+      description: "حزمة الوثائق التربوية، سجلات الريادة، روائز TaRL، استعمالات الزمن، والشواهد التقديرية للطباعة والتعديل",
+      badge: "وثائق الموقع",
+      content: {
+        subtitle: "مكتبة الوثائق والسجلات التربوية المعتمدة للتحرير والطباعة الفورية",
+        highlights: [
+          "روائز الموضعة TaRL، تقارير الورشات 3P، وسجلات الملف التراكمي الشامل.",
+          "استعمالات الزمن، ميثاق القسم، البطاقة الشخصية، وواجهات الملفات والبحوث.",
+          "شبكات التفريغ والتقويم، لائحة العطل الرسمية 2026/2027، وشواهد التقدير للطباعة بصيغة A4.",
+        ],
+        tips: "تصفح وحرر كافة وثائق وسجلات المنصة الداخلية المعدة للطباعة الفورية.",
+        actionLabel: "فتح بنك الوثائق التربوية",
+        targetTab: "pedagogical_docs",
+      },
+    },
+    {
       id: "license",
       title: "الرخصة المهنية",
       targetTab: "portfolio",
@@ -493,6 +517,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       description:
         "توليد وطباعة شواهد التفوق والتشجيع لتلاميذ الفصل بأسماء التلاميذ ومستوياتهم وعبارات التشجيع بنقرة واحدة.",
       icon: Award,
+      iconColor: "text-teal-700",
+      iconBg: "bg-teal-50",
+    },
+    {
+      id: "pedagogical_docs_hub",
+      tab: "pedagogical_docs" as TabKey,
+      title: "بنك الوثائق التربوية وسجلات الريادة",
+      category: "الوثائق البيداغوجية",
+      cycle: ["primary", "middle", "high"],
+      badge: "نماذج جاهزة A4",
+      badgeColor: "bg-teal-100 text-teal-800 border-teal-300",
+      description:
+        "بوابة الوثائق الرسمية وسجلات الأستاذ: روائز الموضعة TaRL، تقارير الورشات 3P، استعمالات الزمن، شبكات التفريغ، وميثاق القسم.",
+      icon: Files,
       iconColor: "text-teal-700",
       iconBg: "bg-teal-50",
     },
@@ -683,6 +721,15 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Most Read / Trending (Matching Screenshot 3)
   const trendingItems = [
     {
+      id: "pedagogical_docs_trending",
+      title: "الوثائق التربوية",
+      icon: Files,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-50",
+      subtext: "سجلات الريادة، روائز TaRL والوثائق الرسمية",
+      action: () => onNavigateToTab("pedagogical_docs"),
+    },
+    {
       id: "recruitment_prep",
       title: "مباراة التعليم",
       icon: Download,
@@ -819,7 +866,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* ========================================================================= */}
-      {/* 0. INTEGRATION BANNER: الربط المباشر والدمج الكامل مع موقع Profpress.net */}
+      {/* 0. INTEGRATION BANNER: الربط المباشر والدمج الكامل مع مدونة بروف بريس */}
       {/* ========================================================================= */}
       <section className="no-print bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-5 text-white shadow-xs border border-blue-800/80">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
@@ -827,7 +874,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="flex items-center gap-2">
               <span className="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
                 <ExternalLink className="w-3 h-3" />
-                <span>الدمج الرسمي • Profpress.net</span>
+                <span>الدمج الرسمي • Profpress</span>
               </span>
               <span className="text-blue-300 text-xs font-semibold">بوابة الدمج الموحدة للأستاذ المغربي</span>
             </div>
@@ -835,7 +882,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               منظومة إعداد وطباعة الوثائق مع موارد ومقالات موقع بروف بريس
             </h1>
             <p className="text-xs text-slate-300 leading-relaxed">
-              تم ربط كافة أقسام وتصنيفات موقع <strong className="text-amber-300">Profpress.net</strong> لتتيح لك تصفح المستجدات الوزارية، بنك الجذاذات، وفروض المراقبة، بالتزامن مع إمكانية تحرير وتوليد وطباعة الوثائق الرسمية وسجلات الريادة بصيغة A4.
+              تم ربط كافة أقسام وتصنيفات موقع <strong className="text-amber-300">Profpress</strong> لتتيح لك تصفح المستجدات الوزارية، بنك الجذاذات، وفروض المراقبة، بالتزامن مع إمكانية تحرير وتوليد وطباعة الوثائق الرسمية وسجلات الريادة بصيغة A4.
             </p>
           </div>
 
@@ -871,41 +918,45 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم... - مثل الصورة 4) */}
+      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم، جذاذات وفروض...) */}
       {/* ========================================================================= */}
       <section className="no-print">
-        {/* 6 Responsive Rounded Cards Bar matching Screenshot 4 with solid colored bottom borders */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+        {/* 7 Responsive Rounded Cards Bar matching Screenshot with solid colored bottom borders */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {portalCategories.map((item) => {
             const Icon = item.icon;
-            const target: TabKey =
-              item.targetTab ||
-              (item.id === "news"
-                ? "news"
-                : item.id === "articles"
-                ? "articles"
-                : item.id === "recruitment"
-                ? "competitions"
-                : item.id === "inspection"
-                ? "competitions"
-                : item.id === "orientation"
-                ? "orientation"
-                : "portfolio");
+            const handleClick = () => {
+              if (item.targetTab) {
+                onNavigateToTab(item.targetTab);
+              } else if (item.id === "news") {
+                onNavigateToTab("news");
+              } else if (item.id === "articles") {
+                onNavigateToTab("articles");
+              } else if (item.id === "recruitment" || item.id === "inspection") {
+                onNavigateToTab("competitions");
+              } else if (item.id === "orientation") {
+                onNavigateToTab("orientation");
+              } else if (item.id === "lesson_plans_exams") {
+                window.open(item.externalUrl, "_blank");
+              } else {
+                onNavigateToTab("portfolio");
+              }
+            };
 
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => onNavigateToTab(target)}
-                className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
+                onClick={handleClick}
+                className={`bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center flex flex-col items-center justify-center gap-2.5 group cursor-pointer relative overflow-hidden border-b-4 ${item.borderBottomColor}`}
                 title={`تصفح صفحة ${item.title}`}
               >
                 <div
-                  className={`w-13 h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
+                  className={`w-12 h-12 sm:w-13 sm:h-13 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xs`}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-5.5 h-5.5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo flex items-center justify-center gap-1.5">
+                <span className="text-xs md:text-sm font-bold text-slate-800 group-hover:text-blue-900 transition-colors font-cairo flex items-center justify-center gap-1 flex-wrap">
                   <span>{item.title}</span>
                   {item.badge ? (
                     <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-blue-100 text-blue-800 font-bold">

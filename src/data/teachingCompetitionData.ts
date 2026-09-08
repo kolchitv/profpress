@@ -43,21 +43,21 @@ export function getDefaultDownloadFiles(
         title: `موضوع الدورة العادية 2024 مع عناصر الإجابة الرسمية - ${subjectTitle}`,
         size: "1.2 MB",
         year: "2024",
-        url: "https://www.profpress.net/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
       },
       {
         id: "f2",
         title: `موضوع الدورة الاستدراكية 2023 مع سلم التنقيط - ${subjectTitle}`,
         size: "980 KB",
         year: "2023",
-        url: "https://www.profpress.net/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D9%86%D9%85%D8%A7%D8%B0%D8%AC%20%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D8%A7%D8%AA",
       },
       {
         id: "f3",
         title: `دليل الديداكتيك والتوصيفات الرسمية المعتمدة - ${subjectTitle}`,
         size: "2.4 MB",
         year: "وزاري",
-        url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
       },
     ];
   }
@@ -68,21 +68,21 @@ export function getDefaultDownloadFiles(
         title: "موضوع الدورة العادية 2024 مع عناصر الإجابة الرسمية",
         size: "1.2 MB",
         year: "2024",
-        url: "https://www.profpress.net/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
       },
       {
         id: "f2",
         title: "موضوع الدورة الاستدراكية 2023 مع سلم التنقيط",
         size: "980 KB",
         year: "2023",
-        url: "https://www.profpress.net/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
       },
       {
         id: "f3",
         title: "دليل الديداكتيك والتوصيفات الرسمية المعتمدة",
         size: "2.4 MB",
         year: "وزاري",
-        url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
       },
     ];
   }
@@ -93,14 +93,14 @@ export function getDefaultDownloadFiles(
         title: `دليل الديداكتيك والتوصيفات الرسمية المعتمدة - ${subjectTitle}`,
         size: "2.4 MB",
         year: "وزاري",
-        url: "https://www.profpress.net/search/label/%D8%AF%D9%8A%D8%AF%D8%A7%D9%83%D8%AA%D9%8A%D9%83",
+        url: "https://profpressma.blogspot.com/search/label/%D8%AF%D9%8A%D8%AF%D8%A7%D9%83%D8%AA%D9%8A%D9%83",
       },
       {
         id: "f2",
         title: `جذاذات نموذجية وتخطيط وضعيات التقويم في ${subjectTitle}`,
         size: "1.6 MB",
         year: "بيداغوجي",
-        url: "https://www.profpress.net/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
+        url: "https://profpressma.blogspot.com/search/label/%D8%AC%D8%B0%D8%A7%D8%B0%D8%A7%D8%AA",
       },
     ];
   }
@@ -110,14 +110,14 @@ export function getDefaultDownloadFiles(
       title: `الملف التوجيهي والملخص الشامل - ${actionTitle}`,
       size: "1.8 MB",
       year: "2024",
-      url: "https://www.profpress.net/p/concours-de-lenseignement.html",
+      url: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
     },
     {
       id: "f2",
       title: `خطاطات ذهنية وبطاقات المراجعة السريعة`,
       size: "1.1 MB",
       year: "محين",
-      url: "https://www.profpress.net/p/concours-de-lenseignement.html",
+      url: "https://profpressma.blogspot.com/search/label/%D9%85%D9%84%D8%AE%D8%B5%D8%A7%D8%AA",
     },
   ];
 }
@@ -174,7 +174,7 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
   pageTitle: "الشامل لمباراة التعليم الابتدائي والثانوي",
   pageDate: "18 مايو, 2026",
   trainingCourseText: "اشترك بدورة تدريبية",
-  trainingCourseUrl: "https://www.profpress.net/p/concours-de-lenseignement.html",
+  trainingCourseUrl: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
   quickResources: [
     {
       id: "specs",
@@ -182,7 +182,7 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       subtitle: "المحاور الرسمية للاختبارات",
       iconName: "FileText",
       color: "teal",
-      url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+      url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
       author: "المركز الوطني للتقويم والامتحانات والتوجيه",
       lastUpdated: "شتنبر 2026",
       writtenContent: `تعتبر التوصيفات الرسمية الصادرة عن المركز الوطني للامتحانات المرجع الأساسي لتأطير وبناء مواضيع مباريات توظيف الأطر النظامية للأكاديميات الجهوية لمهن التربية والتكوين.
@@ -214,19 +214,19 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
         {
           id: "link-specs-1",
           title: "التوصيف الرسمي الشامل لمباراة الابتدائي المزدوج (ملف كامل PDF)",
-          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
           size: "2.8 MB",
         },
         {
           id: "link-specs-2",
           title: "الأطر المرجعية لتوصيفات التعليم الثانوي (بسلكيه الإعدادي والتأهيلي)",
-          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
           size: "3.4 MB",
         },
         {
           id: "link-specs-3",
           title: "دليل معايير وشبكات التنقيط المعتمدة في تصحيح الاختبارات الكتابية",
-          url: "https://www.profpress.net/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
+          url: "https://profpressma.blogspot.com/search/label/%D8%AA%D9%88%D8%B5%D9%8A%D9%81%D8%A7%D8%AA",
           size: "1.5 MB",
         },
       ],
@@ -237,7 +237,7 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       subtitle: "الإعلانات والمذكرات الوزارية",
       iconName: "Megaphone",
       color: "orange",
-      url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+      url: "https://profpressma.blogspot.com/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
       author: "مديرية الموارد البشرية وتكوين الأطر",
       lastUpdated: "دورة 2026",
       writtenContent: `متابعة حصرية لكافة المذكرات التنظيمية، والقرارات الوزارية الصادرة عن وزارة التربية الوطنية والتعليم الأولي والرياضة بخصوص مباريات التوظيف:
@@ -261,13 +261,13 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
         {
           id: "link-news-1",
           title: "المذكرة الوزارية المنظمة لمباراة توظيف الأساتذة أطر الأكاديميات 2026",
-          url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+          url: "https://profpressma.blogspot.com/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
           size: "1.9 MB",
         },
         {
           id: "link-news-2",
           title: "جدول توزيع المناصب المفتوحة حسب كل أكاديمية جهوية والتخصصات",
-          url: "https://www.profpress.net/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
+          url: "https://profpressma.blogspot.com/search/label/%D9%85%D8%B3%D8%AA%D8%AC%D8%AF%D8%A7%D8%AA",
           size: "850 KB",
         },
       ],
@@ -278,7 +278,7 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       subtitle: "الشروط وملف الترشيح",
       iconName: "Folder",
       color: "blue",
-      url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+      url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
       author: "قسم تدبير المسار المهني - بروف بريس",
       lastUpdated: "دليل التسجيل الإلكتروني",
       writtenContent: `دليل شامل ومبسط لتجهيز ملف الترشيح لمباراة التعليم دون أي نقص لتفادي إلغاء الملف أثناء عملية التدقيق الإداري:
@@ -306,13 +306,13 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
         {
           id: "link-reg-1",
           title: "استمارة الترشيح الخطية ونموذج الالتزام بالمصادقة (جاهز للطباعة)",
-          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+          url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
           size: "650 KB",
         },
         {
           id: "link-reg-2",
           title: "دليل خطوات التسجيل والمصادقة في البوابة الإلكترونية للمباريات خطوة بخطوة",
-          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
+          url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84",
           size: "2.1 MB",
         },
       ],
@@ -323,7 +323,7 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
       subtitle: "الاستعداد ونماذج الأسئلة",
       iconName: "MessageSquare",
       color: "purple",
-      url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+      url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
       author: "لجنة التكوين والتأهيل المهني - بروف بريس",
       lastUpdated: "دليل المقابلة 2026",
       writtenContent: `الاستعداد للاختبار الشفوي يتطلب خطة منهجية دقيقة توازن بين التمكن المعرفي وحسن التواصل وإدارة المواقف الصفية:
@@ -350,13 +350,13 @@ export const DEFAULT_TEACHING_COMPETITION_DATA: TeachingCompetitionPageData = {
         {
           id: "link-oral-1",
           title: "بنك الأسئلة الشائعة في المقابلات الشفوية مع الإجابات النموذجية المقترحة",
-          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+          url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
           size: "3.1 MB",
         },
         {
           id: "link-oral-2",
           title: "شبكة تنقيط وتقييم المترشحين الرسمية المعتمدة لدى لجان التحكيم",
-          url: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
+          url: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%B4%D9%81%D9%88%D9%8A",
           size: "920 KB",
         },
       ],

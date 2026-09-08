@@ -84,13 +84,29 @@ export default function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdminControlPanelOpen, setIsAdminControlPanelOpen] = useState(false);
 
-  // Synchronize topics for AdminControlPanel
+  // Synchronize topics for AdminControlPanel with auto-merge for official circulars
   const [topics, setTopics] = useState<TopicItem[]>(() => {
     try {
       const saved = localStorage.getItem("yallataalim_announcements_v1");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((t: TopicItem) => t.id));
+          const newFromInitial = INITIAL_TOPICS.filter((t) => !existingIds.has(t.id));
+          const updatedSaved = parsed.map((item: TopicItem) => {
+            const fresh = INITIAL_TOPICS.find((t) => t.id === item.id);
+            if (fresh && (!item.downloadUrl || item.downloadUrl === "#" || (fresh.downloads && fresh.downloads.length > 0 && (!item.downloads || item.downloads.length === 0)))) {
+              return {
+                ...item,
+                downloadUrl: fresh.downloadUrl || item.downloadUrl,
+                downloadLabel: fresh.downloadLabel || item.downloadLabel,
+                downloads: fresh.downloads || item.downloads,
+              };
+            }
+            return item;
+          });
+          return [...newFromInitial, ...updatedSaved];
+        }
       }
     } catch (e) {
       console.error(e);

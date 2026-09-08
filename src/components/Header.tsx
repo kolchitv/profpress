@@ -103,11 +103,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2.5">
             <img
               src="/morocco-ministry-logo.png"
-              alt="شعار وزارة التربية الوطنية"
+              alt="شعار المنصة التربوية"
               className="w-7 h-7 object-contain bg-white/10 rounded p-0.5"
             />
-            <div className="font-semibold tracking-wide">
-              المملكة المغربية • وزارة التربية الوطنية والتعليم الأولي والرياضة
+            <div className="font-bold tracking-wide text-amber-300">
+              بوابة بروف بريس التربوية
             </div>
           </div>
 

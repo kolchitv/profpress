@@ -61,7 +61,7 @@ export const DEFAULT_EXPLICIT_TEACHING_DATA: ExplicitTeachingPageData = {
   pageTitle: "دروس وموارد التعليم الصريح بالسلك الابتدائي",
   pageSubtitle: "الحقيبة البيداغوجية الشاملة لمدارس الريادة (Écoles Pionnières): عروض PPT تفاعلية للمسلاط، كراسات التلميذ، ودلائل الأستاذ لجميع مستويات الابتدائي (من المستوى الأول إلى السادس)",
   badgeText: "مدارس الريادة • المعتمدة 2026/2027",
-  officialUrl: "https://www.profpress.net/p/lecons-explicites-primaire.html",
+  officialUrl: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B5%D8%B1%D9%8A%D8%AD",
   introduction: {
     title: "الهندسة البيداغوجية للتعليم الصريح (Enseignement Explicite)",
     description: "مقاربة تدريسية مباشرة ومنهجية أثبتت نجاعتها العالمية في تمكين المتعلمين من الكفايات الأساسية في القراءة واللغات والرياضيات، ترتكز على التدرج الدقيق ونقل المسؤولية المعرفية من الأستاذ إلى التلميذ عبر خمس خطوات دقيقة:",
