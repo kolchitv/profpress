@@ -61,7 +61,57 @@ import {
 } from "lucide-react";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>("home");
+  const [activeTab, setActiveTab] = useState<TabKey>(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get("tab") as TabKey;
+        const validTabs: TabKey[] = [
+          "home",
+          "news",
+          "articles",
+          "competitions",
+          "inspection_competition",
+          "orientation_planning",
+          "explicit_teaching",
+          "pedagogical_docs",
+          "daily_log",
+          "workshop_report",
+          "portfolio",
+          "timetable",
+          "card",
+          "charter",
+          "covers",
+          "grids",
+          "positioning_grids",
+          "holidays",
+          "certificates",
+          "remarks",
+          "print_preview",
+          "contact",
+          "primary_1",
+          "primary_2",
+          "primary_3",
+          "primary_4",
+          "primary_5",
+          "primary_6",
+          "middle_1",
+          "middle_2",
+          "middle_3",
+          "high_common",
+          "high_1bac",
+          "high_2bac",
+          "orientation",
+        ];
+        if (tabParam && validTabs.includes(tabParam)) {
+          return tabParam;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return "home";
+  });
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
@@ -140,7 +190,37 @@ export default function App() {
     setIsProfileModalOpen(false);
   };
 
-  // Listen to Admin Session Changes across components
+  // Sync activeTab with URL query parameter (?tab=...)
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        if (activeTab === "home") {
+          url.searchParams.delete("tab");
+        } else {
+          url.searchParams.set("tab", activeTab);
+        }
+        window.history.replaceState({}, "", url.toString());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [activeTab]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = (urlParams.get("tab") as TabKey) || "home";
+        setActiveTab(tabParam);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
   useEffect(() => {
     const handleSessionChange = (e: Event) => {
       const customEvent = e as CustomEvent;
