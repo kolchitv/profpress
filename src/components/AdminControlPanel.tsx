@@ -5,6 +5,7 @@ import {
   Sparkles,
   Users,
   Activity,
+  Filter,
   PlusCircle,
   Edit3,
   Trash2,
@@ -243,8 +244,17 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   const [accountPassSuccess, setAccountPassSuccess] = useState<string | null>(null);
   const [accountPassError, setAccountPassError] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedAdsTxt, setCopiedAdsTxt] = useState(false);
   const [displayNameInput, setDisplayNameInput] = useState(adminCreds.adminName);
   const [nameSaveMsg, setNameSaveMsg] = useState<string | null>(null);
+  const [adminCategoryFilter, setAdminCategoryFilter] = useState<string>("الكل");
+
+  const handleCopyAdsTxt = () => {
+    const code = "google.com, pub-2606934361036411, DIRECT, f08c47fec0942fa0";
+    navigator.clipboard?.writeText(code);
+    setCopiedAdsTxt(true);
+    setTimeout(() => setCopiedAdsTxt(false), 3000);
+  };
 
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
@@ -364,12 +374,22 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
   const totalViews = topics.reduce((acc, curr) => acc + (curr.viewsCount || 0), 0);
 
   // Filtered topics in admin table
-  const filteredTopics = topics.filter(
-    (t) =>
+  const filteredTopics = topics.filter((t) => {
+    const matchesCategory =
+      adminCategoryFilter === "الكل" ||
+      t.category === adminCategoryFilter ||
+      (adminCategoryFilter === "بلاغات" && t.category === "communique") ||
+      (adminCategoryFilter === "مذكرات" && t.category === "memo") ||
+      (adminCategoryFilter === "مقالات" && t.category === "article");
+
+    const matchesSearch =
+      !searchTerm ||
       t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.categoryLabel.includes(searchTerm) ||
-      t.author.includes(searchTerm)
-  );
+      t.author.includes(searchTerm);
+
+    return matchesCategory && matchesSearch;
+  });
 
   const handleCopySitemap = () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${topics
@@ -570,6 +590,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
             {topics.length} <span className="text-xs text-slate-500 font-normal">موضوع</span>
           </div>
           <div className="text-[11px] text-teal-700 font-bold">
+            {topics.filter((t) => t.category === "communique").length} بلاغ •{" "}
             {topics.filter((t) => t.category === "memo").length} مذكرة •{" "}
             {topics.filter((t) => t.category === "article").length} مقال
           </div>
@@ -769,6 +790,38 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
             </button>
           </div>
 
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100">
+            <span className="text-xs text-slate-400 font-bold ml-1 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5" />
+              <span>تصنيف:</span>
+            </span>
+            {[
+              { label: "الكل", value: "الكل" },
+              { label: "بلاغات رسمية", value: "communique" },
+              { label: "مذكرات وزارية", value: "memo" },
+              { label: "إعلانات ومباريات", value: "announcement" },
+              { label: "مقالات تربوية", value: "article" },
+              { label: "نتائج وترقيات", value: "results" },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setAdminCategoryFilter(opt.value)}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  adminCategoryFilter === opt.value
+                    ? "bg-teal-700 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+            <span className="mr-auto text-[11px] text-slate-500 font-mono">
+              {filteredTopics.length} موضوع
+            </span>
+          </div>
+
           {/* Topics Table */}
           <div className="overflow-x-auto rounded-2xl border border-slate-200">
             <table className="w-full text-right text-xs">
@@ -902,7 +955,25 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <a
+                  href="/ads.txt"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                  title="عرض ملف ads.txt الفعلي المعتمد في المتصفح"
+                >
+                  <FileText className="w-3.5 h-3.5 text-amber-700" />
+                  <span>معاينة ads.txt</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyAdsTxt}
+                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  {copiedAdsTxt ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedAdsTxt ? "تم نسخ سطر ads.txt!" : "نسخ سطر ads.txt"}</span>
+                </button>
                 <button
                   type="button"
                   onClick={handleCopySitemap}
@@ -1958,13 +2029,64 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Section 2: Publisher ID & Header Script */}
+            {/* Section 2: Publisher ID, ads.txt & Header Script */}
             <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-                <Shield className="w-5 h-5 text-amber-600" />
-                <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
-                  2. معرّف حساب Google AdSense (Publisher ID)
-                </h3>
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-black text-sm sm:text-base text-slate-900 font-cairo">
+                    2. معرّف حساب Google AdSense وملف التحقق ads.txt
+                  </h3>
+                </div>
+                <span className="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>ads.txt مفعل ومربوط بالجذر</span>
+                </span>
+              </div>
+
+              {/* ads.txt direct card */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-2xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-0.5">
+                    <span className="font-black text-xs text-amber-950 flex items-center gap-1.5 font-cairo">
+                      <FileText className="w-4 h-4 text-amber-700" />
+                      <span>ملف ads.txt الرسمي للمنصة (Google AdSense Crawler Verification):</span>
+                    </span>
+                    <p className="text-[11px] text-amber-900/80 leading-relaxed">
+                      تم تثبيت وتضمين شفرة الناشر المعتمدة في الدليل الجذري للموقع ومسار الرابط:{" "}
+                      <strong className="font-mono text-amber-950 font-bold underline" dir="ltr">
+                        https://www.profpress.net/ads.txt
+                      </strong>
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleCopyAdsTxt}
+                      className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      {copiedAdsTxt ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedAdsTxt ? "تم نسخ الرمز!" : "نسخ رمز ads.txt"}</span>
+                    </button>
+                    <a
+                      href="/ads.txt"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-blue-600" />
+                      <span>فتح الملف المباشر</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="bg-slate-950 text-amber-300 font-mono text-xs p-3 rounded-xl border border-slate-800 flex items-center justify-between overflow-x-auto" dir="ltr">
+                  <code>google.com, pub-2606934361036411, DIRECT, f08c47fec0942fa0</code>
+                  <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700 shrink-0 ml-3">
+                    DIRECT
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

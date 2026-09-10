@@ -148,10 +148,10 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
   // Filter categories
   const filterOptions = [
     { label: "الكل", value: "الكل" },
-    { label: "مذكرة", value: "memo" },
-    { label: "إعلان", value: "announcement" },
-    { label: "مقال", value: "article" },
-    { label: "بلاغ", value: "communique" },
+    { label: "بلاغات رسمية", value: "communique" },
+    { label: "مذكرات وزارية", value: "memo" },
+    { label: "إعلانات ومباريات", value: "announcement" },
+    { label: "مقالات تربوية", value: "article" },
     { label: "نتائج وترقيات", value: "results" },
   ];
 
@@ -162,7 +162,8 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
         activeCategoryFilter === "الكل" ||
         item.category === activeCategoryFilter ||
         (activeCategoryFilter === "مذكرات" && item.category === "memo") ||
-        (activeCategoryFilter === "مقالات" && item.category === "article");
+        (activeCategoryFilter === "مقالات" && item.category === "article") ||
+        (activeCategoryFilter === "بلاغات" && item.category === "communique");
 
       const term = searchTerm.trim().toLowerCase();
       const matchesSearch =
@@ -415,40 +416,83 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           </div>
 
           {/* ========================================================================= */}
-          {/* 2. FACEBOOK CHANNEL & PAGE BANNER (ProfPress on Facebook) */}
+          {/* 2. FACEBOOK CHANNEL & MEN OFFICIAL COMMUNIOUES BANNERS */}
           {/* ========================================================================= */}
-          <div className="bg-gradient-to-r from-blue-50 via-indigo-50/60 to-blue-50 border border-blue-200 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-2xs">
-            {/* Right side: Facebook Icon + Text */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center shrink-0 shadow-2xs">
-                {/* Official Facebook F SVG */}
-                <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Facebook Channel Banner */}
+            <div className="bg-gradient-to-r from-blue-50 via-indigo-50/60 to-blue-50 border border-blue-200 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </div>
+                <div className="space-y-0.5">
+                  <h3 className="font-bold text-xs sm:text-sm text-blue-950 font-cairo flex items-center gap-1.5">
+                    <span>قناة وصفحة بروف بريس</span>
+                    <span className="text-[10px] bg-[#1877F2] text-white px-2 py-0.2 rounded-full font-bold">
+                      Facebook
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-blue-800 line-clamp-1">
+                    تابع جديد المذكرات والمستجدات فور صدورها
+                  </p>
+                </div>
               </div>
-              <div className="space-y-0.5">
-                <h3 className="font-bold text-xs sm:text-sm text-blue-950 font-cairo flex items-center gap-2">
-                  <span>قناة وصفحة بروف بريس على الفايسبوك</span>
-                  <span className="text-[10px] bg-[#1877F2] text-white px-2 py-0.5 rounded-full font-bold">
-                    Facebook
-                  </span>
-                </h3>
-                <p className="text-[11px] sm:text-xs text-blue-800">
-                  انضم إلى صفحة بروف بريس الرسمية لمتابعة جديد المذكرات، ومستجدات التعليم، والوثائق فور صدورها
-                </p>
-              </div>
+
+              <a
+                href="https://facebook.com/profpress.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-2xs shrink-0 flex items-center gap-1"
+              >
+                <span>متابعة</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
             </div>
 
-            {/* Left side: Follow Button */}
-            <a
-              href="https://facebook.com/profpress.net"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-xl transition shadow-2xs shrink-0 flex items-center gap-1.5"
-            >
-              <span>متابعة الصفحة</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            {/* MEN Official Communiques Banner */}
+            <div className="bg-gradient-to-r from-purple-50 via-fuchsia-50/50 to-purple-50 border border-purple-200 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-purple-700 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <Bell className="w-5 h-5 text-amber-300" />
+                </div>
+                <div className="space-y-0.5">
+                  <h3 className="font-bold text-xs sm:text-sm text-purple-950 font-cairo flex items-center gap-1.5">
+                    <span>بلاغات وزارة التربية الوطنية</span>
+                    <span className="text-[10px] bg-purple-200 text-purple-900 border border-purple-300 px-2 py-0.2 rounded-full font-bold">
+                      men.gov.ma
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-purple-800 line-clamp-1">
+                    البلاغات الصحفية والإخبارية الرسمية المحينة
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("communique")}
+                  className={`text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer ${
+                    activeCategoryFilter === "communique"
+                      ? "bg-purple-800 text-white shadow-2xs"
+                      : "bg-purple-100 text-purple-900 hover:bg-purple-200"
+                  }`}
+                >
+                  عرض البلاغات
+                </button>
+                <a
+                  href="https://www.men.gov.ma/Ar/Pages/communiques.aspx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-purple-700 hover:text-purple-900 hover:bg-purple-100/80 rounded-xl transition"
+                  title="زيارة قسم البلاغات على الموقع الرسمي men.gov.ma"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* ========================================================================= */}

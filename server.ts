@@ -27,6 +27,24 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Direct route for Google AdSense ads.txt verification
+  app.get("/ads.txt", (_req, res) => {
+    res.type("text/plain; charset=utf-8");
+    res.send("google.com, pub-2606934361036411, DIRECT, f08c47fec0942fa0\n");
+  });
+
+  // Direct route for robots.txt
+  app.get("/robots.txt", (_req, res) => {
+    res.type("text/plain; charset=utf-8");
+    res.sendFile(path.join(process.cwd(), "public", "robots.txt"));
+  });
+
+  // Direct route for sitemap.xml
+  app.get("/sitemap.xml", (_req, res) => {
+    res.type("application/xml; charset=utf-8");
+    res.sendFile(path.join(process.cwd(), "public", "sitemap.xml"));
+  });
+
   // Health check
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });

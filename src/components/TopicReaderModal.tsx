@@ -258,8 +258,64 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
           )}
 
           {/* Main Content Body */}
-          <div className="prose prose-sm max-w-none text-xs sm:text-sm leading-relaxed space-y-4 whitespace-pre-wrap text-slate-800 font-cairo">
-            {topic.content}
+          <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-slate-800 font-cairo">
+            {topic.content.split("\n\n").map((block, idx) => {
+              const trimmed = block.trim();
+              if (!trimmed) return null;
+
+              // Standalone Image URL detection (Blogger, Google CDN, YouTube, image extensions)
+              if (
+                trimmed.startsWith("http") &&
+                (trimmed.includes("blogger.googleusercontent.com") ||
+                  trimmed.includes("img.youtube.com") ||
+                  trimmed.includes("bp.blogspot.com") ||
+                  /\.(jpg|jpeg|png|webp|gif)($|\?)/i.test(trimmed))
+              ) {
+                return (
+                  <div key={idx} className="my-4 text-center">
+                    <img
+                      src={trimmed}
+                      alt={topic.title}
+                      referrerPolicy="no-referrer"
+                      className="rounded-2xl max-h-[440px] w-auto max-w-full mx-auto object-contain shadow-xs border border-slate-200"
+                    />
+                  </div>
+                );
+              }
+
+              // Heading detection (### Header)
+              if (trimmed.startsWith("### ")) {
+                return (
+                  <h3
+                    key={idx}
+                    className="text-base sm:text-lg font-black text-slate-900 border-r-4 border-amber-500 pr-3 my-3 font-cairo"
+                  >
+                    {trimmed.replace(/^###\s+/, "")}
+                  </h3>
+                );
+              }
+
+              // List detection
+              if (trimmed.startsWith("- ")) {
+                const listItems = trimmed.split("\n").filter(l => l.trim().startsWith("- "));
+                return (
+                  <ul key={idx} className="space-y-1.5 my-2 pr-4 list-disc list-inside text-slate-700">
+                    {listItems.map((li, lIdx) => (
+                      <li key={lIdx} className="leading-relaxed">
+                        {li.replace(/^-\s*/, "")}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              // Regular paragraph with line breaks
+              return (
+                <p key={idx} className="leading-relaxed text-slate-800 whitespace-pre-line">
+                  {trimmed}
+                </p>
+              );
+            })}
           </div>
 
           {/* In-Article AdSense Banner */}
