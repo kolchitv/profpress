@@ -1,8 +1,17 @@
+import { ARABIC_INSPECTION_105_QUIZ } from "./arabicInspectionQuizData";
+
 export interface PrimaryExamSpec {
   duration: string; // e.g. "3 ساعات"
   coefficient: string; // e.g. "1*"
   highestWeight: string; // e.g. "العربية والفرنسية (%30)"
   lowestWeight: string; // e.g. "العلوم (%12)"
+}
+
+export interface ActionAttachedImage {
+  id: string;
+  url: string;
+  title?: string;
+  caption?: string;
 }
 
 export interface PrimarySubjectAction {
@@ -12,11 +21,14 @@ export interface PrimarySubjectAction {
   customUrl?: string; // custom external link or internal modal
   contentSummary?: string;
   articleContent?: string;
+  images?: ActionAttachedImage[];
+  downloadFiles?: PrimaryDownloadFile[];
   qcmQuestions?: {
     question: string;
     options: string[];
     correctIndex: number;
     explanation?: string;
+    level?: string;
   }[];
 }
 
@@ -24,8 +36,8 @@ export interface PrimarySubjectCard {
   id: string;
   title: string; // e.g. "اللغة العربية", "اللغة الفرنسية", "الرياضيات", "العلوم (النشاط العلمي)"
   weightBadge: string; // e.g. "وزن المكون: 30%"
-  colorScheme: "blue" | "indigo" | "cyan" | "emerald" | "amber" | "rose";
-  iconName: string; // "BookOpen", "Languages", "Calculator", "FlaskConical"
+  colorScheme: "blue" | "indigo" | "cyan" | "emerald" | "amber" | "rose" | "purple";
+  iconName?: string; // "BookOpen", "Languages", "Calculator", "FlaskConical"
   actions: PrimarySubjectAction[];
 }
 
@@ -187,27 +199,9 @@ export const DEFAULT_PRIMARY_KNOWLEDGE_DATA: PrimaryKnowledgePageData = {
           id: "ar_quiz",
           title: "اختبار تجريبي",
           iconName: "Laptop",
-          contentSummary: "اختبار تفاعلي يحاكي شروط الامتحان الوطني الموحد لولوج مركز التفتيش مع التصحيح الفوري وتقديم التفسيرات المعرفية.",
-          qcmQuestions: [
-            {
-              question: "أي من المصطلحات التالية يعبر عن 'القدرة على الوعي بالفونيمات وتفكيك الكلمات إلى مقاطع صوتية'؟",
-              options: ["الطلاقة القرائية", "الوعي الصوتي", "الفهم الصريح", "الإثراء اللغوي"],
-              correctIndex: 1,
-              explanation: "الوعي الصوتي هو إدراك أن الكلمات المنطوقة تتكون من وحدات صوتية صغرى (فونيمات) والقدرة على التلاعب بها.",
-            },
-            {
-              question: "في ديداكتيك القراءة، متى يطبق مبدأ 'الممارسة المستقلة'؟",
-              options: ["قبل تقديم النمذجة", "بعد النمذجة والممارسة الموجهة للتأكد من التملك الفردي", "في بداية الحصة كتقويم تشخيصي", "لا تطبق في التعليم الابتدائي"],
-              correctIndex: 1,
-              explanation: "الممارسة المستقلة تأتي في المرحلة الأخيرة من مسار التدريس الصريح لتكريس الاستقلالية والتمكن الفردي.",
-            },
-            {
-              question: "ما نوع البدل في جملة: 'قرأتُ الكتابَ نصفَهُ'؟",
-              options: ["بدل مطابق (كل من كل)", "بدل بعض من كل", "بدل اشتمال", "بدل مباين"],
-              correctIndex: 1,
-              explanation: "'نصفه' بدل بعض من كل من الكتاب، وهو جزء مادي حقيقي منه.",
-            },
-          ],
+          contentSummary: "اختبار تجريبي تفاعلي شامل يضم 105 سؤالاً في مستويات اللغة العربية: الصوتي، الصرفي، التركيبي، البلاغي، وفهم المقروء مع إعراب الجمل كاملاً والتصحيح الفوري.",
+          customUrl: "https://profpressma.blogspot.com/p/quiz-arabe-inspection-primaire.html",
+          qcmQuestions: ARABIC_INSPECTION_105_QUIZ,
         },
       ],
     },

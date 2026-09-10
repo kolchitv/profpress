@@ -12,6 +12,9 @@ import { AdminSession } from "../types";
 import { getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
 import { getDownloadGatewaySettings, DOWNLOAD_GATEWAY_EVENT } from "../utils/downloadGatewaySettings";
 import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { ArticleHtmlRenderer } from "./ArticleHtmlRenderer";
+import { RichArticleEditor } from "./RichArticleEditor";
+import { ArabicInspection105QuizModal } from "./ArabicInspection105QuizModal";
 import {
   Info,
   Clock,
@@ -44,13 +47,18 @@ import {
   Copy,
   Layers,
   CheckSquare,
+  School,
 } from "lucide-react";
 
 interface Props {
   onBackToAllTracks?: () => void;
+  onNavigateToDidactique?: () => void;
 }
 
-export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTracks }) => {
+export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
+  onBackToAllTracks,
+  onNavigateToDidactique,
+}) => {
   // 1. Local Storage Persistence
   const [data, setData] = useState<PrimaryKnowledgePageData>(() => {
     try {
@@ -107,6 +115,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
 
   // Download Gateway state
   const [gatewaySettings, setGatewaySettings] = useState(getDownloadGatewaySettings);
+  const [isArabic105QuizOpen, setIsArabic105QuizOpen] = useState(false);
   const [gatewayFile, setGatewayFile] = useState<{
     isOpen: boolean;
     title: string;
@@ -244,6 +253,14 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
 
   // Action Click Handler
   const handleActionClick = (subject: PrimarySubjectCard, action: PrimarySubjectAction) => {
+    // If it's the Arabic quiz, open the dedicated 105-question quiz modal
+    if (action.id === "ar_quiz" || (subject.id === "subject_arabic" && action.title.includes("اختبار تجريبي"))) {
+      if (!isEditActive) {
+        setIsArabic105QuizOpen(true);
+        return;
+      }
+    }
+
     // If external link defined and not editing
     if (action.customUrl && action.customUrl !== "#" && !isEditActive) {
       if (action.customUrl.startsWith("http")) {
@@ -253,7 +270,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
     }
 
     setActiveActionModal({ subject, action });
-    setModalTab("summary");
+    setModalTab(action.qcmQuestions && action.qcmQuestions.length > 0 ? "qcm" : "summary");
     setCurrentQcmIdx(0);
     setSelectedAnswers({});
     setShowQcmResults(false);
@@ -317,6 +334,17 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          {onNavigateToDidactique && (
+            <button
+              onClick={onNavigateToDidactique}
+              className="bg-purple-800/80 hover:bg-purple-700 text-purple-100 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer border border-purple-600/50"
+              title="الانتقال إلى ديداكتيك تفتيش التعليم الابتدائي"
+            >
+              <School className="w-3.5 h-3.5" />
+              <span>ديداكتيك الابتدائي (ProfPress)</span>
+            </button>
+          )}
+
           {onBackToAllTracks && (
             <button
               onClick={onBackToAllTracks}
@@ -982,8 +1010,8 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
                   </div>
 
                   {activeActionModal.action.articleContent ? (
-                    <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed font-cairo whitespace-pre-wrap">
-                      {activeActionModal.action.articleContent}
+                    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-7 space-y-4 text-slate-800 shadow-2xs">
+                      <ArticleHtmlRenderer content={activeActionModal.action.articleContent} />
                     </div>
                   ) : (
                     <div className="text-center py-10 space-y-3 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
@@ -999,6 +1027,37 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
               {/* 3. QCM Quiz Tab */}
               {modalTab === "qcm" && (
                 <div className="space-y-6">
+                  {/* Launch Dedicated Full Experience Button if Arabic Quiz */}
+                  {activeActionModal.subject.id === "subject_arabic" && (
+                    <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-300 shrink-0">
+                          <BookOpen className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <h4 className="font-black text-sm sm:text-base text-emerald-100">
+                            المركز الوطني للتقويم والامتحانات (105 أسئلة)
+                          </h4>
+                          <p className="text-xs text-emerald-200/80">
+                            مباراة التفتيش التربوي - بنك شامل بكافة المستويات والإعراب الكامل
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveActionModal(null);
+                          setIsArabic105QuizOpen(true);
+                        }}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer shrink-0"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>فتح الاختبار التفاعلي الكامل (105 سؤال)</span>
+                      </button>
+                    </div>
+                  )}
+
                   {activeActionModal.action.qcmQuestions &&
                   activeActionModal.action.qcmQuestions.length > 0 ? (
                     <div className="space-y-6">
@@ -1377,24 +1436,24 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
       {/* C. Edit Action Card Modal */}
       {editingAction && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col p-6 space-y-5 shadow-2xl border border-slate-200 text-right font-cairo">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 text-right font-cairo">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-blue-600" />
-                <span>تعديل بطاقة: {editingAction.action.title}</span>
+                <span>تحرير محتوى وروابط: {editingAction.action.title}</span>
               </h3>
               <button
                 onClick={() => setEditingAction(null)}
-                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg"
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4 overflow-y-auto flex-1 pr-1">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">عنوان البطاقة:</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">عنوان البطاقة والمكون:</label>
                   <input
                     type="text"
                     value={editingAction.action.title}
@@ -1409,7 +1468,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">الأيقونة:</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">الأيقونة المعتمدة:</label>
                   <select
                     value={editingAction.action.iconName}
                     onChange={(e) =>
@@ -1433,7 +1492,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  رابط مخصص أو خارجي (اختياري - اتركه فارغاً لفتح نافذة المراجعة الداخلية):
+                  رابط مخصص أو خارجي (اختياري - اتركه فارغاً لفتح نافذة المراجعة والمقال الداخلي):
                 </label>
                 <input
                   type="url"
@@ -1450,9 +1509,9 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">الملخص التوجيهي:</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">الملخص التوجيهي للمكون:</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={editingAction.action.contentSummary || ""}
                   onChange={(e) =>
                     setEditingAction({
@@ -1465,21 +1524,21 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
                 />
               </div>
 
+              {/* Rich HTML & Markdown Article Editor with Direct Download Insertion */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  النص التفصيلي للمقال والدليل الأكاديمي (Markdown):
+                <label className="block text-xs font-black text-slate-800 mb-1.5 flex items-center justify-between">
+                  <span>محرر المقال التفصيلي وأكواد HTML وروابط التحميل:</span>
                 </label>
-                <textarea
-                  rows={6}
+                <RichArticleEditor
                   value={editingAction.action.articleContent || ""}
-                  onChange={(e) =>
+                  onChange={(newContent) =>
                     setEditingAction({
                       ...editingAction,
-                      action: { ...editingAction.action, articleContent: e.target.value },
+                      action: { ...editingAction.action, articleContent: newContent },
                     })
                   }
-                  className="w-full border border-slate-300 rounded-xl p-3 text-xs font-cairo"
-                  placeholder="# اكتب المقال ومحاور الاختبار بالتفصيل..."
+                  title="محرر مقال المحور وروابط التحميل"
+                  textareaId="primary-knowledge-article-editor"
                 />
               </div>
             </div>
@@ -1488,7 +1547,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
               <button
                 type="button"
                 onClick={() => setEditingAction(null)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"
               >
                 إلغاء
               </button>
@@ -1676,6 +1735,12 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({ onBackToAllTra
         downloadUrl={gatewayFile.url}
         fileType={gatewayFile.type}
         fileSize={gatewayFile.size}
+      />
+
+      {/* Dedicated Arabic Inspection 105 Questions Quiz Modal (Design matching ProfPress) */}
+      <ArabicInspection105QuizModal
+        isOpen={isArabic105QuizOpen}
+        onClose={() => setIsArabic105QuizOpen(false)}
       />
     </div>
   );

@@ -16,6 +16,7 @@ import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } fro
 import { CompetitionTopicEditorModal } from "./CompetitionTopicEditorModal";
 import { QuickResourceEditorModal } from "./QuickResourceEditorModal";
 import { PrimaryKnowledgeInspectionView } from "./PrimaryKnowledgeInspectionView";
+import { PrimaryDidactiqueInspectionView } from "./PrimaryDidactiqueInspectionView";
 import {
   FileText,
   Megaphone,
@@ -69,7 +70,7 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
   });
 
   const [editMode, setEditMode] = useState(false);
-  const [activeInspectionView, setActiveInspectionView] = useState<"primary_knowledge" | "overview">("primary_knowledge");
+  const [activeInspectionView, setActiveInspectionView] = useState<"primary_knowledge" | "primary_didactique" | "overview">("primary_knowledge");
   const [selectedCycle, setSelectedCycle] = useState<"all" | "primary" | "secondary" | "planning" | "finance">("all");
 
   // Modals state
@@ -274,6 +275,26 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
 
   // Action Click Handler
   const handleOpenAction = (track: InspectionTrack, action: CompetitionSubAction) => {
+    // Exact user requirement: clicking on "المعارف" in primary inspection opens the dedicated ProfPress Primary Knowledge page
+    if (
+      (track.id === "primary" || track.cycle === "primary" || track.id === "track_primary") &&
+      (action.id === "primary_knowledge" || action.id === "prim_knowledge" || action.title.includes("المعارف"))
+    ) {
+      setActiveInspectionView("primary_knowledge");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // Exact user requirement: clicking on "الديداكتيك" in primary inspection opens the dedicated ProfPress Primary Didactique page
+    if (
+      (track.id === "primary" || track.cycle === "primary" || track.id === "track_primary") &&
+      (action.id === "prim_didactics" || action.id === "primary_didactics" || action.title.includes("الديداكتيك") || action.title.includes("ديداكتيك"))
+    ) {
+      setActiveInspectionView("primary_didactique");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setActiveActionModal({ track, action });
     setActionModalTab("summary");
     setCurrentQcmIndex(0);
@@ -535,7 +556,7 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
       )}
 
       {/* Top View Selector Tabs (Matches exact user requirement) */}
-      <div className="flex items-center justify-center sm:justify-start gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+      <div className="flex items-center justify-center sm:justify-start gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex-wrap">
         <button
           onClick={() => setActiveInspectionView("primary_knowledge")}
           className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer flex items-center justify-center gap-2 ${
@@ -546,6 +567,18 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
         >
           <BookOpen className="w-4 h-4 text-amber-300" />
           <span>اختبار المعارف - مسلك الابتدائي (ProfPress)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveInspectionView("primary_didactique")}
+          className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer flex items-center justify-center gap-2 ${
+            activeInspectionView === "primary_didactique"
+              ? "bg-purple-700 text-white shadow-xs"
+              : "text-slate-700 hover:text-slate-950 hover:bg-slate-200/60"
+          }`}
+        >
+          <School className="w-4 h-4 text-purple-300" />
+          <span>ديداكتيك الابتدائي (ProfPress)</span>
         </button>
 
         <button
@@ -561,9 +594,17 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
         </button>
       </div>
 
-      {/* Render Specific Primary Knowledge View if active */}
+      {/* Render Specific Primary Knowledge View or Primary Didactique View if active */}
       {activeInspectionView === "primary_knowledge" ? (
-        <PrimaryKnowledgeInspectionView onBackToAllTracks={() => setActiveInspectionView("overview")} />
+        <PrimaryKnowledgeInspectionView
+          onBackToAllTracks={() => setActiveInspectionView("overview")}
+          onNavigateToDidactique={() => setActiveInspectionView("primary_didactique")}
+        />
+      ) : activeInspectionView === "primary_didactique" ? (
+        <PrimaryDidactiqueInspectionView
+          onBackToAllTracks={() => setActiveInspectionView("overview")}
+          onNavigateToKnowledge={() => setActiveInspectionView("primary_knowledge")}
+        />
       ) : (
         <>
       {/* ====================================================================== */}
@@ -796,37 +837,55 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
               {/* 4 Category Blocks (المعارف, الديداكتيك, علوم التربية, اختبار تجريبي) */}
               <div className="p-4 sm:p-6 md:p-8 bg-slate-50/50">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {track.actions.map((act) => (
-                    <div
-                      key={act.id}
-                      id={`track-action-${act.id}`}
-                      onClick={() => handleOpenAction(track, act)}
-                      className={`bg-white border border-slate-200/80 rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3.5 shadow-2xs group ${theme.cardHover}`}
-                    >
-                      {/* Circle Icon */}
+                  {track.actions.map((act) => {
+                    const isPrimaryKnowledge =
+                      (track.id === "primary" || track.cycle === "primary") &&
+                      (act.id === "primary_knowledge" || act.title.includes("المعارف"));
+
+                    return (
                       <div
-                        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition group-hover:scale-110 shadow-2xs ${theme.circleBg}`}
+                        key={act.id}
+                        id={`track-action-${act.id}`}
+                        onClick={() => handleOpenAction(track, act)}
+                        className={`bg-white border rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3.5 shadow-2xs group relative ${
+                          isPrimaryKnowledge
+                            ? "border-emerald-300 hover:border-emerald-500 hover:shadow-md ring-1 ring-emerald-200/60"
+                            : `border-slate-200/80 ${theme.cardHover}`
+                        }`}
                       >
-                        {renderIcon(act.iconName, "w-7 h-7 sm:w-8 sm:h-8")}
-                      </div>
+                        {isPrimaryKnowledge && (
+                          <span className="absolute -top-2.5 right-4 bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
+                            تصميم مطابق لـ ProfPress
+                          </span>
+                        )}
 
-                      {/* Titles */}
-                      <div className="space-y-1">
-                        <h3 className="font-black text-base sm:text-lg text-slate-900 group-hover:text-blue-700 transition">
-                          {act.title}
-                        </h3>
-                        <p className="text-xs text-slate-500 font-medium line-clamp-1">
-                          {act.subtitle}
-                        </p>
-                      </div>
+                        {/* Circle Icon */}
+                        <div
+                          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition group-hover:scale-110 shadow-2xs ${
+                            isPrimaryKnowledge ? "bg-emerald-100 text-emerald-700" : theme.circleBg
+                          }`}
+                        >
+                          {renderIcon(act.iconName, "w-7 h-7 sm:w-8 sm:h-8")}
+                        </div>
 
-                      {/* Small details hint */}
-                      <span className="text-[11px] text-slate-400 group-hover:text-slate-600 flex items-center gap-1 font-bold pt-1">
-                        <span>عرض التفاصيل والملفات</span>
-                        <ChevronLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
-                      </span>
-                    </div>
-                  ))}
+                        {/* Titles */}
+                        <div className="space-y-1">
+                          <h3 className="font-black text-base sm:text-lg text-slate-900 group-hover:text-emerald-700 transition">
+                            {act.title}
+                          </h3>
+                          <p className="text-xs text-slate-500 font-medium line-clamp-1">
+                            {act.subtitle}
+                          </p>
+                        </div>
+
+                        {/* Small details hint */}
+                        <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 flex items-center gap-1 font-bold pt-1">
+                          <span>{isPrimaryKnowledge ? "فتح صفحة اختبار المعارف" : "عرض التفاصيل والملفات"}</span>
+                          <ChevronLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Footer hint & Add custom topic if edit active */}

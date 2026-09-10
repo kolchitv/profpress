@@ -12,6 +12,7 @@ import { TabKey, AdminSession } from "../types";
 import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
 import { CompetitionTopicEditorModal } from "./CompetitionTopicEditorModal";
 import { QuickResourceEditorModal } from "./QuickResourceEditorModal";
+import { ArticleHtmlRenderer } from "./ArticleHtmlRenderer";
 import {
   FileText,
   Megaphone,
@@ -1615,11 +1616,9 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       </div>
 
                       {/* Article Content Display */}
-                      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed">
+                      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed shadow-2xs">
                         {activeActionModal.action.articleContent ? (
-                          <div className="space-y-3 whitespace-pre-line font-medium leading-relaxed">
-                            {activeActionModal.action.articleContent}
-                          </div>
+                          <ArticleHtmlRenderer content={activeActionModal.action.articleContent} />
                         ) : (
                           <div className="text-center py-6 space-y-3">
                             <p className="text-slate-500 text-xs">
@@ -1821,11 +1820,9 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
             )}
 
             {/* Written Topic / Main Text Content */}
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 text-xs sm:text-sm text-slate-800 leading-relaxed space-y-3">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 text-xs sm:text-sm text-slate-800 leading-relaxed space-y-3 shadow-2xs">
               {activeQuickResourceModal.writtenContent ? (
-                <div className="space-y-3 whitespace-pre-line font-medium text-slate-700">
-                  {activeQuickResourceModal.writtenContent}
-                </div>
+                <ArticleHtmlRenderer content={activeQuickResourceModal.writtenContent} />
               ) : (
                 /* Fallback defaults if no writtenContent is present */
                 <div className="space-y-3">
