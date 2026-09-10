@@ -1180,25 +1180,22 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTopicEditorState({
-                        isOpen: true,
-                        subject: activeActionModal.subject,
-                        action: activeActionModal.action,
-                      });
-                    }}
-                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
-                    title="تعديل هذا الموضوع أو تحرير المقال وروابط التحميل (خاص بالمدير)"
-                  >
-                    <Edit3 className="w-3.5 h-3.5 text-blue-600" />
-                    <span className="hidden sm:inline">محرر الموضوع والمرفقات</span>
-                    <span className="sm:hidden">تعديل</span>
-                  </button>
-                )}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTopicEditorState({
+                      isOpen: true,
+                      subject: activeActionModal.subject,
+                      action: activeActionModal.action,
+                    });
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                  title="تعديل هذا المقال وروابط التحميل"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>تعديل المقال والروابط</span>
+                </button>
                 <button
                   onClick={() => {
                     setActiveActionModal(null);
@@ -1744,23 +1741,35 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Admin edit button */}
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const cardToEdit = activeQuickResourceModal;
-                      setActiveQuickResourceModal(null);
-                      setEditingQuickResource(cardToEdit);
-                    }}
-                    className="bg-amber-500 hover:bg-amber-600 text-white font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-                    title="تعديل محتوى وروابط وصور هذه البطاقة"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">تحرير البطاقة</span>
-                  </button>
-                )}
+              <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cardToEdit = activeQuickResourceModal;
+                    setActiveQuickResourceModal(null);
+                    setEditingQuickResource(cardToEdit);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                  title="تعديل محتوى المقال والموضوع"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>تعديل المقال</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cardToEdit = activeQuickResourceModal;
+                    setActiveQuickResourceModal(null);
+                    setEditingQuickResource(cardToEdit);
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                  title="تعديل وإضافة روابط التحميل"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>تعديل الروابط</span>
+                </button>
+
                 <button
                   onClick={() => setActiveQuickResourceModal(null)}
                   className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition"
@@ -1877,18 +1886,33 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </div>
 
             {/* Attached Download Files & Links */}
-            {activeQuickResourceModal.downloadLinks && activeQuickResourceModal.downloadLinks.length > 0 && (
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-black text-slate-900">
-                    <FileDown className="w-4 h-4 text-emerald-600" />
-                    <span>الملفات وروابط التحميل المباشرة:</span>
-                  </div>
-                  <span className="text-[11px] text-slate-500 font-bold">
-                    {activeQuickResourceModal.downloadLinks.length} ملفات جاهزة للتحميل
-                  </span>
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-black text-slate-900">
+                  <FileDown className="w-4 h-4 text-emerald-600" />
+                  <span>الملفات وروابط التحميل المباشرة:</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-slate-500 font-bold">
+                    {activeQuickResourceModal.downloadLinks?.length || 0} ملفات جاهزة للتحميل
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cardToEdit = activeQuickResourceModal;
+                      setActiveQuickResourceModal(null);
+                      setEditingQuickResource(cardToEdit);
+                    }}
+                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                    title="تعديل الروابط وإضافة ملفات جديدة"
+                  >
+                    <Edit3 className="w-3 h-3 text-emerald-600" />
+                    <span>تعديل روابط التحميل</span>
+                  </button>
+                </div>
+              </div>
 
+              {activeQuickResourceModal.downloadLinks && activeQuickResourceModal.downloadLinks.length > 0 ? (
                 <div className="grid grid-cols-1 gap-2">
                   {activeQuickResourceModal.downloadLinks.map((link) => (
                     <div
@@ -1911,21 +1935,39 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                         </div>
                       </div>
 
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 shadow-2xs"
-                        download
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>تحميل</span>
-                      </a>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cardToEdit = activeQuickResourceModal;
+                            setActiveQuickResourceModal(null);
+                            setEditingQuickResource(cardToEdit);
+                          }}
+                          className="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 p-1.5 rounded-lg text-xs transition cursor-pointer border border-slate-200"
+                          title="تعديل هذا الرابط"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 shadow-2xs"
+                          download
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>تحميل</span>
+                        </a>
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-500">
+                  لا توجد روابط تحميل مرفقة حالياً. انقر على زر "تعديل روابط التحميل" بالأعلى لإضافة ملفات ومذكرات.
+                </div>
+              )}
+            </div>
 
             {/* Modal Footer */}
             <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
@@ -1939,20 +1981,18 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
               </a>
 
               <div className="flex items-center gap-2">
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const cardToEdit = activeQuickResourceModal;
-                      setActiveQuickResourceModal(null);
-                      setEditingQuickResource(cardToEdit);
-                    }}
-                    className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
-                  >
-                    <Edit3 className="w-3.5 h-3.5 text-amber-600" />
-                    <span>تعديل المرفقات والروابط</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cardToEdit = activeQuickResourceModal;
+                    setActiveQuickResourceModal(null);
+                    setEditingQuickResource(cardToEdit);
+                  }}
+                  className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                  <span>تعديل المقال والمرفقات والروابط</span>
+                </button>
                 <button
                   onClick={() => setActiveQuickResourceModal(null)}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer"

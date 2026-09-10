@@ -29,6 +29,7 @@ interface QuickResourceEditorModalProps {
   card: QuickResourceCard;
   onClose: () => void;
   onSave: (updated: QuickResourceCard) => void;
+  initialTab?: "content" | "images" | "downloads";
 }
 
 export const QuickResourceEditorModal: React.FC<QuickResourceEditorModalProps> = ({
@@ -36,11 +37,12 @@ export const QuickResourceEditorModal: React.FC<QuickResourceEditorModalProps> =
   card,
   onClose,
   onSave,
+  initialTab = "content",
 }) => {
   if (!isOpen) return null;
 
   // Tabs: basic & article / images / download links
-  const [activeTab, setActiveTab] = useState<"content" | "images" | "downloads">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "images" | "downloads">(initialTab);
 
   // Basic Info
   const [title, setTitle] = useState(card.title || "");

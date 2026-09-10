@@ -757,10 +757,6 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           isAdmin={adminSession.isAdmin}
           isManager={isManager}
           onEdit={(topic) => {
-            if (!adminSession.isAdmin) {
-              setIsLoginModalOpen(true);
-              return;
-            }
             setReadingTopic(null);
             setEditingTopic(topic);
             setIsEditorOpen(true);

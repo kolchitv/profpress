@@ -15,6 +15,7 @@ import { TabKey, AdminSession } from "../types";
 import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
 import { CompetitionTopicEditorModal } from "./CompetitionTopicEditorModal";
 import { QuickResourceEditorModal } from "./QuickResourceEditorModal";
+import { PrimaryKnowledgeInspectionView } from "./PrimaryKnowledgeInspectionView";
 import {
   FileText,
   Megaphone,
@@ -68,6 +69,7 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
   });
 
   const [editMode, setEditMode] = useState(false);
+  const [activeInspectionView, setActiveInspectionView] = useState<"primary_knowledge" | "overview">("primary_knowledge");
   const [selectedCycle, setSelectedCycle] = useState<"all" | "primary" | "secondary" | "planning" | "finance">("all");
 
   // Modals state
@@ -532,6 +534,38 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
         </div>
       )}
 
+      {/* Top View Selector Tabs (Matches exact user requirement) */}
+      <div className="flex items-center justify-center sm:justify-start gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+        <button
+          onClick={() => setActiveInspectionView("primary_knowledge")}
+          className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer flex items-center justify-center gap-2 ${
+            activeInspectionView === "primary_knowledge"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "text-slate-700 hover:text-slate-950 hover:bg-slate-200/60"
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-amber-300" />
+          <span>اختبار المعارف - مسلك الابتدائي (ProfPress)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveInspectionView("overview")}
+          className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition cursor-pointer flex items-center justify-center gap-2 ${
+            activeInspectionView === "overview"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-700 hover:text-slate-950 hover:bg-slate-200/60"
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>جميع مسالك وفضاءات التفتيش</span>
+        </button>
+      </div>
+
+      {/* Render Specific Primary Knowledge View if active */}
+      {activeInspectionView === "primary_knowledge" ? (
+        <PrimaryKnowledgeInspectionView onBackToAllTracks={() => setActiveInspectionView("overview")} />
+      ) : (
+        <>
       {/* ====================================================================== */}
       {/* 1. TOP HERO HEADER & TWO DASHED CARDS (Capture d’écran 2026-09-08 133042.jpg) */}
       {/* ====================================================================== */}
@@ -831,6 +865,8 @@ export const InspectionCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) 
           );
         })}
       </div>
+      </>
+      )}
 
       {/* ====================================================================== */}
       {/* 3. ACTIVE ACTION MODAL (Detailed Study View, Downloads, Articles, QCM) */}

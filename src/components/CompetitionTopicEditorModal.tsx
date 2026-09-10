@@ -39,6 +39,7 @@ interface CompetitionTopicEditorModalProps {
   subject: CompetitionSubject;
   initialAction?: CompetitionSubAction | null;
   onSaveAction: (savedAction: CompetitionSubAction) => void;
+  initialTab?: "content" | "downloads" | "preview";
 }
 
 export const CompetitionTopicEditorModal: React.FC<CompetitionTopicEditorModalProps> = ({
@@ -47,11 +48,12 @@ export const CompetitionTopicEditorModal: React.FC<CompetitionTopicEditorModalPr
   subject,
   initialAction,
   onSaveAction,
+  initialTab = "content",
 }) => {
   if (!isOpen) return null;
 
   // Active Tab: content | downloads | preview
-  const [activeTab, setActiveTab] = useState<"content" | "downloads" | "preview">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "downloads" | "preview">(initialTab);
 
   // Topic Metadata
   const [title, setTitle] = useState(initialAction?.title || "ملخصات مركزة وموارد جديدة");

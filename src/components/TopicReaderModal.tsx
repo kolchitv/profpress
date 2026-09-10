@@ -209,17 +209,17 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0">
-            {isAdmin && (
-              <button
-                type="button"
-                onClick={() => onEdit(topic)}
-                className="p-2 rounded-xl text-slate-600 hover:text-blue-800 hover:bg-blue-50 transition cursor-pointer"
-                title="تعديل في المحرر الداخلي (خاص بالمدير)"
-              >
-                <Edit3 className="w-4 h-4" />
-              </button>
-            )}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => onEdit(topic)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+              title="تعديل المقال والمعطيات وروابط التحميل"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>تعديل المقال</span>
+            </button>
+
             <button
               type="button"
               onClick={onClose}
@@ -340,12 +340,24 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
                   </span>
                 </div>
 
-                {gatewaySettings.isEnabled && (
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full self-start sm:self-auto flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-amber-600" />
-                    <span>بوابة التحميل الآمن نشطة</span>
-                  </span>
-                )}
+                <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(topic)}
+                    className="text-[11px] bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3 py-1 rounded-xl flex items-center gap-1 transition shadow-2xs cursor-pointer"
+                    title="تعديل الروابط وإضافة ملفات جديدة"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    <span>تعديل روابط التحميل</span>
+                  </button>
+
+                  {gatewaySettings.isEnabled && (
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Zap className="w-3 h-3 text-amber-600" />
+                      <span>بوابة التحميل الآمن نشطة</span>
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Primary Download Button */}
