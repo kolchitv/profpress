@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منهاج اللغة العربية EILE - المستوى الثاني A2 الشامل</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Cairo, Fredoka & Noto Naskh Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Fredoka:wght@400;600;700&family=Noto+Naskh+Arabic:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Cairo', system-ui, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-fr { font-family: 'Fredoka', system-ui, sans-serif; }
+    .font-naskh { font-family: 'Noto Naskh Arabic', serif; }
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .animate-gentle { animation: pulse-gentle 2.2s infinite ease-in-out; }
+    .paper-lines {
+      background-image: linear-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 100% 28px;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .unit-pill-active {
+      background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+      border-color: #059669 !important;
+    }
+    .support-pill-active {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+      border-color: #b45309 !important;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100 min-h-screen text-slate-800 flex flex-col antialiased">
+
+  <!-- Top Super Title Bar: SAID EILE العربية -->
+  <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-900 text-white py-1.5 px-4 shadow-sm border-b border-emerald-700/40">
+    <div class="max-w-6xl mx-auto flex items-center justify-between text-xs sm:text-sm">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base sm:text-lg text-amber-400">🇲🇦</span>
+        <span class="font-fr font-black tracking-wider text-amber-300 text-xs sm:text-sm">SAID EILE</span>
+        <span class="text-emerald-400/60 font-bold">•</span>
+        <span class="font-naskh font-black text-sm sm:text-base text-white tracking-wide">Arabe • العَرَبِيَّةُ</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="hidden sm:inline-block text-[11px] text-emerald-200 font-medium">البرنامج السنوي للغة العربية والثقافة المغربية • المستوى الثاني الكامل</span>
+        <span class="text-[10px] bg-amber-500/90 text-slate-950 border border-amber-300 px-2.5 py-0.5 rounded-full font-fr font-black tracking-wide">CECRL A2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-white/90 backdrop-blur sticky top-0 z-40 border-b border-teal-100 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
+      <!-- Brand & Level -->
+      <div class="flex items-center gap-3">
+        <div id="unitLogoBadge" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-800 text-white flex items-center justify-center text-2xl shadow-md transition">
+          🏫
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-fr font-black text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">SAID EILE</span>
+            <span class="text-xs bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full font-fr font-black">NIVEAU A2</span>
+          </div>
+          <h1 class="text-base sm:text-lg font-black text-emerald-950 flex items-center gap-2 leading-tight mt-0.5">
+            <span class="font-fr font-black tracking-wide text-emerald-800">Arabe</span>
+            <span class="text-emerald-400/60 font-bold">•</span>
+            <span class="font-naskh">العَرَبِيَّةُ</span>
+          </h1>
+          <p id="unitSubtitleHeader" class="text-[11px] text-slate-500 font-bold">الوَحْدَةُ 1: الحَيَاةُ فِي المَدْرَسَةِ وَالبَيْتِ</p>
+        </div>
+      </div>
+
+      <!-- Controls: Sound, Audio Test, Help, Stars -->
+      <div class="flex items-center gap-2">
+        <button id="btnSoundToggle" onclick="toggleSoundSystem()" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition flex items-center gap-1.5 shadow-sm">
+          <span id="soundIcon">🔊</span>
+          <span class="hidden sm:inline font-fr" id="soundLabel">Son: Actif</span>
+        </button>
+
+        <button onclick="testWelcomeAudio()" title="Tester le son arabe" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition flex items-center gap-1 shadow-sm">
+          <span>📢</span>
+          <span class="hidden sm:inline">تَجْرِبَةُ الصَّوْتِ</span>
+        </button>
+
+        <div class="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 px-3 py-1.5 rounded-xl font-black text-sm shadow-md">
+          <span class="text-base">⭐</span>
+          <span id="starCounter">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Ribbon with All 6 Units and Evaluation/Support Stations -->
+  <nav class="max-w-6xl mx-auto px-4 mt-3 w-full">
+    <div class="bg-white/95 backdrop-blur border border-emerald-100 rounded-3xl p-3 shadow-sm">
+      
+      <!-- Top header line with Unit Switch Buttons & active tab info -->
+      <div class="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-slate-100 flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-black text-emerald-950 bg-emerald-100/90 px-3 py-1 rounded-2xl flex items-center gap-1 shadow-xs">
+            <span>🗺️</span>
+            <span>مَحَطَّاتُ المِنْهَاجِ :</span>
+          </span>
+
+          <span id="activeTabIndicatorLabel" class="text-xs font-bold text-slate-600 hidden md:inline">
+            1. التَّعْبِيرُ الشَّفَوِيُّ وَالتَّوَاصُلُ
+          </span>
+        </div>
+
+        <!-- Previous / Next Controls -->
+        <div class="flex items-center gap-1.5">
+          <button onclick="navigateTabStep(-1)" title="المحطة السابقة" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-800 text-xs font-bold transition flex items-center gap-1 active:scale-95">
+            <span>⬅️</span>
+            <span class="hidden md:inline">السَّابِق</span>
+          </button>
+          <button onclick="navigateTabStep(1)" title="المحطة التالية" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
+            <span class="hidden md:inline">التَّالِي</span>
+            <span>➡️</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Unit Selector Pills Container (6 Units + Support Stations) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar" id="unitsSelectorRibbon">
+        <!-- Injected dynamically by JS -->
+      </div>
+
+      <!-- 7 Sub-Stations Dynamic Buttons Ribbon (visible inside regular units) -->
+      <div class="grid grid-flow-col auto-cols-[145px] sm:auto-cols-[160px] md:grid-flow-row md:grid-cols-7 gap-2 overflow-x-auto pt-2 border-t border-slate-100 no-scrollbar" id="ribbonButtonsContainer">
+        <!-- Injected and updated dynamically via switchItem() -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- Audio Banner Alert -->
+  <div id="speakingBanner" class="hidden max-w-6xl mx-auto px-4 mt-2 w-full">
+    <div class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center justify-between shadow-sm animate-pulse">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📢</span>
+        <span id="speakingTextContent">...</span>
+      </div>
+      <span class="text-[11px] font-fr bg-emerald-700 px-2 py-0.5 rounded-lg">Écoute bien !</span>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 py-4 flex-1 w-full" id="mainContentContainer">
+
+    <!-- ======================================================== -->
+    <!-- DEDICATED SUPPORT & EVALUATION VIEW (Between Units) -->
+    <!-- ======================================================== -->
+    <div id="view-support-station" class="hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-amber-300 shadow-md">
+        <div class="flex items-center justify-between pb-3 border-b border-amber-100 mb-4 flex-wrap gap-2">
+          <div>
+            <div class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 px-3 py-0.5 rounded-full text-xs font-black mb-1">
+              <span>🎯</span> <span id="supportBadgeTitle">أَنْشِطَةُ التَّقْوِيمِ وَالدَّعْمِ</span>
+            </div>
+            <h2 id="supportMainTitle" class="text-base sm:text-xl font-black text-amber-950 flex items-center gap-2">
+              <span>🏆</span>
+              <span>مُرَاجَعَةُ وَتَثْبِيتُ حُرُوفِ وَتَعَلُّمَاتِ الوَحْدَةِ</span>
+            </h2>
+            <p id="supportMainDesc" class="text-xs text-slate-500 font-fr mt-0.5">
+              Consolidation, discrimination auditive, dictée et entraînement interactif.
+            </p>
+          </div>
+          <button onclick="testSupportAudio()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-black flex items-center gap-1 shadow-sm transition">
+            <span>🔊</span> <span>اسْتَمِعْ لِلتَّعْلِيمَاتِ</span>
+          </button>
+        </div>
+
+        <!-- 3 Interactive Support Columns -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Col 1: Letters Audio Discrimination & Practice (5 cols) -->
+          <div class="lg:col-span-5 bg-gradient-to-b from-amber-50/50 to-orange-50/40 p-4 rounded-2xl border border-amber-200 space-y-3">
+            <h3 class="text-xs font-black text-amber-950 flex items-center gap-1.5">
+              <span>🔤</span> <span>شَجَرَةُ الحُرُوفِ وَالتَّمْيِيزُ السَّمْعِيُّ</span>
+            </h3>
+            <p class="text-[11px] text-slate-600">انْقُرْ عَلَى كُلِّ حَرْفٍ لِتَذَكُّرِ صَوْتِهِ وَكَلِمَتِهِ النَّمُوذَجِيَّةِ:</p>
+            <div id="supportLettersGrid" class="grid grid-cols-5 gap-2 text-center"></div>
+
+            <!-- Missing Letter Challenge -->
+            <div class="bg-white p-3.5 rounded-xl border border-amber-200 mt-3 shadow-xs">
+              <span class="text-[11px] font-black text-slate-700 block mb-1">تَحَدِّي الحَرْفِ النَّاقِصِ (Compléter le mot) :</span>
+              <div class="flex items-center justify-between bg-amber-50 p-2.5 rounded-xl border border-amber-200 my-2">
+                <span id="supportTargetWordDisplay" class="text-2xl font-black text-emerald-900 font-naskh">...</span>
+                <button onclick="speakSupportWordAudio()" class="px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg shadow-xs">
+                  <span>🔊 نُطْقٌ</span>
+                </button>
+              </div>
+              <div id="supportLetterOptions" class="grid grid-cols-5 gap-1.5"></div>
+            </div>
+          </div>
+
+          <!-- Col 2: Interactive Letter Tracing / Dictation Slate (7 cols) -->
+          <div class="lg:col-span-7 bg-white p-4 rounded-2xl border border-amber-200 flex flex-col justify-between shadow-xs">
+            <div>
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
+                <h3 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <span>✍️</span> <span>سَبُّورَةُ الخَطِّ وَالإِمْلَاءِ التَّفَاعُلِيَّةِ</span>
+                </h3>
+                <button onclick="clearSupportCanvas()" class="text-rose-600 font-bold text-xs hover:underline">
+                  مَسْحُ اللَّوْحَةِ
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2 font-fr">
+                Écris le mot ou la lettre dictée à l'aide de la souris ou de ton doigt :
+              </p>
+              <div class="bg-amber-50/40 p-3 rounded-xl border border-dashed border-amber-300 paper-lines">
+                <div class="relative w-full h-44 bg-transparent">
+                  <canvas id="supportCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                  <div id="supportGhostWord" class="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl font-black text-amber-300/60 pointer-events-none select-none font-naskh">...</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+              <span class="text-xs font-bold text-emerald-800">صَفِّقْ لِنَفْسِكَ عِنْدَ إِتْمَامِ الكِتَابَةِ !</span>
+              <div class="flex items-center gap-2">
+                <button onclick="addStars(2); speakDialogue('أَحْسَنْتَ صُنْعًا يَا بَطَلَ الدَّعْمِ وَالتَّقْوِيمِ !');" class="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-xs rounded-xl shadow-xs transition">
+                  ⭐ نَجْمَتَانِ تَشْجِيعِيَّتَانِ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- STANDARD UNIT TABS (1 to 7) -->
+    <!-- ======================================================== -->
+
+    <!-- TAB 1: التعبير الشفوي والتواصل -->
+    <div id="tab-oral" class="tab-content block space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 flex-wrap gap-2">
+          <div>
+            <h2 id="oralMainTitle" class="text-base sm:text-lg font-black text-emerald-950 flex items-center gap-2">
+              <span>🗣️</span>
+              <span>التَّعْبِيرُ الشَّفَوِيُّ وَالتَّوَاصُلُ (Expression Orale A2)</span>
+            </h2>
+            <p id="oralMainDesc" class="text-xs text-slate-500 font-fr mt-0.5">
+              Objectifs A2 du programme annuel.
+            </p>
+          </div>
+          <span class="text-xs bg-emerald-100 text-emerald-900 font-black px-3 py-1 rounded-xl font-fr">الحصص 1 إلى 5</span>
+        </div>
+
+        <!-- Dialogue Cards Grid (Injected by JS according to Unit) -->
+        <div id="oralCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 mb-5"></div>
+
+        <!-- Interactive Parler en continu (Continuous Speech Builder) -->
+        <div id="oralContinuousBox" class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 rounded-2xl border-2 border-amber-200"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: القراءة ونصوص الحروف -->
+    <div id="tab-reading" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 flex-wrap gap-2">
+          <div>
+            <h2 id="readingMainTitle" class="text-base sm:text-lg font-black text-emerald-950 flex items-center gap-2">
+              <span>📖</span>
+              <span>القِرَاءَةُ وَفَهْمُ المَقْرُوءِ (Lecture & Compréhension A2)</span>
+            </h2>
+            <p id="readingMainDesc" class="text-xs text-slate-500 font-fr mt-0.5">
+              Textes courts d'apprentissage de l'unité.
+            </p>
+          </div>
+          <!-- Letters Selector Buttons -->
+          <div id="readingLetterButtons" class="flex items-center gap-1"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Text Reader Display (7 cols) -->
+          <div class="lg:col-span-7 bg-gradient-to-b from-white to-slate-50 p-5 rounded-2xl border-2 border-emerald-100 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200">
+                <span id="readingBadge" class="text-xs font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg font-fr">Texte</span>
+                <button onclick="speakCurrentReadingText()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-xs">
+                  <span>🔊</span>
+                  <span>قِرَاءَةُ النَّصِّ نَمُوذَجِيًّا</span>
+                </button>
+              </div>
+
+              <!-- Big Reading Text -->
+              <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200 mb-4 min-h-[130px] flex items-center justify-center">
+                <p id="readingTextContent" class="text-lg sm:text-xl font-black text-emerald-950 font-naskh leading-loose text-center">...</p>
+              </div>
+
+              <div class="mb-3">
+                <span class="text-xs font-bold text-slate-700 block mb-2">كَلِمَاتٌ بَصَرِيَّةٌ رَئِيسِيَّةٌ (Mots repères) :</span>
+                <div id="readingKeywordsGrid" class="flex flex-wrap gap-2"></div>
+              </div>
+            </div>
+
+            <!-- Reading comprehension question -->
+            <div class="p-3 bg-white rounded-xl border border-emerald-200">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-emerald-900">سُؤَالُ فَهْمِ المَقْرُوءِ :</span>
+                <span class="text-[10px] text-slate-400 font-fr">Compréhension</span>
+              </div>
+              <div id="readingQuestionAr" class="text-xs font-black text-slate-800 mb-2">...</div>
+              <div id="readingOptionsGrid" class="grid grid-cols-2 gap-2"></div>
+            </div>
+          </div>
+
+          <!-- Letter Formats & Guided Practice (5 cols) -->
+          <div class="lg:col-span-5 bg-white p-5 rounded-2xl border-2 border-emerald-100 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-black text-slate-800 text-sm mb-2 flex items-center gap-1.5">
+                <span>✍️</span>
+                <span id="letterPracticeTitle">مَوَاضِعُ الحَرْفِ وَتَطْبِيقَاتُهُ</span>
+              </h3>
+              <p class="text-xs text-slate-500 mb-3 font-fr">Observe la lettre dans ses différentes positions :</p>
+              <div id="readingPositionsGrid" class="grid grid-cols-3 gap-2 mb-4 text-center"></div>
+
+              <!-- Interactive Trace Mini Canvas -->
+              <div class="bg-amber-50/50 p-3 rounded-xl border border-dashed border-emerald-300 paper-lines">
+                <div class="flex justify-between items-center mb-1 text-[11px] text-slate-500 font-fr">
+                  <span>Tracé du mot</span>
+                  <button onclick="clearReadingCanvas()" class="text-rose-600 font-bold hover:underline">Effacer</button>
+                </div>
+                <div class="relative w-full h-32 bg-transparent">
+                  <canvas id="readingCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                  <div id="readingGhostWord" class="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl font-black text-emerald-200/60 pointer-events-none select-none font-naskh">...</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center">
+              <span class="text-xs text-slate-500 font-fr">Bravo pour ta lecture !</span>
+              <button onclick="addStars(1); speakDialogue('أَحْسَنْتَ القِرَاءَةَ يَا بَطَلُ !');" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-bold rounded-xl shadow-xs transition">
+                ⭐ صَفِّقْ لِي
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: الصرف والتراكيب -->
+    <div id="tab-grammar" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md" id="grammarContainer"></div>
+    </div>
+
+    <!-- TAB 4: الإملاء والخط -->
+    <div id="tab-spelling" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md" id="spellingContainer"></div>
+    </div>
+
+    <!-- TAB 5: الثقافة المغربية -->
+    <div id="tab-culture" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md" id="cultureContainer"></div>
+    </div>
+
+    <!-- TAB 6: التطبيقات الكتابية ومشروع الوحدة -->
+    <div id="tab-writing" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md" id="writingContainer"></div>
+    </div>
+
+    <!-- TAB 7: تحدي الأبطال والتقويم الشامل -->
+    <div id="tab-quiz" class="tab-content hidden space-y-4">
+      <div class="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md max-w-2xl mx-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h2 id="quizHeaderTitle" class="text-base sm:text-lg font-black text-emerald-950 flex items-center gap-2">
+            <span>🏆</span>
+            <span>تَحَدِّي الأَبْطَالِ (Grand Défi A2)</span>
+          </h2>
+          <span id="quizProgress" class="text-xs font-black text-emerald-800 bg-emerald-100 px-3 py-1 rounded-xl">السؤال 1</span>
+        </div>
+
+        <div id="quizContainer">
+          <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 mb-4 text-center">
+            <button onclick="speakQuizQuestion()" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow hover:bg-emerald-700 transition mb-2">
+              <span>🔊</span>
+              <span>اسْتَمِعْ لِلسُّؤَالِ</span>
+            </button>
+            <div id="quizQuestionAr" class="text-base sm:text-lg font-black text-emerald-950 leading-relaxed font-naskh">...</div>
+            <div id="quizQuestionFr" class="text-xs text-slate-500 font-fr mt-1">...</div>
+          </div>
+          <div id="quizOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <div id="quizFinishedBox" class="hidden text-center py-6">
+          <div class="text-6xl mb-2 animate-bounce">🎉</div>
+          <h3 class="text-xl font-black text-emerald-950 font-naskh">هَنِيئًا لَكَ يَا بَطَلَ المِسْتَوَى الثَّانِي !</h3>
+          <p class="text-xs text-slate-500 font-fr mt-1 mb-4">Tu as validé les compétences avec succès !</p>
+          <button onclick="restartQuiz()" class="px-5 py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow hover:bg-emerald-700 transition">
+            إِعَادَةُ التَّحَدِّي (Recommencer)
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    /* --- APPLICATION STATE --- */
+    const state = {
+      stars: 0,
+      soundEnabled: true,
+      audioCtx: null,
+      currentType: 'unit', // 'unit' or 'support'
+      currentUnitNum: 1,   // 1 to 6
+      currentSupportNum: 1,// 1 to 6
+      activeTab: 'oral',
+      currentReadingLetter: null,
+      // Support missing letter state
+      currentSupportWordIdx: 0,
+      // Quiz state
+      quizIndex: 0
+    };
+
+    /* --- CURRICULUM DATABASE: ALL 6 UNITS OF A2 SYLLABUS --- */
+    const unitsData = {
+      1: {
+        titleAr: 'الوَحْدَةُ 1: الحَيَاةُ فِي المَدْرَسَةِ وَالبَيْتِ',
+        titleFr: 'La vie à l\'école et à la maison',
+        logo: '🏫',
+        lettersOrder: ['k', 'b', 't', 'm', 'n'],
+        defaultLetter: 'k',
+        reading: {
+          k: {
+            letter: 'ك', titleFr: 'Lettre Kaf (ك)',
+            text: 'كَرِيمٌ تِلْمِيذٌ فِي المَدْرَسَةِ. يَحْمِلُ كِتَابًا وَدَفْتَرًا فِي مِحْفَظَتِهِ، وَيَجْلِسُ فِي قِسْمِهِ بِهُدُوءٍ.',
+            keywords: [{ ar: 'كَرِيمٌ', fr: 'Karim' }, { ar: 'كِتَابًا', fr: 'Un livre' }, { ar: 'مِحْفَظَةٌ', fr: 'Cartable' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'كـ', example: 'كِـتَابٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـكـ', example: 'مَـكْـتَبٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـك / ك', example: 'دِيـكٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا يَحْمِلُ كَرِيمٌ فِي مِحْفَظَتِهِ ؟',
+              options: [{ text: 'كِتَابًا وَدَفْتَرًا', isCorrect: true }, { text: 'تُفَّاحَةً وَعَصِيرًا', isCorrect: false }]
+            }
+          },
+          b: {
+            letter: 'ب', titleFr: 'Lettre Ba (ب)',
+            text: 'بِلَالٌ وَلَدٌ نَشِيطٌ. يَسْتَيْقِظُ فِي الصَّبَاحِ البَاكِرِ، يَلْبَسُ ثِيَابَهُ، وَيَذْهَبُ إِلَى بَابِ المَدْرَسَةِ سَعِيدًا.',
+            keywords: [{ ar: 'بِلَالٌ', fr: 'Bilal' }, { ar: 'بَابٌ', fr: 'Porte' }, { ar: 'صَبَاحٌ', fr: 'Matin' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'بـ', example: 'بِـلَالٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـبـ', example: 'صَـبَـاحٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـب / ب', example: 'بَـابٌ' }
+            ],
+            question: {
+              ar: 'إِلَى أَيْنَ يَذْهَبُ بِلَالٌ فِي الصَّبَاحِ ؟',
+              options: [{ text: 'إِلَى بَابِ المَدْرَسَةِ', isCorrect: true }, { text: 'إِلَى الحَدِيقَةِ', isCorrect: false }]
+            }
+          },
+          t: {
+            letter: 'ت', titleFr: 'Lettre Ta (ت)',
+            text: 'تَرْسُمُ تَسْنِيمُ عَلَمَ المَغْرِبِ فِي دَفْتَرِهَا. لَوَّنَتِ العَلَمَ بِالأَحْمَرِ وَالنَّجْمَةَ الخُمَاسِيَّةَ بِالأَخْضَرِ.',
+            keywords: [{ ar: 'تَسْنِيمُ', fr: 'Tasnim' }, { ar: 'تَرْسُمُ', fr: 'Elle dessine' }, { ar: 'دَفْتَرٌ', fr: 'Cahier' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'تـ', example: 'تَـسْنِيمُ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـتـ', example: 'دَفْـتَـرٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـت / ت', example: 'بَيْـتٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا تَرْسُمُ تَسْنِيمُ فِي دَفْتَرِهَا ؟',
+              options: [{ text: 'عَلَمَ المَغْرِبِ', isCorrect: true }, { text: 'شَجَرَةً كَبِيرَةً', isCorrect: false }]
+            }
+          },
+          m: {
+            letter: 'م', titleFr: 'Lettre Mim (م)',
+            text: 'مَرْيَمُ تُحِبُّ مُعَلِّمَهَا فِي القِسْمِ. تَسْتَمِعُ إِلَى الدَّرْسِ بِاهْتِمَامٍ، وَتَكْتُبُ بِقَلَمِهَا عَلَى السَّبُّورَةِ.',
+            keywords: [{ ar: 'مَرْيَمُ', fr: 'Maryam' }, { ar: 'مُعَلِّمٌ', fr: 'Enseignant' }, { ar: 'مَدْرَسَةٌ', fr: 'École' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'مـ', example: 'مَـدْرَسَةٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـمـ', example: 'قَـلَـمٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـم / م', example: 'مُعَلِّـمٌ' }
+            ],
+            question: {
+              ar: 'كَيْفَ تَسْتَمِعُ مَرْيَمُ إِلَى الدَّرْسِ ؟',
+              options: [{ text: 'بِاهْتِمَامٍ وَتَرْكِيزٍ', isCorrect: true }, { text: 'بِكَسَلٍ', isCorrect: false }]
+            }
+          },
+          n: {
+            letter: 'ن', titleFr: 'Lettre Noun (ن)',
+            text: 'نَبِيلٌ وَنَدَى فِي نَادِي القِرَاءَةِ. يَقْرَأُ نَبِيلٌ نَصًّا جَمِيلًا عَنْ وَطَنِهِ، وَتَسْتَمِعُ نَدَى بِفَرَحٍ.',
+            keywords: [{ ar: 'نَبِيلٌ', fr: 'Nabil' }, { ar: 'نَدَى', fr: 'Nada' }, { ar: 'نَادِي', fr: 'Club' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'نـ', example: 'نَـبِيلٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـنـ', example: 'تَسْـنِـيمُ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـن / ن', example: 'وَطَـنٌ' }
+            ],
+            question: {
+              ar: 'أَيْنَ يَتَوَاجَدُ نَبِيلٌ وَنَدَى ؟',
+              options: [{ text: 'فِي نَادِي القِرَاءَةِ', isCorrect: true }, { text: 'فِي المَلْعَبِ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'مَا هُوَ لَوْنُ عَلَمِ المَمْلَكَةِ المَغْرِبِيَّةِ ؟',
+            qFr: 'Quelle est la couleur du drapeau marocain ?',
+            options: [{ text: 'أَحْمَرُ تَتَوَسَّطُهُ نَجْمَةٌ خَضْرَاءُ', isCorrect: true }, { text: 'أَزْرَقُ وَأَبْيَضُ', isCorrect: false }]
+          },
+          {
+            qAr: 'كَلِمَةُ (يَكْتُبُ) هِيَ :',
+            qFr: 'Le mot (yaktoubou) est :',
+            options: [{ text: 'فِعْلٌ (Verbe)', isCorrect: true }, { text: 'اسْمٌ (Nom)', isCorrect: false }]
+          }
+        ]
+      },
+
+      2: {
+        titleAr: 'الوَحْدَةُ 2: الحَيَاةُ فِي الأُسْرَةِ وَالبَيْتِ',
+        titleFr: 'La vie en famille et à la maison',
+        logo: '🏡',
+        lettersOrder: ['l', 'w', 'd', 'r', 's'],
+        defaultLetter: 'l',
+        reading: {
+          l: {
+            letter: 'ل', titleFr: 'Lettre Lam (ل)',
+            text: 'أَنَا أَسْكُنُ فِي مَنْزِلٍ جَمِيلٍ مَعَ عَائِلَتِي. لَنَا حَدِيقَةٌ خَضْرَاءُ فِيهَا أَزْهَارٌ لَطِيفَةٌ.',
+            keywords: [{ ar: 'مَنْزِلٌ', fr: 'Maison' }, { ar: 'عَائِلَةٌ', fr: 'Famille' }, { ar: 'حَدِيقَةٌ', fr: 'Jardin' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'لـ', example: 'لَـطِيفٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـلـ', example: 'مَـنْـزِلٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـل / ل', example: 'جَمِيـلٌ' }
+            ],
+            question: {
+              ar: 'مَعَ مَنْ يَسْكُنُ الوَلَدُ فِي المَنْزِلِ ؟',
+              options: [{ text: 'مَعَ عَائِلَتِهِ', isCorrect: true }, { text: 'وَحْدَهُ', isCorrect: false }]
+            }
+          },
+          w: {
+            letter: 'و', titleFr: 'Lettre Waw (و)',
+            text: 'تَتَكَوَّنُ أُسْرَتِي مِنَ الوَالِدَيْنِ وَالإِخْوَةِ. نَعِيشُ فِي مَوَدَّةٍ وَسَعَادَةٍ دَاخِلَ بَيْتِنَا.',
+            keywords: [{ ar: 'وَالِدَانِ', fr: 'Parents' }, { ar: 'مَوَدَّةٌ', fr: 'Affection' }, { ar: 'وَرْدَةٌ', fr: 'Rose' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'و...', example: 'وَالِـدٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: '...ـو...', example: 'مَـوَدَّةٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: '...و', example: 'بَـهْـوٌ' }
+            ],
+            question: {
+              ar: 'كَيْفَ تَعِيشُ الأُسْرَةُ فِي البَيْتِ ؟',
+              options: [{ text: 'فِي مَوَدَّةٍ وَسَعَادَةٍ', isCorrect: true }, { text: 'فِي حُزْنٍ', isCorrect: false }]
+            }
+          },
+          d: {
+            letter: 'د', titleFr: 'Lettre Dal (د)',
+            text: 'دَارُنَا دَافِئَةٌ وَوَاسِعَةٌ. نَجْلِسُ فِي غُرْفَةِ الجُلُوسِ وَنَتَحَدَّثُ حَوْلَ المَائِدَةِ.',
+            keywords: [{ ar: 'دَارٌ', fr: 'Maison' }, { ar: 'دَافِئَةٌ', fr: 'Chaleureuse' }, { ar: 'مَائِدَةٌ', fr: 'Table' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'د...', example: 'دَارٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: '...ـد...', example: 'حَدِيـقَةٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: '...د', example: 'وَلَـدٌ' }
+            ],
+            question: {
+              ar: 'أَيْنَ تَجْلِسُ العَائِلَةُ لِلْحَدِيثِ ؟',
+              options: [{ text: 'فِي غُرْفَةِ الجُلُوسِ', isCorrect: true }, { text: 'فِي الشَّارِعِ', isCorrect: false }]
+            }
+          },
+          r: {
+            letter: 'ر', titleFr: 'Lettre Ra (ر)',
+            text: 'رَسَمَ رَشِيدٌ صُورَةً رَائِعَةً لِجَدِّهِ وَجَدَّتِهِ فِي حَفْلِ العَقِيقَةِ.',
+            keywords: [{ ar: 'رَسَمَ', fr: 'Il a dessiné' }, { ar: 'رَشِيدٌ', fr: 'Rachid' }, { ar: 'صُورَةٌ', fr: 'Image' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ر...', example: 'رَسَمَ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: '...ـر...', example: 'أُسْـرَةٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: '...ر', example: 'دَارٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا رَسَمَ رَشِيدٌ ؟',
+              options: [{ text: 'صُورَةً رَائِعَةً لِجَدِّهِ وَجَدَّتِهِ', isCorrect: true }, { text: 'سَيَّارَةً', isCorrect: false }]
+            }
+          },
+          s: {
+            letter: 'س', titleFr: 'Lettre Sin (س)',
+            text: 'سَاعَدَتْ سَلْمَى أُمَّهَا فِي تَرْتِيبِ السَّرِيرِ، وَوَضَعَتِ الكُتُبَ فَوْقَ المَكْتَبِ.',
+            keywords: [{ ar: 'سَلْمَى', fr: 'Salma' }, { ar: 'سَرِيرٌ', fr: 'Lit' }, { ar: 'سَاعَدَتْ', fr: 'Elle a aidé' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'سـ', example: 'سَـرِيرٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـسـ', example: 'أَسْـكُنُ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـس / س', example: 'جَلَـسَ' }
+            ],
+            question: {
+              ar: 'مَاذَا رَتَّبَتْ سَلْمَى مَعَ أُمِّهَا ؟',
+              options: [{ text: 'السَّرِيرَ وَالمَكْتَبَ', isCorrect: true }, { text: 'السَّيَّارَةَ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'جُمْلَةُ: (يَرْسُمُ عُمَرُ صُورَةً) هِيَ جُمْلَةٌ :',
+            qFr: 'La phrase (Yarsumu Omar...) est une phrase :',
+            options: [{ text: 'فِعْلِيَّةٌ (تبدأ بفعل)', isCorrect: true }, { text: 'اسْمِيَّةٌ', isCorrect: false }]
+          }
+        ]
+      },
+
+      3: {
+        titleAr: 'الوَحْدَةُ 3: الحَيَاةُ فِي المَدِينَةِ وَالقَرْيَةِ',
+        titleFr: 'La vie en ville et au village',
+        logo: '🏙️',
+        lettersOrder: ['h', 'q', 'ain', 'taa', 'yaa'],
+        defaultLetter: 'h',
+        reading: {
+          h: {
+            letter: 'ح', titleFr: 'Lettre Haa (ح)',
+            text: 'فِي الحَدِيقَةِ العَامَّةِ حَوْضُ أَزْهَارٍ جَمِيلٌ. يَرْكَبُ حُسَامٌ دَرَّاجَتَهُ بِحَذَرٍ فِي شَوَارِعِ المَدِينَةِ.',
+            keywords: [{ ar: 'حَدِيقَةٌ', fr: 'Jardin' }, { ar: 'حُسَامٌ', fr: 'Houssam' }, { ar: 'حَوْضٌ', fr: 'Bassin' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'حـ', example: 'حَـدِيقَةٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـحـ', example: 'سَـحَـابٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـح / ح', example: 'تُفَّـاحٌ' }
+            ],
+            question: {
+              ar: 'أَيْنَ يَرْكَبُ حُسَامٌ دَرَّاجَتَهُ ؟',
+              options: [{ text: 'فِي الحَدِيقَةِ وَالشَّوَارِعِ', isCorrect: true }, { text: 'فِي الغُرْفَةِ', isCorrect: false }]
+            }
+          },
+          q: {
+            letter: 'ق', titleFr: 'Lettre Qaf (ق)',
+            text: 'القَرْيَةُ قَرِيبَةٌ مِنَ الجَبَلِ. هَوَاؤُهَا نَقِيٌّ، وَحُقُولُ القَمْحِ خَضْرَاءُ يَقْصِدُهَا الزُّوَّارُ.',
+            keywords: [{ ar: 'قَرْيَةٌ', fr: 'Village' }, { ar: 'نَقِيٌّ', fr: 'Pur' }, { ar: 'قَمْحٌ', fr: 'Blé' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'قـ', example: 'قَـرْيَةٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـقـ', example: 'نَـقِـيٌّ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـق / ق', example: 'سُـوقٌ' }
+            ],
+            question: {
+              ar: 'بِمَاذَا تَتَمَيَّزُ القَرْيَةُ ؟',
+              options: [{ text: 'بِهَوَائِهَا النَّقِيِّ وَحُقُولِهَا', isCorrect: true }, { text: 'بِالضَّجِيجِ', isCorrect: false }]
+            }
+          },
+          ain: {
+            letter: 'ع', titleFr: 'Lettre Ain (ع)',
+            text: 'عَاصِمَةُ بِلَادِي المَغْرِبِ هِيَ مَدِينَةُ الرِّبَاطِ. فِيهَا صَوْمَعَةُ حَسَّانَ وَشَوَارِعُ وَاسِعَةٌ.',
+            keywords: [{ ar: 'عَاصِمَةٌ', fr: 'Capitale' }, { ar: 'صَوْمَعَةٌ', fr: 'Minaret' }, { ar: 'وَاسِعَةٌ', fr: 'Large' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'عـ', example: 'عَـاصِمَةٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـعـ', example: 'مَـعْـمَارٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـع / ع', example: 'شَـارِعٌ' }
+            ],
+            question: {
+              ar: 'مَا هِيَ عَاصِمَةُ المَمْلَكَةِ المَغْرِبِيَّةِ ؟',
+              options: [{ text: 'مَدِينَةُ الرِّبَاطِ', isCorrect: true }, { text: 'بَارِيس', isCorrect: false }]
+            }
+          },
+          taa: {
+            letter: 'ط', titleFr: 'Lettre Taa (ط)',
+            text: 'طَرِيقُ المَدِينَةِ طَوِيلٌ. يُسَافِرُ طَارِقٌ بِالقِطَارِ السَّرِيعِ مِنْ طَنْجَةَ إِلَى الدَّارِ البَيْضَاءِ.',
+            keywords: [{ ar: 'طَرِيقٌ', fr: 'Route' }, { ar: 'قِطَارٌ', fr: 'Train' }, { ar: 'طَارِقٌ', fr: 'Tariq' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'طـ', example: 'طَـرِيقٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـطـ', example: 'قِـطَـارٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـط / ط', example: 'حَائِـطٌ' }
+            ],
+            question: {
+              ar: 'بِمَاذَا يُسَافِرُ طَارِقٌ ؟',
+              options: [{ text: 'بِالقِطَارِ السَّرِيعِ', isCorrect: true }, { text: 'بِالطَّائِرَةِ', isCorrect: false }]
+            }
+          },
+          yaa: {
+            letter: 'ي', titleFr: 'Lettre Yaa (ي)',
+            text: 'يَمْشِي يَاسِينُ مَعَ صَدِيقِهِ فِي السُّوقِ القَدِيمِ، يَشْتَرِي هَدَايَا يَدَوِيَّةً تَذْكَارِيَّةً.',
+            keywords: [{ ar: 'يَاسِينُ', fr: 'Yassine' }, { ar: 'يَدَوِيَّةٌ', fr: 'Artisanale' }, { ar: 'هَدَايَا', fr: 'Cadeaux' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'يـ', example: 'يَـاسِينُ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـيـ', example: 'قَـدِيـمٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـي / ي', example: 'شَـايٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا يَشْتَرِي يَاسِينُ فِي السُّوقِ ؟',
+              options: [{ text: 'هَدَايَا يَدَوِيَّةً تَذْكَارِيَّةً', isCorrect: true }, { text: 'كُتُبًا فَقَطْ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'مَا هِيَ عَاصِمَةُ المَمْلَكَةِ المَغْرِبِيَّةِ ؟',
+            qFr: 'Quelle est la capitale du Maroc ?',
+            options: [{ text: 'الرِّبَاطُ', isCorrect: true }, { text: 'فَاسٌ', isCorrect: false }]
+          }
+        ]
+      },
+
+      4: {
+        titleAr: 'الوَحْدَةُ 4: العَادَاتُ وَالتَّقَالِيدُ وَالفُنُونُ المَغْرِبِيَّةُ',
+        titleFr: 'Coutumes, traditions et arts marocains',
+        logo: '🪔',
+        lettersOrder: ['ta_marbouta', 'jeem', 'sheen', 'zay', 'saad'],
+        defaultLetter: 'jeem',
+        reading: {
+          ta_marbouta: {
+            letter: 'ة', titleFr: 'Ta Marbouta (ـة / ة)',
+            text: 'الزَّرْبِيَّةُ المَغْرِبِيَّةُ لَوْحَةٌ فَنِّيَّةٌ رَائِعَةٌ. تَصْنَعُهَا صَانِعَةٌ مَاهِرَةٌ بِالصُّوفِ النَّاعِمِ.',
+            keywords: [{ ar: 'زَرْبِيَّةٌ', fr: 'Tapis' }, { ar: 'مَاهِرَةٌ', fr: 'Habile' }, { ar: 'رَائِعَةٌ', fr: 'Magnifique' }],
+            positions: [
+              { posAr: 'مُتَّصِلَةٌ فِي الآخِرِ', glyph: 'ـة', example: 'مَدْرَسَـةٌ' },
+              { posAr: 'مُنْفَصِلَةٌ فِي الآخِرِ', glyph: 'ة', example: 'زَهْـرَةٌ' },
+              { posAr: 'تَاءٌ مَبْسُوطَةٌ (مقارنة)', glyph: 'ت', example: 'بَيْـتٌ' }
+            ],
+            question: {
+              ar: 'مِمَّا تُصْنَعُ الزَّرْبِيَّةُ المَغْرِبِيَّةُ ؟',
+              options: [{ text: 'مِنَ الصُّوفِ النَّاعِمِ', isCorrect: true }, { text: 'مِنَ البْلَاسْتِيكِ', isCorrect: false }]
+            }
+          },
+          jeem: {
+            letter: 'ج', titleFr: 'Lettre Jeem (ج)',
+            text: 'يَلْبَسُ جَدِّي جِلْبَابًا جَمِيلًا فِي يَوْمِ الجُمُعَةِ، وَيَأْكُلُ الطَّاجِينَ الشَّهِيَّ مَعَ الأُسْرَةِ.',
+            keywords: [{ ar: 'جِلْبَابٌ', fr: 'Djellaba' }, { ar: 'جَمِيلٌ', fr: 'Beau' }, { ar: 'طَاجِينٌ', fr: 'Tajine' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'جـ', example: 'جِـلْبَابٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـجـ', example: 'طَـاجِـينٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـج / ج', example: 'تَـاجٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا يَلْبَسُ الجَدُّ فِي يَوْمِ الجُمُعَةِ ؟',
+              options: [{ text: 'جِلْبَابًا أَبْيَضَ جَمِيلًا', isCorrect: true }, { text: 'قَمِيصًا رِيَاضِيًّا', isCorrect: false }]
+            }
+          },
+          sheen: {
+            letter: 'ش', titleFr: 'Lettre Sheen (ش)',
+            text: 'يُقَدِّمُ الشَّايَ المَغْرِبِيَّ بِالنَّعْنَاعِ فِي كُؤُوسٍ مُزَخْرَفَةٍ مَعَ حَلْوَى الشِّبَّاكِيَّةِ اللَّذِيذَةِ.',
+            keywords: [{ ar: 'شَايٌ', fr: 'Thé' }, { ar: 'شِبَّاكِيَّةٌ', fr: 'Chebakia' }, { ar: 'شَهِيٌّ', fr: 'Délicieux' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'شـ', example: 'شَـايٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـشـ', example: 'مِـشْـمِشٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـش / ش', example: 'عَـرْشٌ' }
+            ],
+            question: {
+              ar: 'بِمَاذَا يُنَكَّهُ الشَّايُ المَغْرِبِيُّ الأَصِيلُ ؟',
+              options: [{ text: 'بِالنَّعْنَاعِ الطَّرِيِّ', isCorrect: true }, { text: 'بِالمِلْحِ', isCorrect: false }]
+            }
+          },
+          zay: {
+            letter: 'ز', titleFr: 'Lettre Zay (ز)',
+            text: 'زَارَتْ زَيْنَبُ مَعْرِضَ الخَزَفِ فِي مَدِينَةِ آسَفِي، وَاشْتَرَتْ مَزْهَرِيَّةً زَرْقَاءَ مُزَيَّنَةً.',
+            keywords: [{ ar: 'زَيْنَبُ', fr: 'Zineb' }, { ar: 'خَزَفٌ', fr: 'Poterie' }, { ar: 'مَزْهَرِيَّةٌ', fr: 'Vase' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ز...', example: 'زَيْـنَبُ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: '...ـز...', example: 'خَـزَفٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: '...ز', example: 'مَـوْزٌ' }
+            ],
+            question: {
+              ar: 'أَيْنَ اشْتَرَتْ زَيْنَبُ المَزْهَرِيَّةَ ؟',
+              options: [{ text: 'فِي مَعْرِضِ الخَزَفِ', isCorrect: true }, { text: 'فِي الصَّيْدَلِيَّةِ', isCorrect: false }]
+            }
+          },
+          saad: {
+            letter: 'ص', titleFr: 'Lettre Saad (ص)',
+            text: 'الصَّانِعُ التَّقْلِيدِيُّ يَصْنَعُ الصَّوَانِيَ الفِضِّيَّةَ النَّاصِعَةَ بِدِقَّةٍ وَصَبْرٍ كَبِيرٍ.',
+            keywords: [{ ar: 'صَانِعٌ', fr: 'Artisan' }, { ar: 'صِينِيَّةٌ', fr: 'Plateau' }, { ar: 'صَبْرٌ', fr: 'Patience' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'صـ', example: 'صَـانِعٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـصـ', example: 'قَـصْـرٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـص / ص', example: 'قَـفَـصٌ' }
+            ],
+            question: {
+              ar: 'كَيْفَ يَعْمَلُ الصَّانِعُ التَّقْلِيدِيُّ ؟',
+              options: [{ text: 'بِدِقَّةٍ وَصَبْرٍ كَبِيرٍ', isCorrect: true }, { text: 'بِإِهْمَالٍ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'مَا هُوَ اللِّبَاسُ التَّقْلِيدِيُّ الشَّهِيرُ لِلْمَرْأَةِ المَغْرِبِيَّةِ ؟',
+            qFr: 'Quel est l\'habit traditionnel marocain ?',
+            options: [{ text: 'القَفْطَانُ المَغْرِبِيُّ', isCorrect: true }, { text: 'السِّتْرَةُ الصُّوفِيَّةُ', isCorrect: false }]
+          }
+        ]
+      },
+
+      5: {
+        titleAr: 'الوَحْدَةُ 5: الإِنْسَانُ وَالبِيئَةُ وَالمَنَاخُ',
+        titleFr: 'L\'Homme, l\'environnement et le climat',
+        logo: '🌿',
+        lettersOrder: ['hamza', 'ghayn', 'haa', 'dhaa', 'faa'],
+        defaultLetter: 'ghayn',
+        reading: {
+          hamza: {
+            letter: 'ء', titleFr: 'Hamza (ء)',
+            text: 'المَاءُ وَالهَوَاءُ النَّقِيُّ ضَرُورِيَّانِ لِحَيَاةِ البِيئَةِ. يَسْأَلُ الطِّفْلُ عَنْ كَيْفِيَّةِ حِمَايَةِ شَاطِئِ البَحْرِ.',
+            keywords: [{ ar: 'مَاءٌ', fr: 'Eau' }, { ar: 'هَوَاءٌ', fr: 'Air' }, { ar: 'شَاطِئٌ', fr: 'Plage' }],
+            positions: [
+              { posAr: 'عَلَى السَّطْرِ', glyph: 'ء', example: 'مَـاءٌ' },
+              { posAr: 'عَلَى الأَلِفِ', glyph: 'أ / ـأ', example: 'سَـأَلَ' },
+              { posAr: 'عَلَى الوَاوِ', glyph: 'ؤ', example: 'سُـؤَالٌ' }
+            ],
+            question: {
+              ar: 'مَا هُمَا العُنْصُرَانِ الضَّرُورِيَّانِ لِلْحَيَاةِ ؟',
+              options: [{ text: 'المَاءُ وَالهَوَاءُ النَّقِيُّ', isCorrect: true }, { text: 'الدُّخَانُ', isCorrect: false }]
+            }
+          },
+          ghayn: {
+            letter: 'غ', titleFr: 'Lettre Ghayn (غ)',
+            text: 'غَابَةُ المَعْمُورَةِ غَنِيَّةٌ بِأَشْجَارِ البَلُّوطِ، وَفِي سَمَائِهَا غُيُومٌ تَبْعَثُ المَطَرَ الغَزِيرَ.',
+            keywords: [{ ar: 'غَابَةٌ', fr: 'Forêt' }, { ar: 'غُيُومٌ', fr: 'Nuages' }, { ar: 'غَزِيرٌ', fr: 'Abondant' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'غـ', example: 'غَـابَةٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـغـ', example: 'صَـغِـيرٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـغ / غ', example: 'صَـمْـغٌ' }
+            ],
+            question: {
+              ar: 'مَا هِيَ الأَشْجَارُ المَوْجُودَةُ فِي غَابَةِ المَعْمُورَةِ ؟',
+              options: [{ text: 'أَشْجَارُ البَلُّوطِ', isCorrect: true }, { text: 'النَّخِيلُ فَقَطْ', isCorrect: false }]
+            }
+          },
+          haa: {
+            letter: 'هـ', titleFr: 'Lettre Haa (هـ)',
+            text: 'تَهْدَأُ الرِّيَاحُ عِنْدَ الهُدُوءِ. تَشْتَهِرُ شَجَرَةُ الأَرْكَانِ المَغْرِبِيَّةُ بِفَوَائِدِهَا الصِّحِّيَّةِ الهَائِلَةِ.',
+            keywords: [{ ar: 'هُدُوءٌ', fr: 'Calme' }, { ar: 'هَائِلَةٌ', fr: 'Immense' }, { ar: 'فَوَاكِهُ', fr: 'Fruits' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'هـ', example: 'هَـوَاءٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـهـ', example: 'نَـهْـرٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـه / ه', example: 'وَجْـهٌ' }
+            ],
+            question: {
+              ar: 'بِمَاذَا تَشْتَهِرُ شَجَرَةُ الأَرْكَانِ ؟',
+              options: [{ text: 'بِفَوَائِدِ زَيْتِهَا الصِّحِّيَّةِ', isCorrect: true }, { text: 'بِأَوْرَاقِهَا الجَافَّةِ', isCorrect: false }]
+            }
+          },
+          dhaa: {
+            letter: 'ظ', titleFr: 'Lettre Dhaa (ظ)',
+            text: 'يُحَافِظُ الأَطْفَالُ عَلَى نَظَافَةِ الحَدِيقَةِ، وَيَجْلِسُونَ تَحْتَ ظِلِّ الأَشْجَارِ الظَّلِيلَةِ.',
+            keywords: [{ ar: 'يُحَافِظُ', fr: 'Il préserve' }, { ar: 'نَظَافَةٌ', fr: 'Propreté' }, { ar: 'ظِلٌّ', fr: 'Ombre' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ظـ', example: 'ظِـلٌّ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـظـ', example: 'نَـظَـافَةٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـظ / ظ', example: 'حِـفْـظٌ' }
+            ],
+            question: {
+              ar: 'عَلَى مَاذَا يُحَافِظُ الأَطْفَالُ ؟',
+              options: [{ text: 'عَلَى نَظَافَةِ البِيئَةِ وَالحَدِيقَةِ', isCorrect: true }, { text: 'عَلَى النُّفَايَاتِ', isCorrect: false }]
+            }
+          },
+          faa: {
+            letter: 'ف', titleFr: 'Lettre Faa (ف)',
+            text: 'فِي فَصْلِ الرَّبِيعِ تَتَفَتَّحُ الفَرَاشَاتُ، وَيَفُوحُ عِطْرُ الأَزْهَارِ فِي كُلِّ مَكَانٍ.',
+            keywords: [{ ar: 'فَصْلٌ', fr: 'Saison' }, { ar: 'فَرَاشَةٌ', fr: 'Papillon' }, { ar: 'عِطْرٌ', fr: 'Parfum' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'فـ', example: 'فَـصْلٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـفـ', example: 'دَفْـتَـرٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـف / ف', example: 'صَـيْـفٌ' }
+            ],
+            question: {
+              ar: 'فِي أَيِّ فَصْلٍ تَتَفَتَّحُ الأَزْهَارُ ؟',
+              options: [{ text: 'فِي فَصْلِ الرَّبِيعِ', isCorrect: true }, { text: 'فِي الشِّتَاءِ القَارِسِ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'مَا هُمَا البَحْرَانِ اللَّذَانِ يُحِيطَانِ بِالمَغْرِبِ ؟',
+            qFr: 'Quelles sont les 2 mers bordant le Maroc ?',
+            options: [{ text: 'البَحْرُ الأَبْيَضُ المُتَوَسِّطُ وَالمُحِيطُ الأَطْلَسِيُّ', isCorrect: true }, { text: 'البَحْرُ الأَحْمَرُ', isCorrect: false }]
+          }
+        ]
+      },
+
+      6: {
+        titleAr: 'الوَحْدَةُ 6: الحَيَاةُ الاقْتِصَادِيَّةُ وَالاجْتِمَاعِيَّةُ',
+        titleFr: 'La vie économique et sociale',
+        logo: '🪙',
+        lettersOrder: ['daad', 'khaa', 'dhal', 'thaa', 'alif_madd'],
+        defaultLetter: 'daad',
+        reading: {
+          daad: {
+            letter: 'ض', titleFr: 'Lettre Daad (ض)',
+            text: 'المَغْرِبُ أَرْضُ الخَيْرَاتِ. يَفِدُ السُّيَّاحُ مِنْ كُلِّ نَحْوٍ لِزِيَارَةِ مَآثِرِ بِلَادِنَا التَّارِيخِيَّةِ العَرِيقَةِ.',
+            keywords: [{ ar: 'أَرْضٌ', fr: 'Terre' }, { ar: 'خَيْرَاتٌ', fr: 'Richesses' }, { ar: 'عَرِيقَةٌ', fr: 'Ancienne' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ضـ', example: 'ضَـيْفٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـضـ', example: 'حَـضَـارَةٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـض / ض', example: 'أَرْضٌ' }
+            ],
+            question: {
+              ar: 'لِمَاذَا يَزُورُ السُّيَّاحُ المَغْرِبَ ؟',
+              options: [{ text: 'لِزِيَارَةِ مَآثِرِهِ وَالتَّعَرُّفِ عَلَى تَارِيخِهِ', isCorrect: true }, { text: 'لِلنَّوْمِ فَقَطْ', isCorrect: false }]
+            }
+          },
+          khaa: {
+            letter: 'خ', titleFr: 'Lettre Khaa (خ)',
+            text: 'يَشْتَغِلُ الخَبَّازُ فِي المَخْبَزَةِ بِجِدٍّ، وَيَصْنَعُ خُبْزًا لَذِيذًا يَشْتَرِيهِ النَّاسُ كُلَّ صَبَاحٍ.',
+            keywords: [{ ar: 'خَبَّازٌ', fr: 'Boulanger' }, { ar: 'خُبْزٌ', fr: 'Pain' }, { ar: 'مَخْبَزَةٌ', fr: 'Boulangerie' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'خـ', example: 'خَـبَّازٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـخـ', example: 'مَـخْـزَنٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـخ / خ', example: 'مَـطْـبَـخٌ' }
+            ],
+            question: {
+              ar: 'مَاذَا يَصْنَعُ الخَبَّازُ ؟',
+              options: [{ text: 'خُبْزًا شَهِيًّا وَلَذِيذًا', isCorrect: true }, { text: 'أَحْذِيَةً', isCorrect: false }]
+            }
+          },
+          dhal: {
+            letter: 'ذ', titleFr: 'Lettre Dhal (ذ)',
+            text: 'تَمْتَازُ الأَسْوَاقُ بِبَيْعِ الذَّهَبِ وَالفِضَّةِ، وَيَسْتَعْمِلُ النَّاسُ النُّقُودَ لِشِرَاءِ احْتِيَاجَاتِهِمْ.',
+            keywords: [{ ar: 'ذَهَبٌ', fr: 'Or' }, { ar: 'لَذِيذٌ', fr: 'Délicieux' }, { ar: 'نَافِذَةٌ', fr: 'Fenêtre' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ذ...', example: 'ذَكَـاءٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: '...ـذ...', example: 'حِـذَاءٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: '...ذ', example: 'مُـعَـاذٌ' }
+            ],
+            question: {
+              ar: 'بِمَاذَا يَشْتَرِي النَّاسُ احْتِيَاجَاتِهِمْ ؟',
+              options: [{ text: 'بِالنُّقُودِ وَالمَالِ', isCorrect: true }, { text: 'بِالأَحْجَارِ', isCorrect: false }]
+            }
+          },
+          thaa: {
+            letter: 'ث', titleFr: 'Lettre Thaa (ث)',
+            text: 'ثَمَنُ الثَّوْبِ ثَلَاثُونَ دِرْهَمًا. التَّاجِرُ أَمِينٌ يَحْرِصُ عَلَى تَقْدِيمِ أَثْمَانٍ مُنَاسِبَةٍ.',
+            keywords: [{ ar: 'ثَمَنٌ', fr: 'Prix' }, { ar: 'ثَوْبٌ', fr: 'Vêtement' }, { ar: 'ثَلَاثَةٌ', fr: 'Trois' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'ثـ', example: 'ثَـوْبٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـثـ', example: 'مِـثَـالٌ' },
+              { posAr: 'آخِرُ الكَلِمَةِ', glyph: 'ـث / ث', example: 'أَثَـاثٌ' }
+            ],
+            question: {
+              ar: 'مَا هِيَ عُمْلَةُ المَمْلَكَةِ المَغْرِبِيَّةِ ؟',
+              options: [{ text: 'الدِّرْهَمُ المَغْرِبِيُّ', isCorrect: true }, { text: 'الدُّولَارُ', isCorrect: false }]
+            }
+          },
+          alif_madd: {
+            letter: 'آ', titleFr: 'Alif Madd (آ)',
+            text: 'المَآثِرُ التَّارِيخِيَّةُ فِي فَاسَ وَمُرَّاكُشَ تَجْذِبُ الآلَافَ مِنَ الزُّوَّارِ سَنَوِيًّا.',
+            keywords: [{ ar: 'مَآثِرُ', fr: 'Monuments' }, { ar: 'آلَافٌ', fr: 'Milliers' }, { ar: 'آمَالٌ', fr: 'Espoirs' }],
+            positions: [
+              { posAr: 'أَوَّلُ الكَلِمَةِ', glyph: 'آ...', example: 'آسِـفٌ' },
+              { posAr: 'وَسَطُ الكَلِمَةِ', glyph: 'ـآـ', example: 'مَـآثِـرُ' },
+              { posAr: 'مَدٌّ بِالأَلِفِ', glyph: 'ـا', example: 'كِـتَـابٌ' }
+            ],
+            question: {
+              ar: 'فِي أَيِّ مَدِينَةٍ تُوجَدُ مَآثِرُ عَرِيقَةٌ ؟',
+              options: [{ text: 'فِي فَاسَ وَمُرَّاكُشَ وَالرِّبَاطِ', isCorrect: true }, { text: 'فِي القُطْبِ الشَّمَالِيِّ', isCorrect: false }]
+            }
+          }
+        },
+        quiz: [
+          {
+            qAr: 'مَا هِيَ العُمْلَةُ الرَّسْمِيَّةُ لِلْمَغْرِبِ ؟',
+            qFr: 'Quelle est la monnaie du Maroc ?',
+            options: [{ text: 'الدِّرْهَمُ المَغْرِبِيُّ', isCorrect: true }, { text: 'اليُورُو', isCorrect: false }]
+          }
+        ]
+      }
+    };
+
+    /* --- SUPPORT AND EVALUATION STATIONS DATA (BETWEEN UNITS) --- */
+    const supportStationsData = {
+      1: {
+        unitRef: 'بَعْدَ الوَحْدَةِ 1 (المدرسة والبيت)',
+        letters: [
+          { char: 'ك', word: 'كِتَابٌ', glyph: 'كـ' },
+          { char: 'ب', word: 'بَابٌ', glyph: 'بـ' },
+          { char: 'ت', word: 'تِلْمِيذٌ', glyph: 'تـ' },
+          { char: 'م', word: 'مَدْرَسَةٌ', glyph: 'مـ' },
+          { char: 'ن', word: 'نَادِي', glyph: 'نـ' }
+        ],
+        wordsChallenge: [
+          { full: 'كِتَابٌ', display: '_ِتَابٌ', missingChar: 'ك' },
+          { full: 'بَابٌ', display: '_َابٌ', missingChar: 'ب' },
+          { full: 'مَدْرَسَةٌ', display: '_َدْرَسَةٌ', missingChar: 'م' },
+          { full: 'تِلْمِيذٌ', display: '_ِلْمِيذٌ', missingChar: 'ت' }
+        ]
+      },
+      2: {
+        unitRef: 'بَعْدَ الوَحْدَةِ 2 (الأسرة والبيت)',
+        letters: [
+          { char: 'ل', word: 'لَطِيفٌ', glyph: 'لـ' },
+          { char: 'و', word: 'وَالِدٌ', glyph: 'و...' },
+          { char: 'د', word: 'دَارٌ', glyph: 'د...' },
+          { char: 'ر', word: 'رَسَمَ', glyph: 'ر...' },
+          { char: 'س', word: 'سَرِيرٌ', glyph: 'سـ' }
+        ],
+        wordsChallenge: [
+          { full: 'مَنْزِلٌ', display: 'مَـ_ـزِلٌ', missingChar: 'ن' },
+          { full: 'سَرِيرٌ', display: '_َرِيرٌ', missingChar: 'س' },
+          { full: 'دَارُنَا', display: '_َارُنَا', missingChar: 'د' },
+          { full: 'عَائِلَةٌ', display: 'عَائِـ_ـةٌ', missingChar: 'ل' }
+        ]
+      },
+      3: {
+        unitRef: 'بَعْدَ الوَحْدَةِ 3 (المدينة والقرية)',
+        letters: [
+          { char: 'ح', word: 'حَدِيقَةٌ', glyph: 'حـ' },
+          { char: 'ق', word: 'قَرْيَةٌ', glyph: 'قـ' },
+          { char: 'ع', word: 'عَاصِمَةٌ', glyph: 'عـ' },
+          { char: 'ط', word: 'طَرِيقٌ', glyph: 'طـ' },
+          { char: 'ي', word: 'يَاسِينُ', glyph: 'يـ' }
+        ],
+        wordsChallenge: [
+          { full: 'حَدِيقَةٌ', display: '_َدِيقَةٌ', missingChar: 'ح' },
+          { full: 'قَرْيَةٌ', display: '_َرْيَةٌ', missingChar: 'ق' },
+          { full: 'قِطَارٌ', display: 'قِـ_ـارٌ', missingChar: 'ط' },
+          { full: 'شَارِعٌ', display: 'شَارِ_ٌ', missingChar: 'ع' }
+        ]
+      },
+      4: {
+        unitRef: 'بَعْدَ الوَحْدَةِ 4 (العادات والتقاليد والفنون)',
+        letters: [
+          { char: 'ة', word: 'زَرْبِيَّةٌ', glyph: 'ـة' },
+          { char: 'ج', word: 'جِلْبَابٌ', glyph: 'جـ' },
+          { char: 'ش', word: 'شَايٌ', glyph: 'شـ' },
+          { char: 'ز', word: 'زَيْنَبُ', glyph: 'ز...' },
+          { char: 'ص', word: 'صَانِعٌ', glyph: 'صـ' }
+        ],
+        wordsChallenge: [
+          { full: 'شَايٌ', display: '_َايٌ', missingChar: 'ش' },
+          { full: 'جِلْبَابٌ', display: '_ِلْبَابٌ', missingChar: 'ج' },
+          { full: 'طَاجِينٌ', display: 'طَا_ِينٌ', missingChar: 'ج' },
+          { full: 'قَفْطَانٌ', display: 'قَفْـ_ـانٌ', missingChar: 'ط' }
+        ]
+      },
+      5: {
+        unitRef: 'بَعْدَ الوَحْدَةِ 5 (الإنسان والبيئة والمناخ)',
+        letters: [
+          { char: 'ء', word: 'مَاءٌ', glyph: 'ء' },
+          { char: 'غ', word: 'غَابَةٌ', glyph: 'غـ' },
+          { char: 'هـ', word: 'هَوَاءٌ', glyph: 'هـ' },
+          { char: 'ظ', word: 'نَظَافَةٌ', glyph: 'ـظـ' },
+          { char: 'ف', word: 'فَصْلٌ', glyph: 'فـ' }
+        ],
+        wordsChallenge: [
+          { full: 'غَابَةٌ', display: '_َابَةٌ', missingChar: 'غ' },
+          { full: 'هَوَاءٌ', display: '_َوَاءٌ', missingChar: 'هـ' },
+          { full: 'نَظَافَةٌ', display: 'نَـ_ـافَةٌ', missingChar: 'ظ' },
+          { full: 'شَاطِئٌ', display: 'شَاطِـ_ـ', missingChar: 'ئ' }
+        ]
+      },
+      6: {
+        unitRef: 'الحَصِيلَةُ النِّهَائِيَّةُ السَّنَوِيَّةُ لِلْمُسْتَوَى الثَّانِي A2',
+        letters: [
+          { char: 'ض', word: 'أَرْضٌ', glyph: 'ضـ' },
+          { char: 'خ', word: 'خُبْزٌ', glyph: 'خـ' },
+          { char: 'ذ', word: 'ذَهَبٌ', glyph: 'ذ...' },
+          { char: 'ث', word: 'ثَمَنٌ', glyph: 'ثـ' },
+          { char: 'آ', word: 'مَآثِرُ', glyph: 'آ' }
+        ],
+        wordsChallenge: [
+          { full: 'مَآثِرُ', display: 'مَـ_ـثِرُ', missingChar: 'آ' },
+          { full: 'خُبْزٌ', display: '_ُبْزٌ', missingChar: 'خ' },
+          { full: 'دِرْهَمٌ', display: '_ِرْهَمٌ', missingChar: 'د' },
+          { full: 'أَرْضٌ', display: 'أَرْ_ٌ', missingChar: 'ض' }
+        ]
+      }
+    };
+
+    /* --- STREAMING_CHUNK:Configuring Audio Engine and Web Speech synthesis... */
+    function initAudioContext() {
+      try {
+        if (!state.audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) state.audioCtx = new AudioContextClass();
+        }
+        if (state.audioCtx && state.audioCtx.state === 'suspended') {
+          state.audioCtx.resume();
+        }
+      } catch (e) {}
+    }
+
+    function playSfx(type) {
+      if (!state.soundEnabled) return;
+      try {
+        initAudioContext();
+        if (!state.audioCtx) return;
+        const ctx = state.audioCtx;
+        const now = ctx.currentTime;
+        if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.04);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.04);
+        } else if (type === 'star' || type === 'success') {
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.setValueAtTime(freq, now + i * 0.06);
+            gain.gain.setValueAtTime(0.2, now + i * 0.06);
+            gain.gain.linearRampToValueAtTime(0, now + i * 0.06 + 0.15);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(now + i * 0.06); osc.stop(now + i * 0.06 + 0.15);
+          });
+        }
+      } catch (e) {}
+    }
+
+    function speakDialogue(text) {
+      if (!state.soundEnabled) return;
+      initAudioContext();
+
+      const banner = document.getElementById('speakingBanner');
+      const bannerText = document.getElementById('speakingTextContent');
+      if (banner && bannerText) {
+        bannerText.textContent = text;
+        banner.classList.remove('hidden');
+        clearTimeout(window.bannerTimer);
+        window.bannerTimer = setTimeout(() => banner.classList.add('hidden'), 3800);
+      }
+
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'ar-SA';
+          utterance.rate = 0.88;
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {}
+      }
+    }
+
+    function toggleSoundSystem() {
+      state.soundEnabled = !state.soundEnabled;
+      const label = document.getElementById('soundLabel');
+      const icon = document.getElementById('soundIcon');
+      if (state.soundEnabled) {
+        initAudioContext(); playSfx('click');
+        if (label) label.textContent = 'Son: Actif';
+        if (icon) icon.textContent = '🔊';
+        speakDialogue('الصَّوْتُ مُفَعَّلٌ');
+      } else {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (label) label.textContent = 'Son: Muet';
+        if (icon) icon.textContent = '🔇';
+      }
+    }
+
+    function testWelcomeAudio() {
+      initAudioContext();
+      state.soundEnabled = true;
+      playSfx('star');
+      if (state.currentType === 'unit') {
+        const u = unitsData[state.currentUnitNum];
+        speakDialogue(u.titleAr);
+      } else {
+        speakDialogue("مَحَطَّةُ التَّقْوِيمِ وَالدَّعْمِ وَمُرَاجَعَةِ الحُرُوفِ");
+      }
+    }
+
+    function addStars(num) {
+      state.stars += num;
+      const counter = document.getElementById('starCounter');
+      if (counter) counter.textContent = state.stars;
+      playSfx('star');
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 35, spread: 65, origin: { y: 0.8 } });
+      }
+    }
+
+    /* --- STREAMING_CHUNK:Rendering navigation switcher pills (Units + Support) --- */
+    function renderUnitsRibbon() {
+      const ribbon = document.getElementById('unitsSelectorRibbon');
+      if (!ribbon) return;
+
+      let html = '';
+      for (let i = 1; i <= 6; i++) {
+        // Unit Pill
+        const isUnitActive = (state.currentType === 'unit' && state.currentUnitNum === i);
+        const unitClass = isUnitActive ? 'unit-pill-active' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50';
+        html += `
+          <button onclick="switchUnit(${i})" class="flex-shrink-0 px-3 py-1.5 rounded-2xl text-xs font-black transition border border-slate-200 flex items-center gap-1.5 ${unitClass}">
+            <span>${unitsData[i].logo}</span>
+            <span>الوَحْدَةُ ${i}</span>
+          </button>
+        `;
+
+        // Support Pill
+        const isSupportActive = (state.currentType === 'support' && state.currentSupportNum === i);
+        const supportClass = isSupportActive ? 'support-pill-active' : 'bg-amber-50/70 text-amber-800 border-amber-200 hover:bg-amber-100';
+        html += `
+          <button onclick="switchSupport(${i})" class="flex-shrink-0 px-2.5 py-1 rounded-2xl text-[11px] font-black transition border flex items-center gap-1 ${supportClass}">
+            <span>🎯</span>
+            <span>دَعْمٌ ${i}</span>
+          </button>
+        `;
+      }
+
+      ribbon.innerHTML = html;
+    }
+
+    /* --- STREAMING_CHUNK:Unit switching and sub-stations ribbon rendering --- */
+    function switchUnit(num) {
+      playSfx('click');
+      state.currentType = 'unit';
+      state.currentUnitNum = num;
+
+      document.getElementById('view-support-station').classList.add('hidden');
+      document.getElementById('ribbonButtonsContainer').classList.remove('hidden');
+
+      const u = unitsData[num];
+      document.getElementById('unitSubtitleHeader').textContent = u.titleAr;
+      document.getElementById('unitLogoBadge').textContent = u.logo;
+
+      renderUnitsRibbon();
+      renderRibbonButtons();
+      renderAllTabContents();
+      switchTab(state.activeTab || 'oral');
+      speakDialogue(u.titleAr);
+    }
+
+    function switchSupport(num) {
+      playSfx('click');
+      state.currentType = 'support';
+      state.currentSupportNum = num;
+
+      // Hide unit tabs, show support station view
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('ribbonButtonsContainer').classList.add('hidden');
+      document.getElementById('view-support-station').classList.remove('hidden');
+
+      const sData = supportStationsData[num];
+      document.getElementById('unitSubtitleHeader').textContent = `تَقْوِيمٌ وَدَعْمٌ: ${sData.unitRef}`;
+      document.getElementById('unitLogoBadge').textContent = '🎯';
+      document.getElementById('activeTabIndicatorLabel').textContent = `تَقْوِيمٌ وَدَعْمٌ ${num}`;
+
+      renderUnitsRibbon();
+      loadSupportStationContent(num);
+      speakDialogue(`مَحَطَّةُ التَّقْوِيمِ وَالدَّعْمِ رَقْم ${num}`);
+    }
+
+    function renderRibbonButtons() {
+      const u = unitsData[state.currentUnitNum];
+      const container = document.getElementById('ribbonButtonsContainer');
+      if (!container) return;
+
+      container.innerHTML = `
+        <button onclick="switchTab('oral')" id="tabBtn-oral" class="tab-btn p-2 rounded-2xl bg-emerald-600 text-white shadow-md border-2 border-emerald-600 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-lg mb-0.5">🗣️</div>
+          <span class="font-black text-xs leading-tight block">التَّعْبِيرُ الشَّفَوِيُّ</span>
+          <span class="text-[10px] opacity-85 font-fr block">Expression</span>
+        </button>
+
+        <button onclick="switchTab('reading')" id="tabBtn-reading" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center text-lg mb-0.5">📖</div>
+          <span class="font-black text-xs leading-tight block">القِرَاءَةُ وَالنُّصُوصُ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">5 Lettres</span>
+        </button>
+
+        <button onclick="switchTab('grammar')" id="tabBtn-grammar" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-lg mb-0.5">🧩</div>
+          <span class="font-black text-xs leading-tight block">الصَّرْفُ وَالتَّرَاكِيبُ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">Grammaire</span>
+        </button>
+
+        <button onclick="switchTab('spelling')" id="tabBtn-spelling" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg mb-0.5">✍️</div>
+          <span class="font-black text-xs leading-tight block">الإِمْلَاءُ وَالخَطُّ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">Orthographe</span>
+        </button>
+
+        <button onclick="switchTab('culture')" id="tabBtn-culture" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center text-lg mb-0.5">🇲🇦</div>
+          <span class="font-black text-xs leading-tight block">الثَّقَافَةُ المَغْرِبِيَّةُ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">Culture</span>
+        </button>
+
+        <button onclick="switchTab('writing')" id="tabBtn-writing" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center text-lg mb-0.5">🪪</div>
+          <span class="font-black text-xs leading-tight block">التَّطْبِيقَاتُ الكِتَابِيَّةُ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">Projet</span>
+        </button>
+
+        <button onclick="switchTab('quiz')" id="tabBtn-quiz" class="tab-btn p-2 rounded-2xl bg-slate-50 text-slate-700 hover:bg-emerald-50 border-2 border-slate-200 transition flex flex-col items-center justify-between min-h-[74px] text-center active:scale-95">
+          <div class="w-8 h-8 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center text-lg mb-0.5">🏆</div>
+          <span class="font-black text-xs leading-tight block">تَحَدِّي الأَبْطَالِ</span>
+          <span class="text-[10px] text-slate-400 font-fr block">Quiz</span>
+        </button>
+      `;
+    }
+
+    /* --- STREAMING_CHUNK:Loading Support and Assessment Station Interactive Elements --- */
+    function loadSupportStationContent(num) {
+      const s = supportStationsData[num];
+      document.getElementById('supportBadgeTitle').textContent = `تَقْوِيمٌ وَدَعْمٌ ${num}: ${s.unitRef}`;
+      state.currentSupportWordIdx = 0;
+
+      // Letters Tree Grid
+      const grid = document.getElementById('supportLettersGrid');
+      grid.innerHTML = s.letters.map(l => `
+        <div onclick="speakDialogue('${l.char}، ${l.word}'); setSupportGhost('${l.char}');" class="p-2.5 bg-white rounded-xl border border-amber-300 hover:border-emerald-500 cursor-pointer shadow-xs transition group">
+          <span class="text-2xl font-black text-amber-950 font-naskh block group-hover:scale-110 transition">${l.char}</span>
+          <span class="text-[10px] font-bold text-slate-600 block truncate font-naskh">${l.word}</span>
+        </div>
+      `).join('');
+
+      renderMissingWordChallenge(num);
+      setTimeout(initSupportCanvas, 150);
+    }
+
+    function renderMissingWordChallenge(num) {
+      const s = supportStationsData[num];
+      const item = s.wordsChallenge[state.currentSupportWordIdx];
+      if (!item) return;
+
+      document.getElementById('supportTargetWordDisplay').textContent = item.display;
+      setSupportGhost(item.full);
+
+      const optsContainer = document.getElementById('supportLetterOptions');
+      optsContainer.innerHTML = s.letters.map(l => `
+        <button onclick="checkSupportAnswer('${l.char}', '${item.missingChar}')" class="py-1.5 px-1 bg-white hover:bg-emerald-50 border border-slate-200 rounded-xl font-black text-sm text-slate-800 font-naskh transition shadow-xs">
+          ${l.char}
+        </button>
+      `).join('');
+    }
+
+    function checkSupportAnswer(selected, correct) {
+      if (selected === correct) {
+        addStars(2);
+        speakDialogue('أَحْسَنْتَ ! إِجَابَةٌ صَحِيحَةٌ');
+        const s = supportStationsData[state.currentSupportNum];
+        state.currentSupportWordIdx = (state.currentSupportWordIdx + 1) % s.wordsChallenge.length;
+        renderMissingWordChallenge(state.currentSupportNum);
+      } else {
+        speakDialogue('حَاوِلْ مَرَّةً أُخْرَى !');
+      }
+    }
+
+    function speakSupportWordAudio() {
+      const s = supportStationsData[state.currentSupportNum];
+      const item = s.wordsChallenge[state.currentSupportWordIdx];
+      if (item) speakDialogue(item.full);
+    }
+
+    function testSupportAudio() {
+      speakDialogue("أَهْلًا بِكَ فِي مَحَطَّةِ التَّقْوِيمِ وَالدَّعْمِ. تَمَرَّنْ عَلَى نُطْقِ الحُرُوفِ وَكِتَابَتِهَا بِدِقَّةٍ.");
+    }
+
+    function setSupportGhost(txt) {
+      const ghost = document.getElementById('supportGhostWord');
+      if (ghost) ghost.textContent = txt;
+    }
+
+    /* --- STREAMING_CHUNK:Support Slate Drawing Canvas... */
+    let supCanvas, supCtx, supDrawing = false, supLastX = 0, supLastY = 0;
+    function initSupportCanvas() {
+      supCanvas = document.getElementById('supportCanvas');
+      if (!supCanvas) return;
+      const rect = supCanvas.parentElement.getBoundingClientRect();
+      supCanvas.width = rect.width;
+      supCanvas.height = rect.height;
+
+      supCtx = supCanvas.getContext('2d');
+      supCtx.lineCap = 'round';
+      supCtx.lineJoin = 'round';
+      supCtx.lineWidth = 6;
+      supCtx.strokeStyle = '#d97706';
+
+      supCanvas.onmousedown = (e) => {
+        supDrawing = true;
+        const p = getSupPos(e);
+        supLastX = p.x; supLastY = p.y;
+      };
+      supCanvas.onmousemove = (e) => {
+        if (!supDrawing) return;
+        const p = getSupPos(e);
+        supCtx.beginPath();
+        supCtx.moveTo(supLastX, supLastY);
+        supCtx.lineTo(p.x, p.y);
+        supCtx.stroke();
+        supLastX = p.x; supLastY = p.y;
+      };
+      window.onmouseup = () => { supDrawing = false; };
+
+      supCanvas.ontouchstart = (e) => {
+        e.preventDefault(); supDrawing = true;
+        const p = getSupPos(e.touches[0]);
+        supLastX = p.x; supLastY = p.y;
+      };
+      supCanvas.ontouchmove = (e) => {
+        e.preventDefault();
+        if (!supDrawing) return;
+        const p = getSupPos(e.touches[0]);
+        supCtx.beginPath();
+        supCtx.moveTo(supLastX, supLastY);
+        supCtx.lineTo(p.x, p.y);
+        supCtx.stroke();
+        supLastX = p.x; supLastY = p.y;
+      };
+      supCanvas.ontouchend = () => { supDrawing = false; };
+    }
+
+    function getSupPos(e) {
+      const rect = supCanvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function clearSupportCanvas() {
+      if (supCtx && supCanvas) {
+        supCtx.clearRect(0, 0, supCanvas.width, supCanvas.height);
+      }
+    }
+
+    /* --- STREAMING_CHUNK:Rendering full tab contents for current active Unit --- */
+    function renderAllTabContents() {
+      const uNum = state.currentUnitNum;
+      renderOralTab(uNum);
+      renderReadingTab(uNum);
+      renderGrammarTab(uNum);
+      renderSpellingTab(uNum);
+      renderCultureTab(uNum);
+      renderWritingTab(uNum);
+      state.quizIndex = 0;
+      loadQuizQuestion();
+    }
+
+    function renderOralTab(uNum) {
+      const cardsGrid = document.getElementById('oralCardsGrid');
+      const contBox = document.getElementById('oralContinuousBox');
+      if (!cardsGrid || !contBox) return;
+
+      const oralDataMap = {
+        1: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'تَبَادُلُ التَّحِيَّةِ وَرَدُّهَا', ar1: 'السَّلَامُ عَلَيْكُمْ', fr1: 'Bonjour', ar2: 'وَعَلَيْكُمُ السَّلَامُ وَرَحْمَةُ اللهِ', fr2: 'Réponse' },
+            { s: 'الحِصَّةُ 2', title: 'أَنْ يَقُولَ اسْمَهُ', ar1: 'أَنَا اسْمِي عُمَرُ', fr1: "Je m'appelle", ar2: 'وَأَنَا اسْمِي كَرِيمَةُ', fr2: 'Et moi...' },
+            { s: 'الحِصَّةُ 3', title: 'أَنْ يَقُولَ عُمْرَهُ', ar1: 'عُمْرِي سَبْعُ سَنَوَاتٍ', fr1: "J'ai 7 ans", ar2: 'عُمْرِي ثَمَانِي سَنَوَاتٍ', fr2: "J'ai 8 ans" },
+            { s: 'الحِصَّةُ 4', title: 'اسْمُ البَلَدِ وَالعَلَمُ', ar1: 'بَلَدِي هُوَ المَغْرِبُ', fr1: 'Le Maroc', ar2: 'عَلَمِي أَحْمَرُ بِنَجْمَةٍ خَضْرَاءَ', fr2: 'Drapeau' },
+            { s: 'الحِصَّةُ 5', title: 'البَلَدُ الأَصْلِيُّ وَالمُضِيفُ', ar1: 'بَلَدِي الأَصْلِيُّ المَغْرِبُ', fr1: 'Origine', ar2: 'أَسْكُنُ فِي فَرَنْسَا', fr2: 'Accueil' }
+          ],
+          continuousText: 'السَّلَامُ عَلَيْكُمْ، أَنَا اسْمِي كَرِيم، عُمْرِي سَبْعُ سَنَوَاتٍ، بَلَدِي الأَصْلِيُّ هُوَ المَغْرِبُ، وَأَسْكُنُ فِي مَدِينَةِ بَارِيس بَفَرَنْسَا.'
+        },
+        2: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'أَنْ يَعْرِفَ أَيْنَ يَسْكُنُ', ar1: 'أَسْكُنُ فِي شَارِعِ الزُّهُورِ', fr1: "J'habite...", ar2: 'بَيْتُنَا جَمِيلٌ وَقَرِيبٌ', fr2: 'Proche' },
+            { s: 'الحِصَّةُ 2', title: 'أَنْ يَتَحَدَّثَ عَنْ أُسْرَتِهِ', ar1: 'تَتَكَوَّنُ أُسْرَتِي مِنْ أَبِي وَأُمِّي', fr1: 'Ma famille', ar2: 'لِي أُخْتٌ وَأَخٌ صَغِيرٌ', fr2: 'Frère/Sœur' },
+            { s: 'الحِصَّةُ 3', title: 'أَنْ يَتَحَدَّثَ عَنْ ذَوْقِهِ', ar1: 'أَنَا أُحِبُّ قِرَاءَةَ القِصَصِ', fr1: 'Lire', ar2: 'وَأُفَضِّلُ الرَّسْمَ بِالأَلْوَانِ', fr2: 'Dessiner' },
+            { s: 'الحِصَّةُ 4', title: 'أَنْ يُقَدِّمَ شَخْصًا أَوْ حَيَوَانًا', ar1: 'هَذَا أَخِي عَلِي', fr1: 'Mon frère', ar2: 'وَهَذِهِ قِطَّتِي مِيشُو', fr2: 'Mon chat' },
+            { s: 'الحِصَّةُ 5', title: 'تَحْدِيدُ مَوْقِعِ الأَشْيَاءِ', ar1: 'الكِتَابُ فَوْقَ الطَّاوِلَةِ', fr1: 'Sur', ar2: 'القِطَّةُ تَحْتَ الكُرْسِيِّ', fr2: 'Sous' }
+          ],
+          continuousText: 'أَسْكُنُ فِي مَنْزِلٍ دَافِئٍ مَعَ أُسْرَتِي، أُحِبُّ مُسَاعَدَةَ أُمِّي وَأَبِي، وَغُرْفَتِي نَظِيفَةٌ وَمُرَتَّبَةٌ.'
+        },
+        3: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'الحِسَابُ وَالمُقَارَنَةُ', ar1: 'خَمْسَةٌ أَكْبَرُ مِنْ ثَلَاثَةٍ', fr1: 'Comparer', ar2: 'عِنْدِي عَشْرَةُ أَقْلَامٍ', fr2: '10 stylos' },
+            { s: 'الحِصَّةُ 2', title: 'طَلَبُ مَعْلُومَاتٍ مِنْ شَخْصٍ', ar1: 'أَيْنَ تَقَعُ مَحَطَّةُ القِطَارِ ؟', fr1: 'La gare', ar2: 'هَلْ يُمْكِنُكَ إِخْبَارِي ؟', fr1: 'Informer' },
+            { s: 'الحِصَّةُ 3', title: 'تَوْدِيعُ شَخْصٍ مَا', ar1: 'إِلَى اللِّقَاءِ يَا صَدِيقِي', fr1: 'Au revoir', ar2: 'مَعَ السَّلَامَةِ، أَرَاكَ غَدًا', fr2: 'À demain' },
+            { s: 'الحِصَّةُ 4', title: 'عِبَارَاتُ الِاحْتِرَامِ', ar1: 'مِنْ فَضْلِكَ أَعْطِنِي الكِتَابَ', fr1: "S'il vous plaît", ar2: 'شُكْرًا جَزِيلًا لَكَ', fr2: 'Merci' },
+            { s: 'الحِصَّةُ 5', title: 'الشُّكْرُ عَلَى مَعْرُوفٍ', ar1: 'أَشْكُرُكَ عَلَى مُسَاعَدَتِي', fr1: 'Aide', ar2: 'العَفْوُ، هَذَا وَاجِبِي', fr2: 'De rien' }
+          ],
+          continuousText: 'فِي مَدِينَتِي شَوَارِعُ وَاسِعَةٌ وَمَحَطَّةُ قِطَارٍ كَبِيرَةٌ، أَتَعَامَلُ مَعَ النَّاسِ بِاحْتِرَامٍ وَأَقُولُ شُكْرًا دَوْمًا.'
+        },
+        4: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'الِاعْتِذَارُ وَالتَّأَسُّفُ', ar1: 'أَنَا آسِفٌ جِدًّا', fr1: 'Pardon', ar2: 'عُذْرًا لَمْ أَقْصِدْ ذَلِكَ', fr2: 'Excusez-moi' },
+            { s: 'الحِصَّةُ 2', title: 'التَّعْبِيرُ عَنِ المُتَمَنَّيَاتِ', ar1: 'أَتَمَنَّى لَكَ عِيدًا سَعِيدًا', fr1: 'Bonne fête', ar2: 'سَنَةً سَعِيدَةً وَكُلَّ عَامٍ وَأَنْتُمْ بِخَيْرٍ', fr2: 'Vœux' },
+            { s: 'الحِصَّةُ 3', title: 'التَّهْنِئَةُ فِي المُنَاسَبَاتِ', ar1: 'مَبْرُوكٌ عَلَيْكَ النَّجَاحُ', fr1: 'Félicitations', ar2: 'تَهَانِيَّ الحَارَّةُ لَكَ', fr2: 'Chaleureuses' },
+            { s: 'الحِصَّةُ 4', title: 'طَلَبُ السَّمَاحِ بِفِعْلِ شَيْءٍ', ar1: 'هَلْ تَسْمَحُ لِي بِالدُّخُولِ ؟', fr1: 'Entrer', ar2: 'نَعَمْ، تَفَضَّلْ بِكُلِّ سُرُورٍ', fr2: 'Bienvenue' },
+            { s: 'الحِصَّةُ 5', title: 'دَعْوَةُ شَخْصٍ لِشَيْءٍ مَا', ar1: 'أَدْعُوكَ لِتَنَاوُلِ الشَّايِ مَعَنَا', fr1: 'Thé', ar2: 'شُكْرًا عَلَى الدَّعْوَةِ اللَّطِيفَةِ', fr2: 'Invitation' }
+          ],
+          continuousText: 'أُحِبُّ أَنْ أُهَنِّئَ أَصْدِقَائِي فِي الأَعْيَادِ وَأَقُولَ لَهُمْ: عِيدٌ مُبَارَكٌ سَعِيدٌ وَكُلُّ عَامٍ وَأَنْتُمْ بِخَيْرٍ.'
+        },
+        5: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'قَبُولُ أَوْ رَفْضُ اقْتِرَاحٍ', ar1: 'نَعَمْ، بِكُلِّ فَرَحٍ وَسُرُورٍ', fr1: 'Accepter', ar2: 'لَا، لَا أَسْتَطِيعُ اليَوْمَ، آسِفٌ', fr2: 'Refuser' },
+            { s: 'الحِصَّةُ 2', title: 'طَلَبُ شَيْءٍ بِأَدَبٍ', ar1: 'أُرِيدُ مَاءً مِنْ فَضْلِكَ', fr1: 'Je veux...', ar2: 'هَلْ لَدَيْكَ قَلَمٌ إِضَافِيٌّ ؟', fr2: 'As-tu...?' },
+            { s: 'الحِصَّةُ 3', title: 'التَّعْبِيرُ عَمَّا يَمْلِكُ', ar1: 'أَنَا عِنْدِي دَرَّاجَةٌ جَدِيدَةٌ', fr1: "J'ai...", ar2: 'لَيْسَ عِنْدِي هَاتِفٌ مَحْمُولٌ', fr2: "Je n'ai pas" },
+            { s: 'الحِصَّةُ 4', title: 'الِاسْتِعْلَامُ عَنِ الطَّقْسِ', ar1: 'كَيْفَ هُوَ الطَّقْسُ اليَوْمَ ؟', fr1: 'Météo', ar2: 'الجَوُّ مُشْمِسٌ وَدَافِئٌ', fr2: 'Ensoleillé' },
+            { s: 'الحِصَّةُ 5', title: 'التَّحَدُّثُ عَنِ الأَنْشِطَةِ', ar1: 'مَاذَا تَفْعَلُ الآنَ ؟', fr1: 'Que fais-tu?', ar2: 'أَنَا أُسَاعِدُ فِي سَقْيِ الأَزْهَارِ', fr2: 'Arroser' }
+          ],
+          continuousText: 'اليَوْمَ الجَوُّ جَمِيلٌ وَمُشْمِسٌ، أَنَا أُحَافِظُ عَلَى بِيئَتِي وَأَغْرِسُ شَجَرَةً فِي حَدِيقَةِ مَدْرَسَتِي.'
+        },
+        6: {
+          sessions: [
+            { s: 'الحِصَّةُ 1', title: 'التَّحَدُّثُ عَنِ الأَنْشِطَةِ المَاضِيَةِ', ar1: 'مَاذَا فَعَلْتَ بِالأَمْسِ ؟', fr1: 'Hier', ar2: 'زُرْتُ مَعْرِضَ المَآثِرِ التَّارِيخِيَّةِ', fr2: 'Visite' },
+            { s: 'الحِصَّةُ 2', title: 'التَّحَدُّثُ عَنْ مَشَارِيعِ الغَدِ', ar1: 'مَاذَا سَتَفْعَلُ غَدًا ؟', fr1: 'Demain', ar2: 'سَأَشْتَرِي كِتَابًا عَنْ تَارِيخِ بِلَادِي', fr2: 'Acheter' },
+            { s: 'الحِصَّةُ 3', title: 'التَّعْبِيرُ عَنِ القُدْرَةِ', ar1: 'أَنَا أَسْتَطِيعُ السِّبَاحَةَ وَالرَّسْمَ', fr1: 'Je peux', ar2: 'أَسْتَطِيعُ التَّحَدُّثَ بِالعَرَبِيَّةِ', fr2: 'En arabe' },
+            { s: 'الحِصَّةُ 4', title: 'تَجْزِئَةُ الِاسْمِ إِلَى حُرُوفٍ', ar1: 'اسْمِي عُمَرُ: عَـ + مَـ + رُ', fr1: 'Épeler', ar2: 'اسْمِي لَيْلَى: لَـ + يْـ + لَى', fr2: 'Prénom' },
+            { s: 'الحِصَّةُ 5', title: 'التَّعْبِيرُ عَنْ مُعْطَيَاتٍ عَدَدِيَّةٍ', ar1: 'ثَمَنُ القَلَمِ عَشَرَةُ دَرَاهِمَ', fr1: '10 Dirhams', ar2: 'اشْتَرَيْتُ ثَلَاثَ دَفَاتِرَ', fr2: '3 cahiers' }
+          ],
+          continuousText: 'أَنَا أَسْتَطِيعُ التَّعْبِيرَ بِاللُّغَةِ العَرَبِيَّةِ بِطَلَاقَةٍ، عَرَفْتُ تَارِيخَ بِلَادِي المَغْرِبِ وَأَفْتَخِرُ بِانْتِمَائِي.'
+        }
+      };
+
+      const curData = oralDataMap[uNum] || oralDataMap[1];
+      cardsGrid.innerHTML = curData.sessions.map(card => `
+        <div class="bg-slate-50 border-2 border-emerald-100 p-3.5 rounded-2xl shadow-sm">
+          <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg">${card.s}</span>
+          <h3 class="font-black text-slate-900 text-xs mt-1 mb-2 truncate">${card.title}</h3>
+          <button onclick="speakDialogue('${card.ar1}')" class="w-full text-right p-2 rounded-xl bg-white border border-slate-200 hover:bg-emerald-50 text-xs font-black transition flex justify-between mb-1.5 shadow-2xs">
+            <span class="font-naskh">${card.ar1}</span><span class="text-[10px] text-slate-400 font-fr">${card.fr1}</span>
+          </button>
+          <button onclick="speakDialogue('${card.ar2}')" class="w-full text-right p-2 rounded-xl bg-white border border-slate-200 hover:bg-emerald-50 text-xs font-black transition flex justify-between shadow-2xs">
+            <span class="font-naskh">${card.ar2}</span><span class="text-[10px] text-slate-400 font-fr">${card.fr2}</span>
+          </button>
+        </div>
+      `).join('');
+
+      contBox.innerHTML = `
+        <h3 class="font-black text-amber-950 text-sm mb-1.5 flex items-center gap-1.5">
+          <span>🎤</span> <span>الاسْتِرْسَالُ فِي الكَلَامِ (Parler en continu - A2)</span>
+        </h3>
+        <p class="text-xs text-slate-600 mb-2.5">اسْتَمِعْ لِلنَّمُوذَجِ الكَامِلِ وَتَمَرَّنْ عَلَى تَرْدِيدِهِ :</p>
+        <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-xs mb-3">
+          <p id="fullContinuousSpeechText" class="font-black text-slate-900 text-sm font-naskh leading-relaxed">
+            ${curData.continuousText}
+          </p>
+        </div>
+        <button onclick="speakDialogue(document.getElementById('fullContinuousSpeechText').textContent)" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow transition">
+          <span>🔊 اسْتَمِعْ لِلنَّصِّ الشَّفَوِيِّ</span>
+        </button>
+      `;
+    }
+
+    /* --- STREAMING_CHUNK:Reading Tab rendering with dynamic letters... */
+    function renderReadingTab(uNum) {
+      const u = unitsData[uNum];
+      const btnContainer = document.getElementById('readingLetterButtons');
+      if (!btnContainer) return;
+
+      btnContainer.innerHTML = u.lettersOrder.map(letKey => `
+        <button onclick="selectReadingLetter('${letKey}')" id="btn-read-${letKey}" class="read-let-btn px-3 py-1 rounded-xl font-black text-sm bg-slate-100 text-slate-700 hover:bg-emerald-100 transition font-naskh">
+          ${u.reading[letKey].letter}
+        </button>
+      `).join('');
+
+      selectReadingLetter(u.defaultLetter);
+    }
+
+    function selectReadingLetter(letKey) {
+      playSfx('click');
+      state.currentReadingLetter = letKey;
+      const u = unitsData[state.currentUnitNum];
+      const data = u.reading[letKey];
+      if (!data) return;
+
+      document.querySelectorAll('.read-let-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById(`btn-read-${letKey}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-emerald-600', 'text-white');
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+      }
+
+      document.getElementById('readingBadge').textContent = `Texte : ${data.titleFr}`;
+      document.getElementById('readingTextContent').textContent = data.text;
+      document.getElementById('letterPracticeTitle').textContent = `مَوَاضِعُ حَرْفِ (${data.letter}) وَتَطْبِيقَاتُهُ`;
+
+      const ghostWord = document.getElementById('readingGhostWord');
+      if (ghostWord) ghostWord.textContent = data.keywords[0]?.ar || data.letter;
+
+      // Keywords
+      const kwGrid = document.getElementById('readingKeywordsGrid');
+      if (kwGrid) {
+        kwGrid.innerHTML = data.keywords.map(kw => `
+          <button onclick="speakDialogue('${kw.ar}')" class="px-3 py-1 bg-white hover:bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-black text-emerald-950 transition flex items-center gap-1 shadow-xs">
+            <span>🔊</span> <span class="font-naskh">${kw.ar}</span> <span class="text-[9px] text-slate-400 font-fr">(${kw.fr})</span>
+          </button>
+        `).join('');
+      }
+
+      // Positions
+      const posGrid = document.getElementById('readingPositionsGrid');
+      if (posGrid) {
+        posGrid.innerHTML = data.positions.map(pos => `
+          <div onclick="speakDialogue('${pos.glyph}، ${pos.example}'); if(document.getElementById('readingGhostWord')) document.getElementById('readingGhostWord').textContent='${pos.example}'; clearReadingCanvas();" class="p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition cursor-pointer group">
+            <span class="text-2xl font-black text-emerald-900 block font-naskh group-hover:scale-110 transition">${pos.glyph}</span>
+            <span class="text-[10px] font-bold text-slate-700 block">${pos.posAr}</span>
+            <span class="text-xs font-black text-teal-700 block font-naskh mt-0.5">${pos.example}</span>
+          </div>
+        `).join('');
+      }
+
+      // Question
+      document.getElementById('readingQuestionAr').textContent = data.question.ar;
+      const optsGrid = document.getElementById('readingOptionsGrid');
+      if (optsGrid) {
+        optsGrid.innerHTML = data.question.options.map(opt => `
+          <button onclick="handleReadingAnswer(this, ${opt.isCorrect})" class="p-2 rounded-xl bg-white border border-slate-200 hover:bg-emerald-50 text-xs font-bold text-slate-800 transition font-naskh">
+            ${opt.text}
+          </button>
+        `).join('');
+      }
+
+      clearReadingCanvas();
+    }
+
+    function handleReadingAnswer(btn, isCorrect) {
+      if (isCorrect) {
+        btn.classList.add('bg-emerald-500', 'text-white');
+        addStars(1);
+        speakDialogue('أَحْسَنْتَ! إِجَابَةٌ صَحِيحَةٌ عَنِ النَّصِّ');
+      } else {
+        btn.classList.add('bg-rose-500', 'text-white');
+        speakDialogue('حَاوِلْ مَرَّةً أُخْرَى!');
+      }
+    }
+
+    function speakCurrentReadingText() {
+      const u = unitsData[state.currentUnitNum];
+      const data = u.reading[state.currentReadingLetter];
+      if (data) speakDialogue(data.text);
+    }
+
+    /* --- STREAMING_CHUNK:Grammar and Morphology Tab rendering... */
+    function renderGrammarTab(uNum) {
+      const c = document.getElementById('grammarContainer');
+      if (!c) return;
+
+      const grammarMap = {
+        1: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 1)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">أقسام الكلمة</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3">تَصْنِيفُ الكَلِمَاتِ إِلَى : (اسْمٍ - فِعْلٍ - حَرْفٍ) :</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-3.5 bg-sky-50 rounded-2xl border border-sky-200 text-center">
+              <span class="font-black text-sky-900 text-sm block mb-1">اسْمٌ (Nom)</span>
+              <span class="text-xs font-bold text-slate-600">مَدْرَسَةٌ - كَرِيمٌ - كِتَابٌ</span>
+              <button onclick="speakDialogue('مَدْرَسَةٌ، كِتَابٌ: اسْمٌ')" class="mt-2 text-[11px] text-sky-700 block mx-auto underline font-bold">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+              <span class="font-black text-emerald-900 text-sm block mb-1">فِعْلٌ (Verbe)</span>
+              <span class="text-xs font-bold text-slate-600">يَقْرَأُ - كَتَبَ - يَجْلِسُ</span>
+              <button onclick="speakDialogue('يَقْرَأُ، كَتَبَ: فِعْلٌ')" class="mt-2 text-[11px] text-emerald-700 block mx-auto underline font-bold">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+              <span class="font-black text-amber-900 text-sm block mb-1">حَرْفٌ (Particule)</span>
+              <span class="text-xs font-bold text-slate-600">فِي - عَلَى - إِلَى</span>
+              <button onclick="speakDialogue('فِي، عَلَى، إِلَى: حَرْفٌ')" class="mt-2 text-[11px] text-amber-700 block mx-auto underline font-bold">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        2: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 2)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">الجملة الفعلية وأسماء الإشارة</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">عَنَاصِرُ الجُمْلَةِ الفِعْلِيَّةِ (فِعْل + فَاعِل)</h3>
+              <div class="bg-white p-3 rounded-xl border border-emerald-200 text-center text-lg font-black text-slate-900 mb-2 font-naskh">
+                <span class="text-teal-600">يَرْسُمُ</span> <span class="text-emerald-700">عُمَرُ</span> الزَّهْرَةَ
+              </div>
+              <button onclick="speakDialogue('يَرْسُمُ عُمَرُ الزَّهْرَةَ، يَرْسُمُ فِعْلٌ، وَعُمَرُ فَاعِلٌ')" class="text-xs text-emerald-700 font-bold hover:underline">
+                🔊 اسْتَمِعْ لِلتَّحْلِيلِ
+              </button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">أَسْمَاءُ الإِشَارَةِ (هَذَا / هَذِهِ)</h3>
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="speakDialogue('هَذَا أَبِي، هَذَا بَيْتِي')" class="p-2 bg-white rounded-xl border border-slate-200 text-center font-bold text-xs">
+                  <span class="text-emerald-700 font-black text-base block font-naskh">هَذَا</span>
+                  <span>لِلْمُذَكَّرِ (أَبِي)</span>
+                </button>
+                <button onclick="speakDialogue('هَذِهِ أُمِّي، هَذِهِ أُسْرَتِي')" class="p-2 bg-white rounded-xl border border-slate-200 text-center font-bold text-xs">
+                  <span class="text-teal-700 font-black text-base block font-naskh">هَذِهِ</span>
+                  <span>لِلْمُؤَنَّثِ (أُمِّي)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `,
+        3: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 3)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">المثنى والجمع والماضي والمضارع</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">المُثَنَّى وَالجَمْعُ (Singulier / Duel / Pluriel)</h3>
+              <p class="text-xs text-slate-600 mb-2">مُفْرَد: كِتَابٌ • مُثَنَّى: كِتَابَانِ • جَمْع: كُتُبٌ</p>
+              <button onclick="speakDialogue('كِتَابٌ مُفْرَد، كِتَابَانِ مُثَنَّى، كُتُبٌ جَمْعٌ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ لِلأَمْثِلَةِ</button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">الفِعْلُ المَاضِي وَالمُضَارِعُ (Passé & Présent)</h3>
+              <p class="text-xs text-slate-600 mb-2">مَاضٍ: سَافَرَ طَارِقٌ • مُضَارِع: يُسَافِرُ طَارِقٌ</p>
+              <button onclick="speakDialogue('سَافَرَ فِي المَاضِي، يُسَافِرُ فِي الحَاضِرِ وَالمُضَارِعِ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ لِلتَّحْوِيلِ</button>
+            </div>
+          </div>
+        `,
+        4: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 4)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">فعل الأمر والضمائر المنفصلة والمتصلة</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">فِعْلُ الأَمْرِ (Impératif)</h3>
+              <p class="text-xs text-slate-600 mb-2">اكْتُبْ دَرْسَكَ • اشْرَبِ الشَّايَ • سَاعِدْ أُمَّكَ</p>
+              <button onclick="speakDialogue('اكْتُبْ، اشْرَبْ، سَاعِدْ: هَذَا فِعْلُ أَمْرٍ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">الضَّمَائِرُ (Pronoms)</h3>
+              <p class="text-xs text-slate-600 mb-2">أَنَا، أَنْتَ، هُوَ، هِيَ • بَيْتِي، بَيْتُكَ، بَيْتُهُ</p>
+              <button onclick="speakDialogue('أَنَا، أَنْتَ، هُوَ، هِيَ: ضَمَائِرُ مُنْفَصِلَةٌ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        5: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 5)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">كان وأخواتها والنعت</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">كَانَ وَأَخَوَاتُهَا (Kana & ses sœurs)</h3>
+              <p class="text-xs text-slate-600 mb-2">كَانَ الجَوُّ جَمِيلًا • صَارَ المَاءُ عَذْبًا</p>
+              <button onclick="speakDialogue('كَانَ الجَوُّ جَمِيلًا، صَارَ المَاءُ عَذْبًا')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">النَّعْتُ وَالوُصُوفُ (L'adjectif qualificatif)</h3>
+              <p class="text-xs text-slate-600 mb-2">شَجَرَةٌ كَبِيرَةٌ • غَابَةٌ خَضْرَاءُ</p>
+              <button onclick="speakDialogue('كَبِيرَةٌ وَخَضْرَاءُ: نَعْتٌ يَصِفُ الاسْمَ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        6: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🧩 الصَّرْفُ وَالتَّرَاكِيبُ (الوحدة 6)</h2>
+            <span class="text-xs bg-indigo-100 text-indigo-900 font-black px-3 py-1 rounded-xl">حروف الجر وظرفا الزمان والمكان</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">حُرُوفُ الجَرِّ (Prépositions)</h3>
+              <p class="text-xs text-slate-600 mb-2">مِنْ، إِلَى، عَنْ، عَلَى، فِي، البَاءُ، اللَّامُ</p>
+              <button onclick="speakDialogue('حُرُوفُ الجَرِّ: مِنْ، إِلَى، عَنْ، عَلَى، فِي، البَاءُ، اللَّامُ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <h3 class="font-black text-slate-800 text-sm mb-2">ظَرْفَا الزَّمَانِ وَالمَكَانِ (Temps & Lieu)</h3>
+              <p class="text-xs text-slate-600 mb-2">صَبَاحًا، مَسَاءً • أَمَامَ، خَلْفَ، دَاخِلَ</p>
+              <button onclick="speakDialogue('صَبَاحًا ظَرْفُ زَمَانٍ، أَمَامَ ظَرْفُ مَكَانٍ')" class="text-xs text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `
+      };
+
+      c.innerHTML = grammarMap[uNum] || grammarMap[1];
+    }
+
+    /* --- STREAMING_CHUNK:Spelling and Orthography Tab rendering... */
+    function renderSpellingTab(uNum) {
+      const c = document.getElementById('spellingContainer');
+      if (!c) return;
+
+      const spellingMap = {
+        1: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 1)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">الشدة والتنوين</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+              <h3 class="font-black text-amber-950 text-sm mb-2">ـّـ (الشَّدَّةُ)</h3>
+              <button onclick="speakDialogue('مُعَلِّمٌ، سَبُّورَةٌ')" class="p-2 bg-white rounded-xl border border-amber-300 w-full text-right font-black text-sm text-amber-950 font-naskh">
+                مُعَلِّـمٌ - سَبُّـورَةٌ
+              </button>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <h3 class="font-black text-emerald-950 text-sm mb-2">ً  ٍ  ٌ (التَّنْوِينُ)</h3>
+              <button onclick="speakDialogue('كِتَابٌ، كِتَابًا، كِتَابٍ')" class="p-2 bg-white rounded-xl border border-emerald-300 w-full text-right font-black text-sm text-emerald-950 font-naskh">
+                كِتَابٌ - كِتَابًا - كِتَابٍ
+              </button>
+            </div>
+          </div>
+        `,
+        2: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 2)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">ال شمسية/قمرية، الهمزة، الترقيم</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <h4 class="font-black text-slate-800 mb-1">ال الشَّمْسِيَّةُ وَالقَمَرِيَّةُ</h4>
+              <p class="text-slate-600 mb-2">شمسية: السَّلَامُ • قمرية: البَيْتُ</p>
+              <button onclick="speakDialogue('السَّلَامُ: شَمْسِيَّة، البَيْتُ: قَمَرِيَّة')" class="text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <h4 class="font-black text-slate-800 mb-1">هَمْزَتَا الوَصْلِ وَالقَطْعِ</h4>
+              <p class="text-slate-600 mb-2">قطع: أُمِّي • وصل: اسْمِي</p>
+              <button onclick="speakDialogue('أُمِّي هَمْزَةُ قَطْعٍ، اسْمِي هَمْزَةُ وَصْلٍ')" class="text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <h4 class="font-black text-slate-800 mb-1">عَلَامَاتُ التَّرْقِيمِ</h4>
+              <p class="text-slate-600 mb-2">النُّقْطَةُ (.) الفَاصِلَةُ (،) (؟)</p>
+              <button onclick="speakDialogue('النُّقْطَةُ فِي آخِرِ الجُمْلَةِ')" class="text-emerald-700 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        3: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 3)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">التاء المربوطة والمبسوطة وإدخال اللام</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+              <h4 class="font-black text-amber-950 mb-1">التَّاءُ المَرْبُوطَةُ (ـة / ة) وَالمَبْسُوطَةُ (ت)</h4>
+              <p class="text-slate-600 mb-2">مربوطة: قَرْيَةٌ، حَدِيقَةٌ • مبسوطة: بَيْتٌ، سَافَرْتُ</p>
+              <button onclick="speakDialogue('قَرْيَةٌ تَاءٌ مَرْبُوطَةٌ، بَيْتٌ تَاءٌ مَبْسُوطَةٌ')" class="text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <h4 class="font-black text-emerald-950 mb-1">إِدْخَالُ اللَّامِ عَلَى (ال)</h4>
+              <p class="text-slate-600 mb-2">المَدْرَسَةُ -> لِلْمَدْرَسَةِ • السَّلَامُ -> لِلسَّلَامِ</p>
+              <button onclick="speakDialogue('لِلْمَدْرَسَةِ، لِلسَّلَامِ')" class="text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        4: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 4)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">إدخال الباء والهمزة المتوسطة على الألف</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+              <h4 class="font-black text-amber-950 mb-1">الهَمْزَةُ المُتَوَسِّطَةُ عَلَى الأَلِفِ</h4>
+              <p class="text-slate-600 mb-2">سَأَلَ - رَأْسٌ - مَسْأَلَةٌ</p>
+              <button onclick="speakDialogue('سَأَلَ، رَأْسٌ: هَمْزَةٌ عَلَى الأَلِفِ')" class="text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <h4 class="font-black text-emerald-950 mb-1">إِدْخَالُ البَاءِ عَلَى (ال)</h4>
+              <p class="text-slate-600 mb-2">القَلَمُ -> بِالقَلَمِ • الصُّوفُ -> بِالصُّوفِ</p>
+              <button onclick="speakDialogue('بِالقَلَمِ، بِالصُّوفِ')" class="text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        5: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 5)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">الهمزة المتوسطة على الواو والياء</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+              <h4 class="font-black text-amber-950 mb-1">الهَمْزَةُ عَلَى الوَاوِ (ؤ)</h4>
+              <p class="text-slate-600 mb-2">سُؤَالٌ - مُؤْمِنٌ - تَفَاؤُلٌ</p>
+              <button onclick="speakDialogue('سُؤَالٌ: هَمْزَةٌ عَلَى الوَاوِ')" class="text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <h4 class="font-black text-emerald-950 mb-1">الهَمْزَةُ عَلَى اليَاءِ (ئـ / ئ)</h4>
+              <p class="text-slate-600 mb-2">بِئْرٌ - رَئِيسٌ - شَاطِئٌ</p>
+              <button onclick="speakDialogue('بِئْرٌ، رَئِيسٌ: هَمْزَةٌ عَلَى اليَاءِ')" class="text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        6: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">✍️ الإِمْلَاءُ وَالخَطُّ (الوحدة 6)</h2>
+            <span class="text-xs bg-amber-100 text-amber-900 font-black px-3 py-1 rounded-xl">الهمزة المتطرفة وألف ابن</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+              <h4 class="font-black text-amber-950 mb-1">الهَمْزَةُ المُتَطَرِّفَةُ فِي آخِرِ الكَلِمَةِ</h4>
+              <p class="text-slate-600 mb-2">سَمَاءٌ - وُضُوءٌ - شَاطِئٌ - جُزْءٌ</p>
+              <button onclick="speakDialogue('سَمَاءٌ، وُضُوءٌ: هَمْزَةٌ مُتَطَرِّفَةٌ')" class="text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <h4 class="font-black text-emerald-950 mb-1">أَلِفُ ابْنٍ (ابن / بن)</h4>
+              <p class="text-slate-600 mb-2">عُمَرُ بْنُ الخَطَّابِ • ابْنُ المَدِينَةِ</p>
+              <button onclick="speakDialogue('عُمَرُ بْنُ الخَطَّابِ، ابْنُ المَدِينَةِ')" class="text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `
+      };
+
+      c.innerHTML = spellingMap[uNum] || spellingMap[1];
+    }
+
+    /* --- STREAMING_CHUNK:Culture and Moroccan Identity Tab rendering... */
+    function renderCultureTab(uNum) {
+      const c = document.getElementById('cultureContainer');
+      if (!c) return;
+
+      const cultureMap = {
+        1: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: عَلَمِي وَبَلَدِي</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <div onclick="speakDialogue('عَلَمُ المَمْلَكَةِ المَغْرِبِيَّةِ: أَحْمَرُ تَتَوَسَّطُهُ نَجْمَةٌ خُضْرَاءُ خُمَاسِيَّةٌ')" class="cursor-pointer p-6 bg-red-600 text-white rounded-2xl text-center shadow-lg hover:scale-102 transition">
+              <span class="text-5xl block mb-2">🇲🇦</span>
+              <h3 class="font-black text-base">عَلَمُ بِلَادِي المَغْرِبِ</h3>
+              <p class="text-xs text-red-100 mt-1">اضغط للاستماع للشرح</p>
+            </div>
+            <div class="space-y-2 text-xs">
+              <button onclick="speakDialogue('المَغْرِبُ بَلَدِي الأَصْلِيُّ، وَفَرَنْسَا بَلَدِي المُضِيفُ')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-right font-bold flex justify-between">
+                <span>بَلَدِي الأَصْلِيُّ وَبَلَدِي المُضِيفُ</span><span>🔊</span>
+              </button>
+              <button onclick="speakDialogue('مَلِكُ المَغْرِبِ هُوَ المَلِكُ مُحَمَّدٌ السَّادِسُ')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-right font-bold flex justify-between">
+                <span>أَعْرِفُ مَلِكَ بِلَادِي</span><span>🔊</span>
+              </button>
+            </div>
+          </div>
+        `,
+        2: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: العَقِيقَةُ، العُرْسُ، وَالحِنَّاءُ</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+              <span class="text-3xl block mb-1">👶</span>
+              <h3 class="font-black text-amber-950 text-sm">حَفْلُ العَقِيقَةِ</h3>
+              <p class="text-xs text-slate-600 mt-1">احْتِفَالٌ بَهِيجٌ بِالمَوْلُودِ الجَدِيدِ فِي الأُسْرَةِ.</p>
+              <button onclick="speakDialogue('حَفْلُ العَقِيقَةِ احْتِفَالٌ بَهِيجٌ بِالمَوْلُودِ الجَدِيدِ')" class="mt-2 text-xs text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-center">
+              <span class="text-3xl block mb-1">🎉</span>
+              <h3 class="font-black text-rose-950 text-sm">العُرْسُ المَغْرِبِيُّ</h3>
+              <p class="text-xs text-slate-600 mt-1">يَتَمَيَّزُ بِالقَفْطَانِ وَالمُوسِيقَى التَّقْلِيدِيَّةِ.</p>
+              <button onclick="speakDialogue('العُرْسُ المَغْرِبِيُّ يَتَمَيَّزُ بِالقَفْطَانِ وَالفَرَحِ')" class="mt-2 text-xs text-rose-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+              <span class="text-3xl block mb-1">🌿</span>
+              <h3 class="font-black text-emerald-950 text-sm">طُقُوسُ الحِنَّاءِ</h3>
+              <p class="text-xs text-slate-600 mt-1">تَعْبِيرٌ عَنِ الفَرَحِ وَالبَرَكَةِ فِي المُنَاسَبَاتِ.</p>
+              <button onclick="speakDialogue('الحِنَّاءُ فِي المُنَاسَبَاتِ تَعْبِيرٌ عَنِ الفَرَحِ')" class="mt-2 text-xs text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        3: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: خَرِيطَةُ وَمُدُنُ وَمَعْمَارُ بِلَادِي</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 bg-sky-50 rounded-2xl border border-sky-200 text-center">
+              <span class="text-3xl block mb-1">🗺️</span>
+              <h3 class="font-black text-sky-950 text-sm">عَاصِمَةُ بِلَادِي</h3>
+              <p class="text-xs text-slate-600 mt-1">الرِّبَاطُ عَاصِمَةُ المَمْلَكَةِ، وَفِيهَا مَعَالِمُ خَالِدَةٌ.</p>
+              <button onclick="speakDialogue('الرِّبَاطُ هِيَ عَاصِمَةُ المَمْلَكَةِ المَغْرِبِيَّةِ')" class="mt-2 text-xs text-sky-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+              <span class="text-3xl block mb-1">🕌</span>
+              <h3 class="font-black text-amber-950 text-sm">المِعْمَارُ المَغْرِبِيُّ</h3>
+              <p class="text-xs text-slate-600 mt-1">الزَّلِيجُ وَالأَقْوَاسُ وَصَوْمَعَةُ حَسَّانَ وَجَامِعُ القَرَوِيِّينَ.</p>
+              <button onclick="speakDialogue('المِعْمَارُ المَغْرِبِيُّ أَنِيقٌ وَأَصِيلٌ')" class="mt-2 text-xs text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+              <span class="text-3xl block mb-1">🗣️</span>
+              <h3 class="font-black text-emerald-950 text-sm">لَهَجَاتُ بِلَادِي</h3>
+              <p class="text-xs text-slate-600 mt-1">تَنَوُّعٌ ثَقَافِيٌّ غَنِيٌّ بِالدَّارِجَةِ وَالأَمَازِيغِيَّةِ.</p>
+              <button onclick="speakDialogue('المَغْرِبُ غَنِيٌّ بِتَنَوُّعِ لَهَجَاتِهِ وَثَقَافَاتِهِ')" class="mt-2 text-xs text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        4: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: الطَّبْخُ، الزَّرْبِيَّةُ، وَاللِّبَاسُ</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 bg-orange-50 rounded-2xl border border-orange-200 text-center">
+              <span class="text-3xl block mb-1">🍲</span>
+              <h3 class="font-black text-orange-950 text-sm">الكَسْكُسُ وَالطَّاجِينُ</h3>
+              <p class="text-xs text-slate-600 mt-1">أَطْبَاقٌ عَالَمِيَّةٌ شَهِيرَةٌ تُعَبِّرُ عَنِ الكَرَمِ.</p>
+              <button onclick="speakDialogue('الكَسْكُسُ وَالطَّاجِينُ مِنْ أَشْهَرِ أَطْبَاقِ الطَّبْخِ المَغْرِبِيِّ')" class="mt-2 text-xs text-orange-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-center">
+              <span class="text-3xl block mb-1">🧵</span>
+              <h3 class="font-black text-rose-950 text-sm">الزَّرْبِيَّةُ المَغْرِبِيَّةُ</h3>
+              <p class="text-xs text-slate-600 mt-1">نُقُوشٌ هَنْدَسِيَّةٌ بَدِيعَةٌ تَصْنَعُهَا الأَيَادِي المَاهِرَةُ.</p>
+              <button onclick="speakDialogue('الزَّرْبِيَّةُ المَغْرِبِيَّةُ لَوْحَةٌ فَنِّيَّةٌ أَصِيلَةٌ')" class="mt-2 text-xs text-rose-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-teal-50 rounded-2xl border border-teal-200 text-center">
+              <span class="text-3xl block mb-1">👘</span>
+              <h3 class="font-black text-teal-950 text-sm">القَفْطَانُ وَالجِلْبَابُ</h3>
+              <p class="text-xs text-slate-600 mt-1">لِبَاسٌ تَقْلِيدِيٌّ رَفِيعٌ يَعْتَزُّ بِهِ كُلُّ مَغْرِبِيٍّ.</p>
+              <button onclick="speakDialogue('القَفْطَانُ لِبَاسٌ تَقْلِيدِيٌّ رَفِيعٌ')" class="mt-2 text-xs text-teal-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        5: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: البَحْرَانِ وَشَجَرَةُ الأَرْكَانِ وَالمَنَاخُ</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 bg-sky-50 rounded-2xl border border-sky-200 text-center">
+              <span class="text-4xl block mb-2">🌊</span>
+              <h3 class="font-black text-sky-950 text-sm">البَحْرُ الأَبْيَضُ وَالمُحِيطُ الأَطْلَسِيُّ</h3>
+              <p class="text-xs text-slate-600 mt-1">يَمْتَلِكُ المَغْرِبُ وَاجِهَتَيْنِ بَحْرِيَّتَيْنِ سَاحِرَتَيْنِ.</p>
+              <button onclick="speakDialogue('يُحِيطُ بِالمَغْرِبِ البَحْرُ الأَبْيَضُ المُتَوَسِّطُ وَالمُحِيطُ الأَطْلَسِيُّ')" class="mt-2 text-xs text-sky-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+              <span class="text-4xl block mb-2">🌳</span>
+              <h3 class="font-black text-amber-950 text-sm">شَجَرَةُ الأَرْكَانِ النَّادِرَةُ</h3>
+              <p class="text-xs text-slate-600 mt-1">شَجَرَةٌ فَرِيدَةٌ فِي المَغْرِبِ تُعْطِي زَيْتًا صِحِّيًّا ثَمِينًا.</p>
+              <button onclick="speakDialogue('شَجَرَةُ الأَرْكَانِ ثَرْوَةٌ طَبِيعِيَّةٌ نَادِرَةٌ فِي المَغْرِبِ')" class="mt-2 text-xs text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `,
+        6: `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h2 class="text-base sm:text-lg font-black text-emerald-950">🇲🇦 الثَّقَافَةُ المَغْرِبِيَّةُ: مَآثِرُ بِلَادِي وَالِانْدِمَاجُ</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+              <span class="text-3xl block mb-1">🏛️</span>
+              <h3 class="font-black text-amber-950 text-sm">مَآثِرُ خَالِدَةٌ</h3>
+              <p class="text-xs text-slate-600 mt-1">وَلِيلِي، جَامِعُ الفَنَا، قَصْرُ البَدِيعِ، وَصَوْمَعَةُ الكُتُبِيَّةِ.</p>
+              <button onclick="speakDialogue('مَآثِرُ المَغْرِبِ التَّارِيخِيَّةُ شَاهِدَةٌ عَلَى حَضَارَةٍ عَظِيمَةٍ')" class="mt-2 text-xs text-amber-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+              <span class="text-3xl block mb-1">🤝</span>
+              <h3 class="font-black text-emerald-950 text-sm">الِانْدِمَاجُ وَالمُوَاطَنَةُ</h3>
+              <p class="text-xs text-slate-600 mt-1">الِاعْتِزَازُ بِالهُوِيَّةِ المَغْرِبِيَّةِ مَعَ الِانْدِمَاجِ الإِيجَابِيِّ.</p>
+              <button onclick="speakDialogue('نَحْنُ نَفْتَخِرُ بِهُوِيَّتِنَا وَنَنْدَمِجُ فِي بَلَدِنَا المُضِيفِ')" class="mt-2 text-xs text-emerald-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+            <div class="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-center">
+              <span class="text-3xl block mb-1">🎲</span>
+              <h3 class="font-black text-rose-950 text-sm">أَلْعَابٌ شَعْبِيَّةٌ</h3>
+              <p class="text-xs text-slate-600 mt-1">أَلْعَابٌ تُرَاثِيَّةٌ تَبْعَثُ المَرَحَ بَيْنَ الأَطْفَالِ.</p>
+              <button onclick="speakDialogue('الأَلْعَابُ الشَّعْبِيَّةُ تُرَاثٌ مَرَحٌ يَرْبِطُنَا بِالأَصَالَةِ')" class="mt-2 text-xs text-rose-800 font-bold underline">اسْتَمِعْ</button>
+            </div>
+          </div>
+        `
+      };
+
+      c.innerHTML = cultureMap[uNum] || cultureMap[1];
+    }
+
+    /* --- STREAMING_CHUNK:Writing and Project Tab rendering... */
+    function renderWritingTab(uNum) {
+      const c = document.getElementById('writingContainer');
+      if (!c) return;
+
+      c.innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h2 class="text-base sm:text-lg font-black text-emerald-950">🪪 مَشْرُوعُ الوَحْدَةِ ${uNum} (Atelier d'Écriture)</h2>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+          <p class="font-bold text-slate-800">فَقْرَةُ الإِنْتَاجِ الكِتَابِيِّ لِلْوَحْدَةِ :</p>
+          <div class="p-3 bg-white rounded-xl border font-black text-sm leading-loose font-naskh text-emerald-950" id="writingTargetText">
+            ${unitsData[uNum]?.reading[unitsData[uNum]?.defaultLetter]?.text || '...'}
+          </div>
+          <button onclick="speakDialogue(document.getElementById('writingTargetText').textContent)" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow">
+            🔊 اسْتَمِعْ لِلْفَقْرَةِ النَّمُوذَجِيَّةِ
+          </button>
+        </div>
+      `;
+    }
+
+    /* --- STREAMING_CHUNK:Grand Quiz Challenge logic... */
+    function loadQuizQuestion() {
+      const u = unitsData[state.currentUnitNum];
+      const q = u.quiz[state.quizIndex];
+      if (!q) return;
+
+      document.getElementById('quizProgress').textContent = `السؤال ${state.quizIndex + 1} / ${u.quiz.length}`;
+      document.getElementById('quizQuestionAr').textContent = q.qAr;
+      document.getElementById('quizQuestionFr').textContent = q.qFr;
+
+      const grid = document.getElementById('quizOptionsGrid');
+      if (!grid) return;
+      grid.innerHTML = q.options.map(opt => `
+        <button onclick="handleQuizAnswer(${opt.isCorrect}, this)" class="p-3 rounded-2xl bg-white border-2 border-slate-200 text-slate-800 font-black text-xs sm:text-sm hover:border-emerald-500 hover:bg-emerald-50 transition shadow-sm font-naskh">
+          ${opt.text}
+        </button>
+      `).join('');
+    }
+
+    function speakQuizQuestion() {
+      const u = unitsData[state.currentUnitNum];
+      const q = u.quiz[state.quizIndex];
+      if (q) speakDialogue(q.qAr);
+    }
+
+    function handleQuizAnswer(isCorrect, btn) {
+      if (isCorrect) {
+        btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+        addStars(2);
+        speakDialogue('إِجَابَةٌ مُمْتَازَةٌ وَصَحِيحَةٌ !');
+      } else {
+        btn.classList.add('bg-rose-500', 'text-white', 'border-rose-600');
+        speakDialogue('لَا بَأْسَ، حَاوِلْ مَرَّةً ثَانِيَةً!');
+        return;
+      }
+
+      setTimeout(() => {
+        state.quizIndex++;
+        const u = unitsData[state.currentUnitNum];
+        if (state.quizIndex < u.quiz.length) {
+          loadQuizQuestion();
+        } else {
+          document.getElementById('quizContainer').classList.add('hidden');
+          document.getElementById('quizFinishedBox').classList.remove('hidden');
+          addStars(5);
+        }
+      }, 1300);
+    }
+
+    function restartQuiz() {
+      state.quizIndex = 0;
+      document.getElementById('quizContainer').classList.remove('hidden');
+      document.getElementById('quizFinishedBox').classList.add('hidden');
+      loadQuizQuestion();
+    }
+
+    /* --- STREAMING_CHUNK:Tab switching within a standard unit... */
+    const tabSequence = ['oral', 'reading', 'grammar', 'spelling', 'culture', 'writing', 'quiz'];
+    const tabTitlesMap = {
+      oral: '1. التَّعْبِيرُ الشَّفَوِيُّ وَالتَّوَاصُلُ',
+      reading: '2. القِرَاءَةُ وَالنُّصُوصُ',
+      grammar: '3. الصَّرْفُ وَالتَّرَاكِيبُ',
+      spelling: '4. الإِمْلَاءُ وَالخَطُّ',
+      culture: '5. الثَّقَافَةُ المَغْرِبِيَّةُ',
+      writing: '6. التَّطْبِيقَاتُ الكِتَابِيَّةُ',
+      quiz: '7. تَحَدِّي الأَبْطَالِ A2'
+    };
+
+    function switchTab(tabKey) {
+      if (state.currentType === 'support') {
+        switchUnit(state.currentUnitNum);
+      }
+      playSfx('click');
+      state.activeTab = tabKey;
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeEl = document.getElementById(`tab-${tabKey}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'border-emerald-600');
+        b.classList.add('bg-slate-50', 'text-slate-700', 'border-slate-200');
+      });
+
+      const activeBtn = document.getElementById(`tabBtn-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-50', 'text-slate-700', 'border-slate-200');
+        activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'border-emerald-600');
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+
+      const progressLabel = document.getElementById('activeTabIndicatorLabel');
+      if (progressLabel && tabTitlesMap[tabKey]) {
+        progressLabel.textContent = tabTitlesMap[tabKey];
+      }
+
+      if (tabKey === 'reading') {
+        setTimeout(initReadingCanvas, 120);
+      }
+    }
+
+    function navigateTabStep(direction) {
+      if (state.currentType === 'support') {
+        let nextSup = state.currentSupportNum + direction;
+        if (nextSup < 1) nextSup = 6;
+        if (nextSup > 6) nextSup = 1;
+        switchSupport(nextSup);
+        return;
+      }
+      const curIdx = tabSequence.indexOf(state.activeTab);
+      if (curIdx === -1) return;
+      let nextIdx = curIdx + direction;
+      if (nextIdx < 0) nextIdx = tabSequence.length - 1;
+      if (nextIdx >= tabSequence.length) nextIdx = 0;
+      switchTab(tabSequence[nextIdx]);
+    }
+
+    /* --- STREAMING_CHUNK:Reading Tab writing canvas helper... */
+    let readCanvas, readCtx, isDrawingRead = false, rLastX = 0, rLastY = 0;
+    function initReadingCanvas() {
+      readCanvas = document.getElementById('readingCanvas');
+      if (!readCanvas) return;
+      const rect = readCanvas.parentElement.getBoundingClientRect();
+      readCanvas.width = rect.width;
+      readCanvas.height = rect.height;
+
+      readCtx = readCanvas.getContext('2d');
+      readCtx.lineCap = 'round';
+      readCtx.lineJoin = 'round';
+      readCtx.lineWidth = 7;
+      readCtx.strokeStyle = '#059669';
+
+      readCanvas.onmousedown = (e) => {
+        isDrawingRead = true;
+        const pos = getReadPos(e);
+        rLastX = pos.x; rLastY = pos.y;
+      };
+      readCanvas.onmousemove = (e) => {
+        if (!isDrawingRead) return;
+        const pos = getReadPos(e);
+        readCtx.beginPath();
+        readCtx.moveTo(rLastX, rLastY);
+        readCtx.lineTo(pos.x, pos.y);
+        readCtx.stroke();
+        rLastX = pos.x; rLastY = pos.y;
+      };
+      window.onmouseup = () => { isDrawingRead = false; };
+
+      readCanvas.ontouchstart = (e) => {
+        e.preventDefault(); isDrawingRead = true;
+        const pos = getReadPos(e.touches[0]);
+        rLastX = pos.x; rLastY = pos.y;
+      };
+      readCanvas.ontouchmove = (e) => {
+        e.preventDefault();
+        if (!isDrawingRead) return;
+        const pos = getReadPos(e.touches[0]);
+        readCtx.beginPath();
+        readCtx.moveTo(rLastX, rLastY);
+        readCtx.lineTo(pos.x, pos.y);
+        readCtx.stroke();
+        rLastX = pos.x; rLastY = pos.y;
+      };
+      readCanvas.ontouchend = () => { isDrawingRead = false; };
+    }
+
+    function getReadPos(evt) {
+      const rect = readCanvas.getBoundingClientRect();
+      return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
+    }
+
+    function clearReadingCanvas() {
+      if (readCtx && readCanvas) {
+        readCtx.clearRect(0, 0, readCanvas.width, readCanvas.height);
+      }
+    }
+
+    /* --- STREAMING_CHUNK:Window startup event... */
+    window.onload = function() {
+      renderUnitsRibbon();
+      switchUnit(1);
+      document.addEventListener('pointerdown', () => initAudioContext(), { once: true });
+    };
+  </script>
+</body>
+</html>
