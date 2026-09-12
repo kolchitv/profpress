@@ -351,35 +351,37 @@ export const TeacherCard: React.FC<TeacherCardProps> = ({
       {/* Official A4 Printable Teacher Card (Fiche Personnelle) */}
       <div ref={sheetRef} className="print-sheet bg-white border border-slate-400 rounded-2xl p-6 md:p-10 shadow-xs max-w-4xl mx-auto space-y-6">
         {/* Moroccan Official Ministerial Header */}
-        <div className="border-b-2 border-slate-800 pb-4">
-          <div className="flex items-start justify-between text-xs text-slate-800 font-semibold">
-            <div className="space-y-1">
-              <p className="font-bold text-slate-900">المملكة المغربية</p>
-              <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-              <p>{formData.academy}</p>
-              <p>{formData.directorate}</p>
-              <p className="text-blue-900 font-bold">مؤسسة: {formData.institution}</p>
+        <div className="border-b-2 border-slate-900 pb-3">
+          <div className="flex justify-center mb-1.5">
+            <img
+              src="/morocco-ministry-logo.png"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1 mb-2">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {formData.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {formData.directorate || "...................................."}</p>
             </div>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {formData.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">السنة الدراسية :</span> {formData.schoolYear || "2026/2027"}</p>
+            </div>
+          </div>
 
-            <div className="text-center">
-              <img
-                src="/morocco-ministry-logo.png"
-                alt="شعار وزارة التربية الوطنية"
-                className="h-16 w-16 mx-auto object-contain mb-1 drop-shadow-xs"
-              />
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+            <div className="flex-1 text-center">
               <h1 className="text-xl md:text-2xl font-black font-cairo text-slate-900 tracking-wide">
                 البطاقة الشخصية للأستاذ(ة)
               </h1>
               <p className="text-xs font-bold text-slate-600 tracking-wider">
                 FICHE PERSONNELLE DE L'ENSEIGNANT(E)
               </p>
-              <p className="text-[11px] text-blue-800 font-semibold mt-0.5">
-                الموسم الدراسي: {formData.schoolYear}
-              </p>
             </div>
 
             {/* Photo Box with optional upload */}
-            <div className="relative group">
+            <div className="relative group shrink-0 mr-4">
               <div className="w-24 h-28 border-2 border-dashed border-slate-400 rounded-lg flex flex-col items-center justify-center overflow-hidden bg-slate-50 text-slate-400 text-center p-1">
                 {photoUrl ? (
                   <img
@@ -502,17 +504,17 @@ export const TeacherCard: React.FC<TeacherCardProps> = ({
         {/* Section 4: Endorsement & Signatures */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs pt-4 border-t-2 border-slate-800">
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع السيد(ة) الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
             <span className="text-[10px] text-slate-400">حرر بـ {formData.commune} في: ..................</span>
           </div>
 
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم السيد رئيس المؤسسة</span>
+            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
             <span className="text-[10px] text-slate-400">صودق عليه بتاريخ: ..................</span>
           </div>
 
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة السيد(ة) المفتش(ة) التربوي(ة)</span>
+            <span className="font-bold text-slate-800">تأشيرة المفتش(ة) التربوي(ة)</span>
             <span className="text-[10px] text-slate-400">ملاحظات: ..................</span>
           </div>
         </div>

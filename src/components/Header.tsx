@@ -30,6 +30,7 @@ import {
   LogOut,
   ShieldCheck,
   BookOpen,
+  School,
 } from "lucide-react";
 import { TabKey, AdminSession } from "../types";
 
@@ -205,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                منصة بروف بريس Profpress الشاملة لتجهيز وتنظيم وتوليد وثائق أستاذ التعليم الابتدائي بالمغرب بصيغة A4 وبشعار الوزارة الرسمي
+                منصة بروف بريس Profpress الشاملة لتجهيز وتنظيم وتوليد وثائق أستاذ التعليم الابتدائي بالمغرب
               </p>
             </div>
           </div>
@@ -330,7 +331,55 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </button>
 
-          {/* 4.3 دروس التعليم الصريح */}
+          {/* 4.3 امتحانات مهنية */}
+          <button
+            key="professional_exams"
+            id="nav-tab-professional-exams"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("professional_exams");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "professional_exams"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Award className={`w-4 h-4 ${activeTab === "professional_exams" ? "text-amber-300" : "text-amber-600"}`} />
+            <span>امتحانات مهنية</span>
+            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
+              جميع الأسلاك
+            </span>
+          </button>
+
+          {/* 4.4 فضاء التعليم الابتدائي */}
+          <button
+            key="primaire"
+            id="nav-tab-primaire"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("primaire");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "primaire" ||
+              activeTab === "primary_1" ||
+              activeTab === "primary_2" ||
+              activeTab === "primary_3" ||
+              activeTab === "primary_4" ||
+              activeTab === "primary_5" ||
+              activeTab === "primary_6"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <School className={`w-4 h-4 ${activeTab === "primaire" ? "text-amber-300" : "text-blue-600"}`} />
+            <span>التعليم الابتدائي</span>
+            <span className="text-[10px] bg-blue-100 text-blue-900 px-1.5 py-0.2 rounded-full font-bold">
+              1AEP-6AEP
+            </span>
+          </button>
+
+          {/* 4.4 دروس التعليم الصريح */}
           <button
             key="explicit_teaching"
             id="nav-tab-explicit-teaching"

@@ -1360,28 +1360,23 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
         }}
       >
         {/* Top Official Ministerial Header */}
-        <div className="grid grid-cols-3 items-center border-b border-black pb-2 text-center">
-          {/* Right: Arabic Ministry */}
-          <div className="text-right text-[12px] md:text-[13px] font-bold leading-tight space-y-0.5">
-            <p className="font-extrabold text-black">المملكة المغربية</p>
-            <p>وزارة التربية الوطنية</p>
-            <p>والتعليم الأولي والرياضة</p>
-          </div>
-
-          {/* Center: Coat of Arms */}
-          <div className="flex flex-col items-center justify-center">
+        <div className="border-b-2 border-black pb-2 mb-2 text-center">
+          <div className="flex justify-center mb-1.5">
             <img
               src="/morocco-ministry-logo.png"
-              alt="شعار المملكة المغربية"
-              className="h-16 md:h-20 w-auto object-contain drop-shadow-xs"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
             />
           </div>
-
-          {/* Left: Amazigh Ministry text */}
-          <div className="text-left text-[11px] md:text-[12px] font-bold leading-tight space-y-0.5 font-mono text-slate-900">
-            <p>+oXM.l+ | HCYO50</p>
-            <p>+o[oU.O+ | :OXC% :I.C:O</p>
-            <p>A :OOUCA .CXU.O: A +:II:I+</p>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile?.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile?.directorate || "...................................."}</p>
+            </div>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {meta.schoolName || teacherProfile?.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">السنة الدراسية :</span> {meta.schoolYear || teacherProfile?.schoolYear || "2026/2027"}</p>
+            </div>
           </div>
         </div>
 
@@ -1886,15 +1881,21 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
         </div>
 
         {/* Official Footer Signatures */}
-        <div className="grid grid-cols-2 pt-6 text-xs md:text-sm font-bold text-slate-900 border-t border-slate-300">
-          <div className="text-right space-y-8">
+        <div className="grid grid-cols-3 pt-6 text-xs md:text-sm font-bold text-slate-900 border-t border-slate-300 gap-4">
+          <div className="text-center space-y-6">
             <p>توقيع وتأشير الأستاذ(ة):</p>
             <p className="text-[11px] text-slate-400 font-normal">
               ................................................
             </p>
           </div>
-          <div className="text-left space-y-8">
-            <p>توقيع ومصادقة السيد مدير المؤسسة:</p>
+          <div className="text-center space-y-6">
+            <p>تأشيرة ومصادقة مدير(ة) المؤسسة:</p>
+            <p className="text-[11px] text-slate-400 font-normal">
+              ................................................
+            </p>
+          </div>
+          <div className="text-center space-y-6">
+            <p>تأشيرة وتوجيهات المفتش(ة) التربوي(ة):</p>
             <p className="text-[11px] text-slate-400 font-normal">
               ................................................
             </p>

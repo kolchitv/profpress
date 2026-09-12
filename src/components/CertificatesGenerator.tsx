@@ -223,23 +223,22 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
 
           {/* Certificate Ministerial Top */}
           <div className="border-b border-slate-200 pb-3 text-center relative z-10">
-            <div className="flex items-center justify-between text-xs text-slate-700 font-semibold mb-1">
+            <div className="flex justify-center mb-1">
+              <img
+                src="/morocco-ministry-logo.png"
+                alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+                className="h-10 md:h-12 w-auto max-w-full object-contain"
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs text-slate-700 font-semibold px-2">
               <div className="text-right">
-                <p className="font-bold text-slate-900">المملكة المغربية</p>
-                <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-                <p>{teacherProfile.academy}</p>
-                <p>{teacherProfile.directorate}</p>
+                <p><span className="text-slate-500 font-normal">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................."}</p>
+                <p><span className="text-slate-500 font-normal">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................."}</p>
               </div>
 
-              <div className="w-14 h-14 rounded-full border-2 border-amber-600 bg-amber-50 flex items-center justify-center text-xl font-bold text-amber-700 shadow-2xs">
-                ★
-              </div>
-
-              <div className="text-left" dir="ltr">
-                <p className="font-bold text-slate-900">ROYAUME DU MAROC</p>
-                <p>Écoles Pionnières</p>
-                <p>{teacherProfile.institution}</p>
-                <p className="text-slate-500 font-mono text-[11px]">{teacherProfile.schoolYear}</p>
+              <div className="text-left">
+                <p><span className="text-slate-500 font-normal">المؤسسة :</span> {teacherProfile.institution || "...................."}</p>
+                <p><span className="text-slate-500 font-normal">السنة الدراسية :</span> {teacherProfile.schoolYear || "2026/2027"}</p>
               </div>
             </div>
           </div>
@@ -283,7 +282,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
             </div>
 
             <div>
-              <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم السيد رئيس المؤسسة</span>
+              <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم رئيس(ة) المؤسسة</span>
               <p className="text-xs text-slate-600 mt-0.5">{teacherProfile.institution}</p>
               <div className="w-20 h-10 border border-dashed border-slate-300 rounded-md mx-auto mt-2 flex items-center justify-center text-[10px] text-slate-400">
                 خاتم الإدارة
@@ -307,19 +306,21 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
               className="print-sheet print-sheet-landscape page-break bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 border-amber-500 ring-8 ring-amber-100 mb-8"
             >
               <div className="border-b border-slate-200 pb-3 text-center">
-                <div className="flex items-center justify-between text-xs text-slate-700 font-semibold mb-1">
+                <div className="flex justify-center mb-1">
+                  <img
+                    src="/morocco-ministry-logo.png"
+                    alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+                    className="h-10 md:h-12 w-auto max-w-full object-contain"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-700 font-semibold px-2">
                   <div className="text-right">
-                    <p className="font-bold text-slate-900">المملكة المغربية</p>
-                    <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-                    <p>{teacherProfile.academy}</p>
+                    <p><span className="text-slate-500 font-normal">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................."}</p>
+                    <p><span className="text-slate-500 font-normal">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................."}</p>
                   </div>
-                  <div className="w-14 h-14 rounded-full border-2 border-amber-600 bg-amber-50 flex items-center justify-center text-xl font-bold text-amber-700">
-                    ★
-                  </div>
-                  <div className="text-left" dir="ltr">
-                    <p className="font-bold text-slate-900">ROYAUME DU MAROC</p>
-                    <p>{teacherProfile.institution}</p>
-                    <p className="text-slate-500 text-[11px]">{teacherProfile.schoolYear}</p>
+                  <div className="text-left">
+                    <p><span className="text-slate-500 font-normal">المؤسسة :</span> {teacherProfile.institution || "...................."}</p>
+                    <p><span className="text-slate-500 font-normal">السنة الدراسية :</span> {teacherProfile.schoolYear || "2026/2027"}</p>
                   </div>
                 </div>
               </div>
@@ -355,7 +356,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
                   <p className="text-xs text-slate-600 mt-0.5">ذ. {teacherProfile.fullNameAr}</p>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم السيد رئيس المؤسسة</span>
+                  <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم رئيس(ة) المؤسسة</span>
                   <p className="text-xs text-slate-600 mt-0.5">{teacherProfile.institution}</p>
                 </div>
               </div>

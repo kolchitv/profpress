@@ -3,6 +3,7 @@ export interface CompetitionDownloadFile {
   title: string;
   size?: string;
   year?: string;
+  fileType?: string;
   url: string;
   isExternal?: boolean;
 }

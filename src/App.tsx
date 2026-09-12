@@ -23,6 +23,8 @@ import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
 import { OrientationPage } from "./components/OrientationPage";
+import { ProfessionalExamsPage } from "./components/ProfessionalExamsPage";
+import { PrimaireHubPage } from "./components/PrimaireHubPage";
 import { ContactModal, PROFPRESS_CONTACT_INFO } from "./components/ContactModal";
 import {
   AboutModal,
@@ -89,6 +91,7 @@ export default function App() {
           "remarks",
           "print_preview",
           "contact",
+          "primaire",
           "primary_1",
           "primary_2",
           "primary_3",
@@ -102,6 +105,7 @@ export default function App() {
           "high_1bac",
           "high_2bac",
           "orientation",
+          "professional_exams",
         ];
         if (tabParam && validTabs.includes(tabParam)) {
           return tabParam;
@@ -120,7 +124,16 @@ export default function App() {
   const [profile, setProfile] = useState<TeacherProfile>(() => {
     try {
       const saved = localStorage.getItem("yalla_teacher_profile");
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.academy === "الأكاديمية الجهوية للتربية والتكوين لجهة الرباط - سلا - القنيطرة") {
+          parsed.academy = "لجهة الرباط - سلا - القنيطرة";
+        }
+        if (parsed.directorate === "المديرية الإقليمية بالصخيرات - تمارة") {
+          parsed.directorate = "بالصخيرات - تمارة";
+        }
+        return parsed;
+      }
     } catch (e) {
       console.error(e);
     }
@@ -440,6 +453,14 @@ export default function App() {
             <ContactPage onNavigateToTab={setActiveTab} />
           )}
 
+          {/* Primary Hub dedicated page (فضاء التعليم الابتدائي الشامل) */}
+          {activeTab === "primaire" && (
+            <PrimaireHubPage
+              onNavigateToTab={setActiveTab}
+              onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+            />
+          )}
+
           {/* Educational Levels dedicated pages (التعليم الابتدائي، الإعدادي، الثانوي) */}
           {(activeTab === "primary_1" ||
             activeTab === "primary_2" ||
@@ -463,6 +484,14 @@ export default function App() {
           {/* Orientation & Guidance dedicated page (توجيه) */}
           {activeTab === "orientation" && (
             <OrientationPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {/* Professional Exams dedicated page (امتحانات مهنية) */}
+          {activeTab === "professional_exams" && (
+            <ProfessionalExamsPage
+              onNavigateToTab={setActiveTab}
+              adminSession={adminSession}
+            />
           )}
         </div>
       </main>

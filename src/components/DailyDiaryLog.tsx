@@ -13,6 +13,8 @@ import {
   Sparkles,
   Layers,
   UserCheck,
+  User,
+  PenTool,
   Award,
   Briefcase,
   GraduationCap,
@@ -1040,16 +1042,12 @@ const CoverPage: React.FC<{ config: DailyLogBookConfig; teacherProfile: TeacherP
 
       {/* Header section with Morocco Emblem */}
       <div className="space-y-3 z-10 pt-2">
-        <div className="w-20 h-20 mx-auto flex items-center justify-center">
+        <div className="flex justify-center">
           <img
             src="/morocco-ministry-logo.png"
-            alt="المملكة المغربية"
-            className="w-full h-full object-contain filter drop-shadow-xs"
+            alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+            className="h-16 md:h-20 w-auto max-w-full object-contain filter drop-shadow-xs"
           />
-        </div>
-        <div className="text-slate-800 font-bold text-sm tracking-wide">
-          <p className="text-base font-black text-slate-900">المملكة المغربية</p>
-          <p className="text-xs text-slate-700 mt-0.5">وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
         </div>
       </div>
 
@@ -1153,23 +1151,30 @@ const TeacherCardPage: React.FC<{ teacherProfile: TeacherProfile }> = ({ teacher
   return (
     <div className="print-sheet bg-white w-full max-w-[794px] mx-auto min-h-[1123px] p-6 md:p-10 rounded-2xl shadow-xl border border-slate-300 relative flex flex-col justify-between select-none font-cairo text-right">
       {/* Top Header */}
-      <div className="text-center space-y-2 pb-3 border-b border-slate-200">
-        <div className="flex items-center justify-between">
-          <div className="w-12 h-12">
-            <img src="/morocco-ministry-logo.png" alt="الشعار" className="w-full h-full object-contain" />
+      <div className="space-y-2 pb-3 border-b-2 border-slate-900">
+        <div className="flex justify-center mb-1.5">
+          <img
+            src="/morocco-ministry-logo.png"
+            alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+            className="h-12 md:h-14 w-auto max-w-full object-contain"
+          />
+        </div>
+        <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+          <div className="text-right space-y-0.5">
+            <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+            <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
           </div>
-          <div className="text-center">
-            <p className="font-bold text-slate-900 text-sm">المملكة المغربية</p>
-            <p className="text-xs text-slate-600">وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-          </div>
-          <div className="w-12 h-12 flex items-center justify-center text-emerald-700">
-            <BookOpen className="w-8 h-8" />
+          <div className="text-left space-y-0.5">
+            <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+            <p><span className="text-slate-600 font-medium">الأستاذ(ة) :</span> {teacherProfile.fullNameAr || "...................................."}</p>
           </div>
         </div>
 
         {/* Page Title Ribbon (Matching Page 3) */}
-        <div className="inline-block bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white px-8 py-2.5 rounded-2xl font-black text-lg md:text-xl shadow-md border-2 border-emerald-600">
-          البطاقة الشخصية للأستاذ (ة)
+        <div className="text-center pt-1">
+          <div className="inline-block bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white px-8 py-2.5 rounded-2xl font-black text-lg md:text-xl shadow-md border-2 border-emerald-600">
+            البطاقة الشخصية للأستاذ (ة)
+          </div>
         </div>
       </div>
 
@@ -1375,9 +1380,20 @@ const DailyLogSheetPage: React.FC<{
         </div>
       </div>
 
-      {/* Bottom Row: ملاحظات ونسب التحقق & توقيع المدير والمفتش */}
+      {/* Bottom Row: ملاحظات ونسب التحقق & توقيع الأستاذ والمدير والمفتش */}
       <div className="pt-3 space-y-3 border-t border-slate-200">
-        <div className="grid grid-cols-2 gap-4 text-xs font-bold text-slate-800">
+        <div className="grid grid-cols-3 gap-3 text-xs font-bold text-slate-800 text-center">
+          {/* إمضاء وتوقيع الأستاذ */}
+          <div className="border-2 border-indigo-600 rounded-2xl p-2.5 bg-indigo-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
+            <div className="flex items-center justify-center gap-1.5 text-indigo-900">
+              <User className="w-4 h-4 text-indigo-700" />
+              <span>إمضاء الأستاذ(ة)</span>
+            </div>
+            <div className="border-b border-dotted border-indigo-400 w-3/4 mx-auto pb-1 text-[10px] text-slate-400">
+              توقيع وملاحظات الأستاذ(ة)
+            </div>
+          </div>
+
           {/* إمضاء المدير */}
           <div className="border-2 border-emerald-600 rounded-2xl p-2.5 bg-emerald-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
             <div className="flex items-center justify-center gap-1.5 text-emerald-900">
@@ -1393,7 +1409,7 @@ const DailyLogSheetPage: React.FC<{
           <div className="border-2 border-blue-600 rounded-2xl p-2.5 bg-blue-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
             <div className="flex items-center justify-center gap-1.5 text-blue-900">
               <Award className="w-4 h-4 text-blue-700" />
-              <span>إمضاء المفتش(ة)</span>
+              <span>إمضاء المفتش(ة) التربوي</span>
             </div>
             <div className="border-b border-dotted border-blue-400 w-3/4 mx-auto pb-1 text-[10px] text-slate-400">
               ملاحظات وتوجيهات التأطير

@@ -225,24 +225,22 @@ export const ClassCharter: React.FC<ClassCharterProps> = ({ teacherProfile }) =>
         }`}
       >
         {/* Poster Header */}
-        <div className="text-center pb-5 border-b-2 border-slate-800 mb-6">
-          <div className="flex items-center justify-between text-xs text-slate-700 font-semibold mb-2">
-            <div>
-              <p>المملكة المغربية</p>
-              <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-              <p>{teacherProfile.institution}</p>
+        <div className="text-center pb-4 border-b-2 border-slate-800 mb-5">
+          <div className="flex justify-center mb-1.5">
+            <img
+              src="/morocco-ministry-logo.png"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1 mb-2">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
             </div>
-            <div className="h-16 w-16 mx-auto flex items-center justify-center">
-              <img
-                src="/morocco-ministry-logo.png"
-                alt="شعار وزارة التربية الوطنية"
-                className="h-14 w-14 object-contain drop-shadow-xs"
-              />
-            </div>
-            <div className="text-left" dir="ltr">
-              <p className="font-bold">Charte de la Classe</p>
-              <p>{teacherProfile.assignedLevel}</p>
-              <p className="text-slate-500">{teacherProfile.schoolYear}</p>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">السنة الدراسية :</span> {teacherProfile.schoolYear || "2026/2027"}</p>
             </div>
           </div>
 
@@ -333,7 +331,7 @@ export const ClassCharter: React.FC<ClassCharterProps> = ({ teacherProfile }) =>
               <span className="text-[10px] text-slate-400">التوقيعات: ....................</span>
             </div>
             <div className="border border-dashed border-slate-400 rounded-xl p-3 min-h-[75px] flex flex-col justify-between">
-              <span className="font-bold text-slate-800">توقيع السيد(ة) الأستاذ(ة)</span>
+              <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
               <span className="text-[10px] text-slate-400">ذ. {teacherProfile.fullNameAr}</span>
             </div>
             <div className="border border-dashed border-slate-400 rounded-xl p-3 min-h-[75px] flex flex-col justify-between col-span-2 md:col-span-1">

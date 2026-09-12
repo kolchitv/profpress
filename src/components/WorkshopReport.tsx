@@ -853,7 +853,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                 {/* Director Box */}
                 <div className="border border-slate-300 rounded-xl p-3 min-h-[125px] flex flex-col justify-between bg-slate-50/60">
                   <div>
-                    <span className="font-bold text-slate-900 block text-[11px]">السيد(ة) المدير(ة):</span>
+                    <span className="font-bold text-slate-900 block text-[11px]">مدير(ة) المؤسسة:</span>
                     <span className="text-xs font-bold text-slate-700 block mt-0.5">
                       {reportData.directorName}
                     </span>
@@ -866,7 +866,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                 {/* Inspector Box */}
                 <div className="border border-slate-300 rounded-xl p-3 min-h-[125px] flex flex-col justify-between bg-slate-50/60">
                   <div>
-                    <span className="font-bold text-slate-900 block text-[11px]">السيد(ة) المفتش(ة) التربوي(ة):</span>
+                    <span className="font-bold text-slate-900 block text-[11px]">المفتش(ة) التربوي(ة):</span>
                     <span className="text-xs font-bold text-slate-700 block mt-0.5">
                       {reportData.inspectorName}
                     </span>
@@ -1451,7 +1451,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-600 font-medium mb-1">السيد(ة) المدير(ة):</label>
+                        <label className="block text-slate-600 font-medium mb-1">مدير(ة) المؤسسة:</label>
                         <input
                           type="text"
                           value={tempData.directorName}
@@ -1460,7 +1460,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-600 font-medium mb-1">السيد(ة) المفتش(ة):</label>
+                        <label className="block text-slate-600 font-medium mb-1">المفتش(ة) التربوي(ة):</label>
                         <input
                           type="text"
                           value={tempData.inspectorName}

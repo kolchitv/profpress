@@ -404,37 +404,33 @@ export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile, 
       {/* Official A4 Printable Evaluation Sheet */}
       <div ref={sheetRef} className="print-sheet print-sheet-landscape bg-white border border-slate-300 rounded-2xl p-6 md:p-8 shadow-xs max-w-6xl mx-auto">
         {/* Printable Official Header */}
-        <div className="border-b-2 border-slate-800 pb-3 mb-4">
-          <div className="flex items-start justify-between text-xs text-slate-700 font-semibold">
-            <div>
-              <p className="font-bold text-slate-900">المملكة المغربية</p>
-              <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-              <p>{teacherProfile.academy}</p>
-              <p>{teacherProfile.directorate}</p>
-              <p>المؤسسة: <strong>{teacherProfile.institution}</strong></p>
+        <div className="border-b-2 border-slate-900 pb-3 mb-4">
+          <div className="flex justify-center mb-1.5">
+            <img
+              src="/morocco-ministry-logo.png"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1 mb-2">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
             </div>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">الأستاذ(ة) :</span> {teacherProfile.fullNameAr || "...................................."}</p>
+            </div>
+          </div>
 
-            <div className="text-center">
-              <img
-                src="/morocco-ministry-logo.png"
-                alt="شعار وزارة التربية الوطنية"
-                className="h-16 w-16 mx-auto object-contain mb-1 drop-shadow-xs"
-              />
-              <h2 className="text-base md:text-lg font-black font-cairo text-slate-900">
-                شبكة تفريغ نتائج المراقبة المستمرة والتقويم
-              </h2>
-              <p className="text-xs font-bold text-blue-800">
-                المادة: {subject} • {period} • {examType}
-              </p>
-              <p className="text-[10px] text-slate-500">الموسم الدراسي: {teacherProfile.schoolYear}</p>
-            </div>
-
-            <div className="text-left" dir="ltr">
-              <p className="font-bold text-slate-900">SYSTÈME MASSAR</p>
-              <p>Grille d'Évaluation des Acquis</p>
-              <p>Niveau: <strong>{teacherProfile.assignedLevel}</strong></p>
-              <p>Enseignant: <strong>{teacherProfile.fullNameFr}</strong></p>
-            </div>
+          <div className="text-center pt-1 border-t border-slate-200">
+            <h2 className="text-base md:text-lg font-black font-cairo text-slate-900">
+              شبكة تفريغ نتائج المراقبة المستمرة والتقويم
+            </h2>
+            <p className="text-xs font-bold text-blue-800">
+              المادة: {subject} • {period} • {examType} • المستوى: {teacherProfile.assignedLevel}
+            </p>
+            <p className="text-[10px] text-slate-500">الموسم الدراسي: {teacherProfile.schoolYear}</p>
           </div>
         </div>
 
@@ -559,16 +555,16 @@ export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile, 
         {/* Printable Endorsements */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs mt-6 pt-4 border-t-2 border-slate-800">
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع السيد(ة) الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
             <span className="text-[10px] text-slate-400">حرر بتاريخ: ....................</span>
           </div>
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم السيد المدير</span>
+            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
             <span className="text-[10px] text-slate-400">صودق عليه بتاريخ: ....................</span>
           </div>
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة السيد المفتش التربوي</span>
-            <span className="text-[10px] text-slate-400">مفتش المقاطعة</span>
+            <span className="font-bold text-slate-800">تأشيرة المفتش(ة) التربوي(ة)</span>
+            <span className="text-[10px] text-slate-400">مفتش(ة) المقاطعة التربوية</span>
           </div>
         </div>
       </div>

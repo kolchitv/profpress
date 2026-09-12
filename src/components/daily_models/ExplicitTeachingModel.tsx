@@ -198,6 +198,27 @@ export const ExplicitTeachingModel: React.FC<ExplicitTeachingModelProps> = ({ te
       {/* Printable Sheet */}
       <div className="print-sheet bg-white w-full max-w-[794px] mx-auto min-h-[1123px] p-6 md:p-8 rounded-2xl shadow-xl border border-slate-400 text-slate-900 font-cairo flex flex-col justify-between">
         <div className="space-y-4">
+          {/* Official Ministry Wide Logo & Metadata Header */}
+          <div className="border-b-2 border-slate-900 pb-2 mb-2 text-xs">
+            <div className="flex justify-center mb-1.5">
+              <img
+                src="/morocco-ministry-logo.png"
+                alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+                className="h-12 md:h-14 w-auto max-w-full object-contain"
+              />
+            </div>
+            <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+              <div className="text-right space-y-0.5">
+                <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+                <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
+              </div>
+              <div className="text-left space-y-0.5">
+                <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+                <p><span className="text-slate-600 font-medium">الأستاذ(ة) :</span> {teacherProfile.fullNameAr || "...................................."}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Header Metadata Ribbon */}
           <div className="border-2 border-slate-900 rounded-xl p-2.5 bg-slate-50/80 text-xs">
             <div className="flex items-center justify-between border-b border-slate-300 pb-1.5 mb-1.5 font-bold">
@@ -415,15 +436,19 @@ export const ExplicitTeachingModel: React.FC<ExplicitTeachingModelProps> = ({ te
           </div>
         </div>
 
-        {/* Footer Director & Inspector Stamp Boxes */}
+        {/* Footer Teacher, Director & Inspector Stamp Boxes */}
         <div className="pt-4 border-t border-slate-300 mt-4">
-          <div className="grid grid-cols-2 gap-4 text-center text-xs">
+          <div className="grid grid-cols-3 gap-3 text-center text-xs">
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">إطار خاص بالسيد(ة) مدير(ة) المؤسسة</span>
+              <span className="font-bold text-slate-900">إطار خاص بالأستاذ(ة)</span>
+              <span className="text-[10px] text-slate-500">توقيع وملاحظات الأستاذ(ة)</span>
+            </div>
+            <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
+              <span className="font-bold text-slate-900">إطار خاص بمدير(ة) المؤسسة</span>
               <span className="text-[10px] text-slate-500">تأشيرة وملاحظات الإدارة التربوية</span>
             </div>
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">إطار خاص بالسيد(ة) المفتش(ة) المواكب(ة)</span>
+              <span className="font-bold text-slate-900">إطار خاص بالمفتش(ة) التربوي(ة)</span>
               <span className="text-[10px] text-slate-500">تأشيرة وتوجيهات التأطير والمواكبة</span>
             </div>
           </div>

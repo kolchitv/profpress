@@ -134,6 +134,27 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
 
       {/* Render Active View */}
       <div className="print-sheet bg-white w-full max-w-[794px] mx-auto min-h-[1123px] p-6 md:p-8 rounded-2xl shadow-xl border border-slate-300 text-slate-900 font-cairo flex flex-col justify-between">
+        {/* Official Ministry Wide Logo & Metadata Header */}
+        <div className="border-b-2 border-slate-900 pb-2 mb-3 text-xs">
+          <div className="flex justify-center mb-1.5">
+            <img
+              src="/morocco-ministry-logo.png"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
+            </div>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">الأستاذ(ة) :</span> {teacherProfile.fullNameAr || "...................................."}</p>
+            </div>
+          </div>
+        </div>
+
         {/* TAB 1: المستجدات الـ 18 */}
         {activeTab === "regulations" && (
           <div className="space-y-4">
@@ -265,12 +286,11 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
         {/* TAB 3: النشيد الوطني المغربي */}
         {activeTab === "anthem" && (
           <div className="space-y-6 text-center my-auto py-8">
-            <div className="w-16 h-16 mx-auto flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto flex items-center justify-center">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Coat_of_arms_of_Morocco.svg/180px-Coat_of_arms_of_Morocco.svg.png"
-                alt="شعار المملكة"
-                className="w-14 h-14 object-contain drop-shadow-sm"
-                referrerPolicy="no-referrer"
+                src="/morocco-ministry-logo.png"
+                alt="شعار وزارة التربية الوطنية والتعليم الأولي والرياضة"
+                className="w-16 h-16 object-contain drop-shadow-sm"
               />
             </div>
 
@@ -389,11 +409,11 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
                 <span className="text-[10px] text-slate-500">{teacherProfile.fullName || "الأستاذ(ة)"}</span>
               </div>
               <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
-                <span className="font-bold text-slate-900">توقيع السيد(ة) المدير(ة)</span>
+                <span className="font-bold text-slate-900">توقيع مدير(ة) المؤسسة</span>
                 <span className="text-[10px] text-slate-500">{teacherProfile.directorName || "إدارة المؤسسة"}</span>
               </div>
               <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
-                <span className="font-bold text-slate-900">توقيع السيد(ة) المفتش(ة)</span>
+                <span className="font-bold text-slate-900">توقيع المفتش(ة) التربوي(ة)</span>
                 <span className="text-[10px] text-slate-500">{teacherProfile.inspectorName || "المواكبة التربوية"}</span>
               </div>
             </div>
@@ -434,9 +454,9 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
                   ❖ معطيات حول إدارة المؤسسة وهيئة التأطير:
                 </div>
                 <div className="p-3 bg-white grid grid-cols-2 gap-3">
-                  <div>اسم مدير(ة) المؤسسة: {teacherProfile.directorName || "السيد(ة) مدير(ة) المؤسسة"}</div>
+                  <div>اسم مدير(ة) المؤسسة: {teacherProfile.directorName || "مدير(ة) المؤسسة"}</div>
                   <div>الهاتف: {teacherProfile.directorPhone || "06XXXXXXXX"}</div>
-                  <div>اسم المفتش(ة) المواكب(ة): {teacherProfile.inspectorName || "السيد(ة) المفتش(ة) المواكب(ة)"}</div>
+                  <div>اسم المفتش(ة) المواكب(ة): {teacherProfile.inspectorName || "المفتش(ة) المواكب(ة)"}</div>
                   <div>البريد الإلكتروني: {teacherProfile.directorEmail || "direction@ecole.ma"}</div>
                 </div>
               </div>

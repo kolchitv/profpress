@@ -22,6 +22,7 @@ export type TabKey =
   | "print_preview"
   | "contact"
   // التعليم الابتدائي
+  | "primaire" // فضاء التعليم الابتدائي الشامل (دروس، فروض، مخططات، خرائط ذهنية)
   | "primary_1" // الأول ابتدائي
   | "primary_2" // الثاني ابتدائي
   | "primary_3" // الثالث ابتدائي
@@ -37,7 +38,8 @@ export type TabKey =
   | "high_1bac" // الأولى باكالوريا
   | "high_2bac" // الثانية باكالوريا
   // توجيه ومباريات
-  | "orientation";
+  | "orientation"
+  | "professional_exams";
 
 export type EducationalCycleType = "primary" | "middle" | "high";
 

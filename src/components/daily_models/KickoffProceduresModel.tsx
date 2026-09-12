@@ -25,8 +25,8 @@ interface KickoffProceduresModelProps {
 export const KickoffProceduresModel: React.FC<KickoffProceduresModelProps> = ({ teacherProfile }) => {
   const [kickoffData, setKickoffData] = useState(INITIAL_KICKOFF_DATA);
   const [schoolName, setSchoolName] = useState(teacherProfile.school || "مدرسة الريادة النموذجية");
-  const [directorName, setDirectorName] = useState(teacherProfile.directorName || "السيد(ة) مدير(ة) المؤسسة");
-  const [inspectorName, setInspectorName] = useState(teacherProfile.inspectorName || "السيد(ة) المفتش(ة) المواكب(ة)");
+  const [directorName, setDirectorName] = useState(teacherProfile.directorName || "مدير(ة) المؤسسة");
+  const [inspectorName, setInspectorName] = useState(teacherProfile.inspectorName || "المفتش(ة) المواكب(ة)");
   const [teacherName, setTeacherName] = useState(teacherProfile.fullName || "الأستاذ(ة)");
   const [schoolYear, setSchoolYear] = useState("2026/2027");
   const [isEditMode, setIsEditMode] = useState(false);
@@ -244,31 +244,28 @@ export const KickoffProceduresModel: React.FC<KickoffProceduresModelProps> = ({ 
       {/* Printable Sheet (Standard A4 Page 210x297mm) */}
       <div className="print-sheet bg-white w-full max-w-[794px] mx-auto min-h-[1123px] p-6 md:p-8 rounded-2xl shadow-xl border border-slate-300 text-slate-900 font-cairo flex flex-col justify-between">
         <div className="space-y-4">
-          {/* Header with Kingdom Emblem & Official Typography */}
-          <div className="text-center space-y-2 pb-2">
-            <div className="flex items-center justify-between text-[11px] text-slate-700 font-bold px-2">
-              <div className="text-right">
-                <p>المملكة المغربية</p>
-                <p className="text-[10px] text-slate-500 font-serif">ⵜⴰⴳⵍⴷⵉⵜ ⵏ ⵍⵎⵖⵔⵉⴱ</p>
-                <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
+          {/* Official Ministry Wide Logo & Metadata Header */}
+          <div className="border-b-2 border-slate-900 pb-2 mb-3 text-xs">
+            <div className="flex justify-center mb-1.5">
+              <img
+                src="/morocco-ministry-logo.png"
+                alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+                className="h-12 md:h-14 w-auto max-w-full object-contain"
+              />
+            </div>
+            <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+              <div className="text-right space-y-0.5">
+                <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+                <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
               </div>
-
-              {/* Emblem */}
-              <div className="w-12 h-12 flex items-center justify-center">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Coat_of_arms_of_Morocco.svg/180px-Coat_of_arms_of_Morocco.svg.png"
-                  alt="الشعار الملكي"
-                  className="w-10 h-10 object-contain drop-shadow-xs"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              <div className="text-left font-mono text-[10px]">
-                <p>{schoolName}</p>
-                <p className="text-slate-500">الأستاذ(ة): {teacherName}</p>
+              <div className="text-left space-y-0.5">
+                <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {schoolName || "...................................."}</p>
+                <p><span className="text-slate-600 font-medium">الأستاذ(ة) :</span> {teacherName || "...................................."}</p>
               </div>
             </div>
+          </div>
 
+          <div className="text-center space-y-2 pb-2">
             {/* Official Title Ribbon */}
             <div className="inline-block border-2 border-slate-950 bg-amber-100 px-6 py-1.5 rounded-xl shadow-xs">
               <h1 className="text-lg md:text-xl font-black text-slate-950 tracking-wide font-cairo">
@@ -389,12 +386,12 @@ export const KickoffProceduresModel: React.FC<KickoffProceduresModelProps> = ({ 
             </div>
 
             <div className="border border-slate-400 bg-slate-50/80 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">تأشيرة السيد(ة) مدير(ة) المؤسسة</span>
+              <span className="font-bold text-slate-900">تأشيرة مدير(ة) المؤسسة</span>
               <span className="text-[10px] text-slate-500">{directorName}</span>
             </div>
 
             <div className="border border-slate-400 bg-slate-50/80 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">تأشيرة السيد(ة) المفتش(ة) المواكب(ة)</span>
+              <span className="font-bold text-slate-900">تأشيرة المفتش(ة) المواكب(ة)</span>
               <span className="text-[10px] text-slate-500">{inspectorName}</span>
             </div>
           </div>

@@ -71,7 +71,8 @@ export const PROFPRESS_LINKS = {
   recruitment: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85",
   inspection: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%81%D8%AA%D9%8A%D8%B4",
   orientation: "https://profpressma.blogspot.com/search/label/%D9%85%D8%A8%D8%A7%D8%B1%D8%A7%D8%A9%20%D8%A7%D9%84%D8%AA%D9%88%D8%AC%D9%8A%D9%87",
-  license: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%B1%D8%AE%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A%D8%A9",
+  license: "https://profpressma.blogspot.com/p/blog-page_77.html",
+  professionalExams: "https://profpressma.blogspot.com/p/blog-page_77.html",
   primary: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A7%D8%A8%D8%AA%D8%AF%D8%A7%D8%A6%D9%8A",
   middle: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%A5%D8%B9%D8%AF%D8%A7%D8%AF%D9%8A",
   high: "https://profpressma.blogspot.com/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%88%D9%8A",
@@ -345,26 +346,28 @@ export const HomePage: React.FC<HomePageProps> = ({
       },
     },
     {
-      id: "license",
-      title: "الرخصة المهنية",
-      targetTab: "portfolio",
-      icon: UserCheck,
+      id: "professional_exams",
+      title: "امتحانات مهنية",
+      targetTab: "professional_exams",
+      icon: Award,
       iconColor: "text-amber-500",
       iconBg: "bg-amber-50",
       borderHover: "hover:border-amber-400",
       borderBottomColor: "border-b-amber-400",
-      description: "شهادة الكفاءة التربوية، الترسيم، والترقية بالامتحان المهني",
-      externalUrl: PROFPRESS_LINKS.license,
+      description: "قسم خاص بالإمتحانات المهنية جميع الأسلاك : مواضيع للاستعداد، وثائق، نصائح، نماذج وتصحيح",
+      badge: "جميع الأسلاك",
+      externalUrl: PROFPRESS_LINKS.professionalExams,
       content: {
-        subtitle: "ملف الكفاءة المهنية، الترسيم، وحساب نقط الأقدمية",
+        subtitle: "حقائب التحضير للامتحانات المهنية، نماذج 2015-2024 مع التصحيح، ومنصة مهني",
         highlights: [
-          "ملف امتحان شهادة الكفاءة التربوية للأطر النظامية الجديدة ومكونات الحصة العملية.",
-          "الوثائق الإلزامية التي يطلبها المفتش: بطاقة الأستاذ، استعمال الزمن، ميثاق القسم، والجذاذات.",
-          "طريقة احتساب نقطة الترقية بالاختيار والامتحان المهني لولوج السلم 11 وخارج السلم.",
+          "قسم خاص بالإمتحانات المهنية لجميع الأسلاك التعليمية (ابتدائي، إعدادي، تأهيلي).",
+          "مواضيع الامتحانات السابقة من 2015 إلى 2024 مع عناصر الإجابة والتصحيح الرسمي.",
+          "ديداكتيك مواد التخصص، علوم التربية، مستجدات المنهاج، وتنمية المهارات الحياتية.",
+          "دليل الترشيح الإلكتروني عبر منصة مهني mihani.men.gov.ma وشروط الترقية.",
         ],
-        tips: "تأكد من طباعة بطاقتك الشخصية واستعمال الزمن وميثاق القسم لتزيين وتوثيق حجرتك الدراسية.",
-        actionLabel: "تجهيز البطاقة الشخصية",
-        targetTab: "card",
+        tips: "تصفح الفضاء الشامل للامتحانات المهنية لتحميل حقائب الاستعداد ونماذج الدورات السابقة مع التصحيح.",
+        actionLabel: "فتح فضاء الامتحانات المهنية",
+        targetTab: "professional_exams",
       },
     },
   ];
@@ -1019,6 +1022,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             <div className="pt-3 flex flex-wrap gap-2 relative z-10">
+              <button
+                type="button"
+                onClick={() => onNavigateToTab("primaire")}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <School className="w-3.5 h-3.5 text-slate-950" />
+                <span>فضاء التعليم الابتدائي الشامل (دروس • فروض)</span>
+              </button>
               <button
                 type="button"
                 onClick={() => onNavigateToTab("primary_6")}

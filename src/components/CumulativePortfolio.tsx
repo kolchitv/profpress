@@ -228,34 +228,33 @@ export const CumulativePortfolio: React.FC<CumulativePortfolioProps> = ({
         </div>
 
         {/* Moroccan Official Printable Header */}
-        <div className="text-center border-b-2 border-slate-800 pb-4 mb-6">
-          <div className="flex items-center justify-between text-xs md:text-sm text-slate-700 font-semibold mb-2">
-            <div>
-              <p>المملكة المغربية</p>
-              <p>وزارة التربية الوطنية والتعليم الأولي والرياضة</p>
-              <p>{teacherProfile.academy}</p>
-              <p>{teacherProfile.directorate}</p>
+        <div className="border-b-2 border-slate-900 pb-3 mb-5">
+          <div className="flex justify-center mb-1.5">
+            <img
+              src="/morocco-ministry-logo.png"
+              alt="وزارة التربية الوطنية والتعليم الأولي والرياضة"
+              className="h-12 md:h-14 w-auto max-w-full object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+            <div className="text-right space-y-0.5">
+              <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile.academy || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile.directorate || "...................................."}</p>
             </div>
-            <div className="text-center">
-              <div className="w-14 h-14 mx-auto rounded-full border-2 border-amber-600 flex items-center justify-center font-bold text-amber-700 bg-amber-50 text-xl mb-1">
-                ★
-              </div>
-              <span className="text-xs font-bold text-emerald-800">مشروع مدارس الريادة</span>
-            </div>
-            <div className="text-left" dir="ltr">
-              <p>ROYAUME DU MAROC</p>
-              <p>Ministère de l'Éducation Nationale</p>
-              <p>Écoles Pionnières</p>
-              <p className="text-[11px] text-slate-500">Année: {teacherProfile.schoolYear}</p>
+            <div className="text-left space-y-0.5">
+              <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {teacherProfile.institution || "...................................."}</p>
+              <p><span className="text-slate-600 font-medium">السنة الدراسية :</span> {teacherProfile.schoolYear || "2026/2027"}</p>
             </div>
           </div>
 
-          <h2 className="text-xl md:text-2xl font-black font-cairo text-slate-900 mt-3">
-            فهرس وثائق الملف التراكمي للأستاذ(ة)
-          </h2>
-          <p className="text-xs font-semibold text-slate-600">
-            Le Portfolio de l'Enseignant - Écoles Pionnières
-          </p>
+          <div className="text-center mt-3">
+            <h2 className="text-xl md:text-2xl font-black font-cairo text-slate-900">
+              فهرس وثائق الملف التراكمي للأستاذ(ة)
+            </h2>
+            <p className="text-xs font-semibold text-slate-600">
+              Le Portfolio de l'Enseignant - Écoles Pionnières
+            </p>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200 mt-3 text-right">
             <div><span className="text-slate-500">الأستاذ(ة):</span> <strong className="text-slate-900">{teacherProfile.fullNameAr}</strong></div>
@@ -329,15 +328,15 @@ export const CumulativePortfolio: React.FC<CumulativePortfolioProps> = ({
         {/* Official Endorsements & Stamps at the Bottom */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs mt-8 pt-6 border-t-2 border-slate-800">
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع السيد(ة) الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
             <span className="text-[11px] text-slate-400">حرر بتاريخ: ....................</span>
           </div>
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم السيد المدير</span>
+            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
             <span className="text-[11px] text-slate-400">بتاريخ: ....................</span>
           </div>
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">ملاحظات وتأشيرة المفتش التربوي</span>
+            <span className="font-bold text-slate-800">تأشيرة وتوجيهات المفتش(ة) التربوي(ة)</span>
             <span className="text-[11px] text-slate-400">بتاريخ: ....................</span>
           </div>
         </div>

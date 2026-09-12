@@ -156,22 +156,33 @@ export const EducationalCyclesAccordion: React.FC<EducationalCyclesAccordionProp
             {/* 1. Primary Cycle Branch (سلك التعليم الابتدائي) */}
             <div className="bg-white border border-blue-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition flex flex-col md:flex-row md:items-center gap-3 md:gap-4 w-full max-w-full">
               {/* Branch Root / Cycle Header Node */}
-              <div className="w-full md:w-52 shrink-0 bg-blue-50/90 border border-blue-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-right">
+              <div 
+                onClick={() => onNavigateToTab("primaire")}
+                className={`w-full md:w-56 shrink-0 bg-blue-50/90 hover:bg-blue-100/90 border border-blue-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-right cursor-pointer transition-colors group ${
+                  activeTab === "primaire" ? "ring-2 ring-blue-600 bg-blue-100/90" : ""
+                }`}
+                title="فتح فضاء التعليم الابتدائي الشامل (دروس، فروض، مخططات، خرائط ذهنية)"
+              >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
                     <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="text-xs sm:text-sm font-black text-blue-900 leading-tight truncate">
-                      التعليم الابتدائي
-                    </h4>
-                    <span className="text-[10px] sm:text-[11px] font-bold text-blue-700">
-                      6 مستويات دراسية
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <h4 className="text-xs sm:text-sm font-black text-blue-900 leading-tight truncate">
+                        التعليم الابتدائي
+                      </h4>
+                      <span className="text-[9px] bg-blue-600 text-white font-black px-1.5 py-0.2 rounded-md">
+                        فضاء شامل
+                      </span>
+                    </div>
+                    <span className="text-[10px] sm:text-[11px] font-bold text-blue-700 block truncate">
+                      دروس • فروض • مخططات • خرائط
                     </span>
                   </div>
                 </div>
 
-                <div className="hidden md:flex items-center text-blue-400">
+                <div className="hidden md:flex items-center text-blue-400 group-hover:text-blue-700 transition-colors">
                   <ChevronLeft className="w-4 h-4" />
                 </div>
               </div>
@@ -439,13 +450,24 @@ export const EducationalCyclesAccordion: React.FC<EducationalCyclesAccordionProp
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => onNavigateToTab("primary_6")}
-                className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-black py-2 rounded-xl transition cursor-pointer text-center"
-              >
-                الامتحان الموحد الإقليمي (السادس) ←
-              </button>
+              <div className="space-y-1.5 pt-1">
+                <button
+                  type="button"
+                  id="grid-btn-primary-hub"
+                  onClick={() => onNavigateToTab("primaire")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black py-2 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1 shadow-2xs"
+                >
+                  <span>فضاء الابتدائي الشامل (دروس • فروض)</span>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigateToTab("primary_6")}
+                  className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-black py-1.5 rounded-xl transition cursor-pointer text-center"
+                >
+                  الامتحان الموحد الإقليمي (السادس) ←
+                </button>
+              </div>
             </div>
 
             {/* Column 2: الإعدادي */}
@@ -655,6 +677,17 @@ export const EducationalCyclesAccordion: React.FC<EducationalCyclesAccordionProp
                     </button>
                   </div>
                 ))}
+
+                <div className="pt-2 pb-1">
+                  <button
+                    type="button"
+                    onClick={() => onNavigateToTab("primaire")}
+                    className="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                  >
+                    <span>عرض فضاء الابتدائي الشامل (دروس • فروض • مخططات • خرائط)</span>
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
