@@ -166,7 +166,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
   };
 
   const handleStartDownload = () => {
-    if (!downloadUrl || downloadUrl === "#") {
+    if (!downloadUrl || downloadUrl === "#" || downloadUrl.startsWith("javascript:")) {
       if (onDirectDownload) {
         onDirectDownload();
       } else {
@@ -175,7 +175,29 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
       onClose();
       return;
     }
-    window.open(downloadUrl, "_blank", "noopener,noreferrer");
+
+    try {
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.download = fileTitle ? `${fileTitle}.pdf` : "document.pdf";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        if (document.body.contains(a)) {
+          document.body.removeChild(a);
+        }
+      }, 1000);
+    } catch {
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+    }
+    onClose();
+  };
+
+  const handleSkipCountdown = () => {
+    setIsReady(true);
+    setSecondsLeft(0);
   };
 
   return (
@@ -313,6 +335,16 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
                 <p className="text-xs text-slate-500">
                   يرجى عدم إغلاق النافذة حتى يتم تأكيد صلاحية الرابط على الخادم الرسمي.
                 </p>
+
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={handleSkipCountdown}
+                    className="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline transition cursor-pointer"
+                  >
+                    تخطي الانتظار والتحميل الفوري ⚡
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="space-y-3 animate-in fade-in duration-300">

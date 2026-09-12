@@ -366,7 +366,7 @@ export const AiPedagogyAssistant: React.FC<AiPedagogyAssistantProps> = ({
                   </div>
                   <div>
                     <span className="font-bold text-slate-800">مفتش المقاطعة التربوية</span>
-                    <p className="text-[11px] text-slate-500 mt-1">تأشيرة وملاحظات التأطير</p>
+                    <p className="text-[11px] text-slate-500 mt-1">ملاحظات وتوجيهات التأطير</p>
                   </div>
                 </div>
               </div>

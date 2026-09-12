@@ -1315,11 +1315,11 @@ const TeacherCardPage: React.FC<{ teacherProfile: TeacherProfile }> = ({ teacher
       {/* Signature boxes */}
       <div className="pt-3 border-t border-slate-200 grid grid-cols-2 gap-6 text-center text-xs font-bold text-slate-800">
         <div className="p-2 border border-slate-300 rounded-xl bg-slate-50/60 min-h-[55px] flex flex-col justify-between">
-          <span>توقيع الأستاذ(ة) :</span>
+          <span>الأستاذ(ة) :</span>
           <span className="text-[10px] text-slate-400">....................................</span>
         </div>
         <div className="p-2 border border-slate-300 rounded-xl bg-slate-50/60 min-h-[55px] flex flex-col justify-between">
-          <span>تأشيرة ومصادقة الإدارة التربوية :</span>
+          <span>الإدارة التربوية :</span>
           <span className="text-[10px] text-slate-400">....................................</span>
         </div>
       </div>
@@ -1380,39 +1380,39 @@ const DailyLogSheetPage: React.FC<{
         </div>
       </div>
 
-      {/* Bottom Row: ملاحظات ونسب التحقق & توقيع الأستاذ والمدير والمفتش */}
+      {/* Bottom Row: ملاحظات ونسب التحقق & الأستاذ والمدير والمفتش */}
       <div className="pt-3 space-y-3 border-t border-slate-200">
         <div className="grid grid-cols-3 gap-3 text-xs font-bold text-slate-800 text-center">
-          {/* إمضاء وتوقيع الأستاذ */}
+          {/* إطار الأستاذ */}
           <div className="border-2 border-indigo-600 rounded-2xl p-2.5 bg-indigo-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
             <div className="flex items-center justify-center gap-1.5 text-indigo-900">
               <User className="w-4 h-4 text-indigo-700" />
-              <span>إمضاء الأستاذ(ة)</span>
+              <span>الأستاذ(ة)</span>
             </div>
             <div className="border-b border-dotted border-indigo-400 w-3/4 mx-auto pb-1 text-[10px] text-slate-400">
-              توقيع وملاحظات الأستاذ(ة)
+              ملاحظات الأستاذ(ة)
             </div>
           </div>
 
-          {/* إمضاء المدير */}
+          {/* إطار المدير */}
           <div className="border-2 border-emerald-600 rounded-2xl p-2.5 bg-emerald-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
             <div className="flex items-center justify-center gap-1.5 text-emerald-900">
               <UserCheck className="w-4 h-4 text-emerald-700" />
-              <span>إمضاء المدير(ة)</span>
+              <span>مدير(ة) المؤسسة</span>
             </div>
             <div className="border-b border-dotted border-emerald-400 w-3/4 mx-auto pb-1 text-[10px] text-slate-400">
-              ملاحظة وتأشيرة الإدارة
+              ملاحظات الإدارة
             </div>
           </div>
 
-          {/* إمضاء المفتش */}
+          {/* إطار المفتش */}
           <div className="border-2 border-blue-600 rounded-2xl p-2.5 bg-blue-50/30 text-center space-y-2 min-h-[75px] flex flex-col justify-between">
             <div className="flex items-center justify-center gap-1.5 text-blue-900">
               <Award className="w-4 h-4 text-blue-700" />
-              <span>إمضاء المفتش(ة) التربوي</span>
+              <span>المفتش(ة) التربوي(ة)</span>
             </div>
             <div className="border-b border-dotted border-blue-400 w-3/4 mx-auto pb-1 text-[10px] text-slate-400">
-              ملاحظات وتوجيهات التأطير
+              توجيهات التأطير
             </div>
           </div>
         </div>

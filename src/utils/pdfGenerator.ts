@@ -209,12 +209,20 @@ export async function generatePdfFromElement(
     const canvas = await html2canvas(element, {
       scale: scale,
       useCORS: true,
-      allowTaint: true,
+      allowTaint: false,
       backgroundColor: "#ffffff",
       logging: false,
       scrollX: 0,
       scrollY: 0,
       onclone: (clonedDoc) => {
+        // 1. Reset all scale and transform wrappers in cloned document
+        const allCloned = clonedDoc.querySelectorAll<HTMLElement>("*");
+        allCloned.forEach((node) => {
+          if (node.style && node.style.transform && node.style.transform.includes("scale")) {
+            node.style.transform = "none";
+          }
+        });
+        // 2. Sanitize modern color functions
         sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
       },
       ignoreElements: (el) => {
@@ -245,16 +253,20 @@ export async function generatePdfFromElement(
     if (colorMode === "grayscale") {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        const imgDataRaw = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imgDataRaw.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const brightness =
-            0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-          data[i] = brightness;
-          data[i + 1] = brightness;
-          data[i + 2] = brightness;
+        try {
+          const imgDataRaw = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgDataRaw.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const brightness =
+              0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            data[i] = brightness;
+            data[i + 1] = brightness;
+            data[i + 2] = brightness;
+          }
+          ctx.putImageData(imgDataRaw, 0, 0);
+        } catch {
+          // fallback if tainted
         }
-        ctx.putImageData(imgDataRaw, 0, 0);
       }
       imgData = canvas.toDataURL("image/jpeg", 0.95);
     } else {
@@ -276,13 +288,36 @@ export async function generatePdfFromElement(
     pdf.addImage(imgData, "JPEG", 0, 0, pdfPageWidth, pdfPageHeight, undefined, "FAST");
 
     onProgress?.("اكتمل التوليد! جاري بدء التحميل...");
-    const cleanFilename = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
-    pdf.save(cleanFilename);
+    savePdfSafely(pdf, filename);
   } catch (error) {
     console.error("PDF generation failed:", error);
     throw error;
   } finally {
     window.scrollTo(origScrollX, origScrollY);
+  }
+}
+
+/**
+ * Robust cross-browser and iframe PDF downloader.
+ */
+export function savePdfSafely(pdf: jsPDF, filename: string): void {
+  const cleanFilename = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+  try {
+    pdf.save(cleanFilename);
+  } catch {
+    const blob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = cleanFilename;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      if (document.body.contains(a)) document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    }, 3000);
   }
 }
 
@@ -370,12 +405,19 @@ export async function generateMultiPagePdfFromElements(
       const canvas = await html2canvas(element, {
         scale: scale,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: "#ffffff",
         logging: false,
         scrollX: 0,
         scrollY: 0,
         onclone: (clonedDoc) => {
+          // Reset all scale and transform wrappers
+          const allCloned = clonedDoc.querySelectorAll<HTMLElement>("*");
+          allCloned.forEach((node) => {
+            if (node.style && node.style.transform && node.style.transform.includes("scale")) {
+              node.style.transform = "none";
+            }
+          });
           sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
         },
         ignoreElements: (el) => {
@@ -394,15 +436,19 @@ export async function generateMultiPagePdfFromElements(
       if (colorMode === "grayscale") {
         const ctx = canvas.getContext("2d");
         if (ctx) {
-          const imgDataRaw = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imgDataRaw.data;
-          for (let p = 0; p < data.length; p += 4) {
-            const brightness = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
-            data[p] = brightness;
-            data[p + 1] = brightness;
-            data[p + 2] = brightness;
+          try {
+            const imgDataRaw = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgDataRaw.data;
+            for (let p = 0; p < data.length; p += 4) {
+              const brightness = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
+              data[p] = brightness;
+              data[p + 1] = brightness;
+              data[p + 2] = brightness;
+            }
+            ctx.putImageData(imgDataRaw, 0, 0);
+          } catch {
+            // fallback
           }
-          ctx.putImageData(imgDataRaw, 0, 0);
         }
         imgData = canvas.toDataURL("image/jpeg", 0.95);
       } else {
@@ -418,8 +464,7 @@ export async function generateMultiPagePdfFromElements(
     }
 
     onProgress?.("اكتمل تجهيز الملف! جاري التنزيل...");
-    const cleanFilename = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
-    pdf.save(cleanFilename);
+    savePdfSafely(pdf, filename);
   } catch (error) {
     console.error("Multi-page PDF generation failed:", error);
     throw error;

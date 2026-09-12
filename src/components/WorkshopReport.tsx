@@ -827,13 +827,13 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
               </p>
             </div>
 
-            {/* Section 6: التوقيعات والمصادقات الرسمية (تنسيق منظم ومطابق للمواصفات) */}
+            {/* Section 6: المصادقات الرسمية (تنسيق منظم ومطابق للمواصفات) */}
             <div className="border border-slate-200/90 bg-white/95 rounded-2xl p-3.5 shadow-2xs space-y-2.5">
               <div className="flex items-center gap-2 text-xs font-black text-slate-900">
                 <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[10px]">
-                  ✍️
+                  🏛️
                 </span>
-                <span>التوقيعات والمصادقات الرسمية:</span>
+                <span>المصادقات الرسمية:</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs">
@@ -846,7 +846,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
-                    توقيع الأستاذ: ....................
+                    ........................................
                   </div>
                 </div>
 
@@ -859,7 +859,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
-                    تأشيرة وخاتم الإدارة: ....................
+                    ........................................
                   </div>
                 </div>
 
@@ -872,7 +872,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
-                    ملاحظة وتوقيع المفتش: ....................
+                    ........................................
                   </div>
                 </div>
               </div>

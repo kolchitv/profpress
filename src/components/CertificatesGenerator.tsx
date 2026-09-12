@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Award,
   Printer,
@@ -8,9 +8,14 @@ import {
   Medal,
   RotateCcw,
   Palette,
+  Download,
 } from "lucide-react";
 import { CertificateItem, TeacherProfile } from "../types";
 import { DEFAULT_STUDENTS_GRADES } from "../data/defaultTemplates";
+import {
+  generatePdfFromElement,
+  generateMultiPagePdfFromElements,
+} from "../utils/pdfGenerator";
 
 interface CertificatesGeneratorProps {
   teacherProfile: TeacherProfile;
@@ -22,6 +27,10 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
   const [mode, setMode] = useState<"single" | "batch">("single");
   const [certType, setCertType] = useState<"excellence" | "encouragement" | "behavior" | "honor">("excellence");
   const [styleTheme, setStyleTheme] = useState<"gold" | "emerald" | "blue">("gold");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
+
+  const singleSheetRef = useRef<HTMLDivElement>(null);
+  const batchContainerRef = useRef<HTMLDivElement>(null);
 
   // Single Certificate State
   const [studentName, setStudentName] = useState("آية بناني");
@@ -31,6 +40,37 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
   const [customPraise, setCustomPraise] = useState(
     "تقديراً لاجتهادها المتواصل، وتألقها الدراسي المتميز، وسلوكها النموذجي المشرف خلال الدورة الأولى."
   );
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      if (mode === "single" && singleSheetRef.current) {
+        await generatePdfFromElement(singleSheetRef.current, {
+          filename: `شهادة_${studentName.replace(/\s+/g, "_")}.pdf`,
+          orientation: "landscape",
+          quality: "ultra",
+          colorMode: "color",
+        });
+      } else if (mode === "batch" && batchContainerRef.current) {
+        const sheets = Array.from(
+          batchContainerRef.current.querySelectorAll<HTMLElement>(".print-sheet")
+        ) as HTMLElement[];
+        if (sheets.length > 0) {
+          await generateMultiPagePdfFromElements(sheets, {
+            filename: `شواهد_القسم_${teacherProfile.assignedLevel || "المستوى"}.pdf`,
+            orientation: "landscape",
+            quality: "ultra",
+            colorMode: "color",
+          });
+        }
+      }
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("حدث خطأ أثناء إعداد ملف PDF. يرجى استخدام زر طباعة المتصفح لحفظ الشهادة كـ PDF.");
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   const certTitles = {
     excellence: "شهادة تفوق وامتياز",
@@ -66,12 +106,30 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
 
           <div className="flex items-center gap-2">
             <button
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+              className="bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-400 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+            >
+              {isGeneratingPdf ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>جاري إنشاء PDF...</span>
+                </span>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5 text-amber-300" />
+                  <span>تحميل الشهادة كـ PDF</span>
+                </>
+              )}
+            </button>
+
+            <button
               id="print-certificate-btn"
               onClick={() => window.print()}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
             >
               <Printer className="w-3.5 h-3.5 text-amber-300" />
-              <span>{mode === "single" ? "طباعة الشهادة A4" : `طباعة شواهد القسم (${batchStudents.length} شهادة)`}</span>
+              <span>{mode === "single" ? "طباعة فورية" : `طباعة جماعية (${batchStudents.length})`}</span>
             </button>
           </div>
         </div>
@@ -207,6 +265,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
       {/* Certificate Print Render: Single Certificate OR Batch */}
       {mode === "single" ? (
         <div
+          ref={singleSheetRef}
           className={`print-sheet print-sheet-landscape bg-white max-w-5xl mx-auto rounded-3xl p-8 md:p-12 shadow-lg min-h-[580px] flex flex-col justify-between relative overflow-hidden border-8 ${
             styleTheme === "gold"
               ? "border-amber-500 ring-8 ring-amber-100"
@@ -276,13 +335,13 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
           {/* Certificate Signatures */}
           <div className="pt-4 border-t border-slate-200 grid grid-cols-2 gap-8 text-center text-xs relative z-10">
             <div>
-              <span className="font-bold text-slate-800 block text-sm">توقيع الأستاذ(ة)</span>
+              <span className="font-bold text-slate-800 block text-sm">الأستاذ(ة)</span>
               <p className="text-xs text-slate-600 mt-0.5">ذ. {teacherProfile.fullNameAr}</p>
               <span className="text-[10px] text-slate-400 block mt-6">حرر بتاريخ: {new Date().toISOString().split("T")[0]}</span>
             </div>
 
             <div>
-              <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم رئيس(ة) المؤسسة</span>
+              <span className="font-bold text-slate-800 block text-sm">رئيس(ة) المؤسسة</span>
               <p className="text-xs text-slate-600 mt-0.5">{teacherProfile.institution}</p>
               <div className="w-20 h-10 border border-dashed border-slate-300 rounded-md mx-auto mt-2 flex items-center justify-center text-[10px] text-slate-400">
                 خاتم الإدارة
@@ -292,7 +351,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
         </div>
       ) : (
         /* Batch Generation View (Multi-Page Print Ready) */
-        <div className="space-y-8">
+        <div ref={batchContainerRef} className="space-y-8">
           <div className="no-print bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
             <span>
               عرض {batchStudents.length} شهادات جاهزة للطباعة المتتالية لجميع تلاميذ القسم المتفوقين.
@@ -352,11 +411,11 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
 
               <div className="pt-4 border-t border-slate-200 grid grid-cols-2 gap-8 text-center text-xs">
                 <div>
-                  <span className="font-bold text-slate-800 block text-sm">توقيع الأستاذ(ة)</span>
+                  <span className="font-bold text-slate-800 block text-sm">الأستاذ(ة)</span>
                   <p className="text-xs text-slate-600 mt-0.5">ذ. {teacherProfile.fullNameAr}</p>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block text-sm">توقيع وخاتم رئيس(ة) المؤسسة</span>
+                  <span className="font-bold text-slate-800 block text-sm">رئيس(ة) المؤسسة</span>
                   <p className="text-xs text-slate-600 mt-0.5">{teacherProfile.institution}</p>
                 </div>
               </div>

@@ -328,14 +328,14 @@ export const ClassCharter: React.FC<ClassCharterProps> = ({ teacherProfile }) =>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center text-xs">
             <div className="border border-dashed border-slate-400 rounded-xl p-3 min-h-[75px] flex flex-col justify-between">
               <span className="font-bold text-slate-800">ممثلو تلاميذ القسم</span>
-              <span className="text-[10px] text-slate-400">التوقيعات: ....................</span>
+              <span className="text-[10px] text-slate-400">....................</span>
             </div>
             <div className="border border-dashed border-slate-400 rounded-xl p-3 min-h-[75px] flex flex-col justify-between">
-              <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
+              <span className="font-bold text-slate-800">الأستاذ(ة)</span>
               <span className="text-[10px] text-slate-400">ذ. {teacherProfile.fullNameAr}</span>
             </div>
             <div className="border border-dashed border-slate-400 rounded-xl p-3 min-h-[75px] flex flex-col justify-between col-span-2 md:col-span-1">
-              <span className="font-bold text-slate-800">مصادقة إدارة المؤسسة</span>
+              <span className="font-bold text-slate-800">إدارة المؤسسة</span>
               <span className="text-[10px] text-slate-400">بتاريخ: ....................</span>
             </div>
           </div>

@@ -405,15 +405,15 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
             {/* Signatures */}
             <div className="pt-4 grid grid-cols-3 gap-3 text-center text-xs">
               <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
-                <span className="font-bold text-slate-900">توقيع الأستاذ(ة)</span>
+                <span className="font-bold text-slate-900">الأستاذ(ة)</span>
                 <span className="text-[10px] text-slate-500">{teacherProfile.fullName || "الأستاذ(ة)"}</span>
               </div>
               <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
-                <span className="font-bold text-slate-900">توقيع مدير(ة) المؤسسة</span>
+                <span className="font-bold text-slate-900">مدير(ة) المؤسسة</span>
                 <span className="text-[10px] text-slate-500">{teacherProfile.directorName || "إدارة المؤسسة"}</span>
               </div>
               <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
-                <span className="font-bold text-slate-900">توقيع المفتش(ة) التربوي(ة)</span>
+                <span className="font-bold text-slate-900">المفتش(ة) التربوي(ة)</span>
                 <span className="text-[10px] text-slate-500">{teacherProfile.inspectorName || "المواكبة التربوية"}</span>
               </div>
             </div>

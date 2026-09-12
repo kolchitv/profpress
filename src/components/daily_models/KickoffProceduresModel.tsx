@@ -381,17 +381,17 @@ export const KickoffProceduresModel: React.FC<KickoffProceduresModelProps> = ({ 
         <div className="pt-6 border-t border-slate-300 mt-6">
           <div className="grid grid-cols-3 gap-3 text-center text-xs">
             <div className="border border-slate-400 bg-slate-50/80 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">توقيع الأستاذ(ة)</span>
+              <span className="font-bold text-slate-900">الأستاذ(ة)</span>
               <span className="text-[10px] text-slate-500">{teacherName}</span>
             </div>
 
             <div className="border border-slate-400 bg-slate-50/80 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">تأشيرة مدير(ة) المؤسسة</span>
+              <span className="font-bold text-slate-900">مدير(ة) المؤسسة</span>
               <span className="text-[10px] text-slate-500">{directorName}</span>
             </div>
 
             <div className="border border-slate-400 bg-slate-50/80 rounded-xl p-2.5 h-20 flex flex-col justify-between">
-              <span className="font-bold text-slate-900">تأشيرة المفتش(ة) المواكب(ة)</span>
+              <span className="font-bold text-slate-900">المفتش(ة) المواكب(ة)</span>
               <span className="text-[10px] text-slate-500">{inspectorName}</span>
             </div>
           </div>

@@ -231,7 +231,7 @@ export const TripleSubjectsModel: React.FC<TripleSubjectsModelProps> = ({ teache
               <div className="col-span-3 p-2 bg-slate-50/50 flex flex-col justify-between">
                 <div className="font-bold text-slate-900 text-[10px] border-b border-slate-300 pb-0.5">Observations:</div>
                 <div className="text-[10px] text-slate-600 mt-1">{data.french.observations}</div>
-                <div className="border-t border-dashed border-slate-300 pt-1 text-[9px] text-slate-400 text-center">تأشيرة الأستاذ</div>
+                <div className="border-t border-dashed border-slate-300 pt-1 text-[9px] text-slate-400 text-center">الأستاذ(ة)</div>
               </div>
             </div>
           </div>
@@ -405,15 +405,15 @@ export const TripleSubjectsModel: React.FC<TripleSubjectsModelProps> = ({ teache
           <div className="grid grid-cols-3 gap-3 text-center text-xs">
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بالأستاذ(ة)</span>
-              <span className="text-[10px] text-slate-500">توقيع وملاحظات الأستاذ(ة)</span>
+              <span className="text-[10px] text-slate-500">ملاحظات الأستاذ(ة)</span>
             </div>
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بمدير(ة) المؤسسة</span>
-              <span className="text-[10px] text-slate-500">تأشيرة وملاحظات الإدارة</span>
+              <span className="text-[10px] text-slate-500">ملاحظات الإدارة</span>
             </div>
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2 h-16 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بالمفتش(ة) التربوي(ة)</span>
-              <span className="text-[10px] text-slate-500">تأشيرة وتوجيهات التأطير التربوي</span>
+              <span className="text-[10px] text-slate-500">توجيهات التأطير التربوي</span>
             </div>
           </div>
         </div>

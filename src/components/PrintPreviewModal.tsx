@@ -24,7 +24,10 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { TeacherProfile, TabKey } from "../types";
-import { generatePdfFromElement } from "../utils/pdfGenerator";
+import {
+  generatePdfFromElement,
+  generateMultiPagePdfFromElements,
+} from "../utils/pdfGenerator";
 import { TimetableEditor } from "./TimetableEditor";
 import { TeacherCard } from "./TeacherCard";
 import { ClassCharter } from "./ClassCharter";
@@ -163,25 +166,35 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
     setIsGenerating(true);
     setGenerationSuccess(false);
 
-    // Look for target print sheet inside the preview ref
-    const targetElement =
-      previewSheetRef.current.querySelector<HTMLElement>(".print-sheet") ||
-      previewSheetRef.current;
-
     try {
-      await generatePdfFromElement(targetElement, {
-        filename: currentDocMeta.filename,
-        orientation: currentDocMeta.orientation,
-        quality: quality,
-        colorMode: colorMode,
-        onProgress: (status) => setProgressStatus(status),
-      });
+      const sheets = Array.from(
+        previewSheetRef.current.querySelectorAll<HTMLElement>(".print-sheet")
+      ) as HTMLElement[];
+
+      if (sheets.length > 1) {
+        await generateMultiPagePdfFromElements(sheets, {
+          filename: currentDocMeta.filename,
+          orientation: currentDocMeta.orientation,
+          quality: quality,
+          colorMode: colorMode,
+          onProgress: (status) => setProgressStatus(status),
+        });
+      } else {
+        const targetElement = sheets[0] || previewSheetRef.current;
+        await generatePdfFromElement(targetElement, {
+          filename: currentDocMeta.filename,
+          orientation: currentDocMeta.orientation,
+          quality: quality,
+          colorMode: colorMode,
+          onProgress: (status) => setProgressStatus(status),
+        });
+      }
 
       setGenerationSuccess(true);
       setTimeout(() => setGenerationSuccess(false), 5000);
     } catch (err) {
-      console.error(err);
-      alert("حدث خطأ أثناء معالجة ملف PDF. يرجى المحاولة مجدداً أو استخدام الطباعة المباشرة.");
+      console.error("PDF generation failed in preview modal:", err);
+      alert("حدث خطأ أثناء معالجة ملف PDF. يرجى استخدام زر الطباعة المباشرة لحفظ الملف كـ PDF عبر المتصفح.");
     } finally {
       setIsGenerating(false);
       setProgressStatus("");

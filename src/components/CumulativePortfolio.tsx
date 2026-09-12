@@ -286,7 +286,7 @@ export const CumulativePortfolio: React.FC<CumulativePortfolioProps> = ({
                       <th className="border border-slate-300 p-2">اسم الوثيقة ومضمونها</th>
                       <th className="border border-slate-300 p-2 w-28 text-center">النوع</th>
                       <th className="border border-slate-300 p-2 w-24 text-center">حالة الوثيقة</th>
-                      <th className="border border-slate-300 p-2 w-32 text-center">ملاحظات والتوقيع</th>
+                      <th className="border border-slate-300 p-2 w-32 text-center">ملاحظات</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -328,15 +328,15 @@ export const CumulativePortfolio: React.FC<CumulativePortfolioProps> = ({
         {/* Official Endorsements & Stamps at the Bottom */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs mt-8 pt-6 border-t-2 border-slate-800">
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">الأستاذ(ة)</span>
             <span className="text-[11px] text-slate-400">حرر بتاريخ: ....................</span>
           </div>
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
+            <span className="font-bold text-slate-800">مدير(ة) المؤسسة</span>
             <span className="text-[11px] text-slate-400">بتاريخ: ....................</span>
           </div>
           <div className="p-3 border border-dashed border-slate-300 rounded-lg min-h-[90px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وتوجيهات المفتش(ة) التربوي(ة)</span>
+            <span className="font-bold text-slate-800">المفتش(ة) التربوي(ة)</span>
             <span className="text-[11px] text-slate-400">بتاريخ: ....................</span>
           </div>
         </div>

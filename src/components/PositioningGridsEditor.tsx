@@ -1883,19 +1883,19 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
         {/* Official Footer Signatures */}
         <div className="grid grid-cols-3 pt-6 text-xs md:text-sm font-bold text-slate-900 border-t border-slate-300 gap-4">
           <div className="text-center space-y-6">
-            <p>توقيع وتأشير الأستاذ(ة):</p>
+            <p>الأستاذ(ة):</p>
             <p className="text-[11px] text-slate-400 font-normal">
               ................................................
             </p>
           </div>
           <div className="text-center space-y-6">
-            <p>تأشيرة ومصادقة مدير(ة) المؤسسة:</p>
+            <p>مدير(ة) المؤسسة:</p>
             <p className="text-[11px] text-slate-400 font-normal">
               ................................................
             </p>
           </div>
           <div className="text-center space-y-6">
-            <p>تأشيرة وتوجيهات المفتش(ة) التربوي(ة):</p>
+            <p>المفتش(ة) التربوي(ة):</p>
             <p className="text-[11px] text-slate-400 font-normal">
               ................................................
             </p>

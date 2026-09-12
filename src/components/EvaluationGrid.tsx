@@ -555,15 +555,15 @@ export const EvaluationGrid: React.FC<EvaluationGridProps> = ({ teacherProfile, 
         {/* Printable Endorsements */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs mt-6 pt-4 border-t-2 border-slate-800">
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">الأستاذ(ة)</span>
             <span className="text-[10px] text-slate-400">حرر بتاريخ: ....................</span>
           </div>
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
+            <span className="font-bold text-slate-800">مدير(ة) المؤسسة</span>
             <span className="text-[10px] text-slate-400">صودق عليه بتاريخ: ....................</span>
           </div>
           <div className="border border-dashed border-slate-400 rounded-lg p-2.5 min-h-[85px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة المفتش(ة) التربوي(ة)</span>
+            <span className="font-bold text-slate-800">المفتش(ة) التربوي(ة)</span>
             <span className="text-[10px] text-slate-400">مفتش(ة) المقاطعة التربوية</span>
           </div>
         </div>

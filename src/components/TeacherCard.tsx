@@ -504,17 +504,17 @@ export const TeacherCard: React.FC<TeacherCardProps> = ({
         {/* Section 4: Endorsement & Signatures */}
         <div className="grid grid-cols-3 gap-4 text-center text-xs pt-4 border-t-2 border-slate-800">
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">توقيع الأستاذ(ة)</span>
+            <span className="font-bold text-slate-800">الأستاذ(ة)</span>
             <span className="text-[10px] text-slate-400">حرر بـ {formData.commune} في: ..................</span>
           </div>
 
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة وخاتم مدير(ة) المؤسسة</span>
+            <span className="font-bold text-slate-800">مدير(ة) المؤسسة</span>
             <span className="text-[10px] text-slate-400">صودق عليه بتاريخ: ..................</span>
           </div>
 
           <div className="border border-dashed border-slate-400 rounded-lg p-3 min-h-[100px] flex flex-col justify-between">
-            <span className="font-bold text-slate-800">تأشيرة المفتش(ة) التربوي(ة)</span>
+            <span className="font-bold text-slate-800">المفتش(ة) التربوي(ة)</span>
             <span className="text-[10px] text-slate-400">ملاحظات: ..................</span>
           </div>
         </div>

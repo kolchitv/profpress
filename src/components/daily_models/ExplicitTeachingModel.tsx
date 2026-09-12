@@ -441,15 +441,15 @@ export const ExplicitTeachingModel: React.FC<ExplicitTeachingModelProps> = ({ te
           <div className="grid grid-cols-3 gap-3 text-center text-xs">
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بالأستاذ(ة)</span>
-              <span className="text-[10px] text-slate-500">توقيع وملاحظات الأستاذ(ة)</span>
+              <span className="text-[10px] text-slate-500">ملاحظات الأستاذ(ة)</span>
             </div>
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بمدير(ة) المؤسسة</span>
-              <span className="text-[10px] text-slate-500">تأشيرة وملاحظات الإدارة التربوية</span>
+              <span className="text-[10px] text-slate-500">ملاحظات الإدارة التربوية</span>
             </div>
             <div className="border border-slate-400 bg-slate-50 rounded-xl p-2.5 h-20 flex flex-col justify-between">
               <span className="font-bold text-slate-900">إطار خاص بالمفتش(ة) التربوي(ة)</span>
-              <span className="text-[10px] text-slate-500">تأشيرة وتوجيهات التأطير والمواكبة</span>
+              <span className="text-[10px] text-slate-500">توجيهات التأطير والمواكبة</span>
             </div>
           </div>
         </div>
