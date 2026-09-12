@@ -57,8 +57,20 @@ html, body {
     print-color-adjust: exact !important;
   }
 
-  .no-print, nav, header, button, .app-sidebar, .interactive-controls, .no-print-zone {
+  .no-print, nav, header, button, .app-sidebar, .interactive-controls, .no-print-zone,
+  ins, iframe, .adsbygoogle, .google-auto-placed, [id*="aswift"], [id*="google_ads"], [class*="adsense"], [class*="ad-zone"], [class*="ad-banner"], [data-ad-client] {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    pointer-events: none !important;
+  }
+
+  * {
+    letter-spacing: normal !important;
+    font-variant-ligatures: normal !important;
+    text-rendering: geometricPrecision !important;
   }
 
   .print-only {

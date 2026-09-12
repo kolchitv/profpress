@@ -97,10 +97,44 @@ const COLOR_PROPERTIES = [
 
 /**
  * Sanitizes all elements and styles in the cloned document for html2canvas
- * to prevent any "unsupported color function oklch" errors.
+ * to prevent any "unsupported color function oklch" errors,
+ * removes Google Ads, floating widgets, and extension overlays,
+ * and fixes Arabic typography and cursive ligatures (preventing disjointed/reversed text).
  */
 function sanitizeClonedDocumentForHtml2Canvas(clonedDoc: Document) {
-  // 1. Sanitize all <style> elements in the cloned document
+  // 1. Purge all ads, ad banners, iframes, ins tags, and auto-ads
+  try {
+    const adSelectors = [
+      "ins",
+      "iframe",
+      ".adsbygoogle",
+      ".google-auto-placed",
+      '[id*="aswift"]',
+      '[id*="google_ads"]',
+      '[class*="ad-zone"]',
+      '[class*="adsense"]',
+      '[class*="ad-banner"]',
+      '[class*="ad-container"]',
+      "[data-ad-client]",
+      "[data-ad-slot]",
+      '[aria-label*="advertisement"]',
+      '[aria-label*="إعلان"]',
+      ".no-print",
+      ".interactive-controls",
+    ];
+    const adElements = clonedDoc.querySelectorAll(adSelectors.join(", "));
+    adElements.forEach((el) => {
+      try {
+        el.remove();
+      } catch {
+        (el as HTMLElement).style.display = "none";
+      }
+    });
+  } catch {
+    // Ignore removal errors
+  }
+
+  // 2. Sanitize all <style> elements in the cloned document
   const styleElements = clonedDoc.querySelectorAll("style");
   styleElements.forEach((styleEl) => {
     if (styleEl.textContent) {
@@ -108,7 +142,8 @@ function sanitizeClonedDocumentForHtml2Canvas(clonedDoc: Document) {
     }
   });
 
-  // 2. Sanitize inline and computed styles across all cloned elements
+  // 3. Sanitize inline and computed styles across all cloned elements
+  // & Enforce proper Arabic typography (strictly reset letter-spacing and enable ligatures)
   const allElements = clonedDoc.querySelectorAll("*");
   allElements.forEach((node) => {
     if (node instanceof HTMLElement || node instanceof SVGElement) {
@@ -118,6 +153,14 @@ function sanitizeClonedDocumentForHtml2Canvas(clonedDoc: Document) {
         if (inlineStyle) {
           node.setAttribute("style", convertModernColorsToStandard(inlineStyle));
         }
+      }
+
+      if (node instanceof HTMLElement) {
+        // Reset letter-spacing on Arabic content (letter-spacing breaks Arabic cursive script ligatures)
+        node.style.letterSpacing = "normal";
+        node.style.fontVariantLigatures = "normal";
+        node.style.fontFeatureSettings = '"liga" 1, "dlig" 1';
+        (node.style as any).textRendering = "geometricPrecision";
       }
 
       // Read computed style and enforce converted standard colors
@@ -142,6 +185,36 @@ function sanitizeClonedDocumentForHtml2Canvas(clonedDoc: Document) {
       }
     }
   });
+}
+
+/**
+ * Filter function for html2canvas to ignore ads, iframes, and interactive controls.
+ */
+function shouldIgnoreElement(el: Element): boolean {
+  const tagName = el.tagName?.toLowerCase() || "";
+  const className = typeof el.className === "string" ? el.className.toLowerCase() : "";
+  const id = (el.id || "").toLowerCase();
+  const ariaLabel = (el.getAttribute("aria-label") || "").toLowerCase();
+
+  return (
+    tagName === "ins" ||
+    tagName === "iframe" ||
+    className.includes("no-print") ||
+    className.includes("interactive-controls") ||
+    className.includes("adsbygoogle") ||
+    className.includes("google-ad") ||
+    className.includes("adsense") ||
+    className.includes("ad-zone") ||
+    className.includes("ad-banner") ||
+    className.includes("ad-container") ||
+    id.includes("google") ||
+    id.includes("aswift") ||
+    id.includes("ad-") ||
+    ariaLabel.includes("advertisement") ||
+    ariaLabel.includes("إعلان") ||
+    el.hasAttribute("data-ad-client") ||
+    el.hasAttribute("data-ad-slot")
+  );
 }
 
 /**
@@ -225,12 +298,7 @@ export async function generatePdfFromElement(
         // 2. Sanitize modern color functions
         sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
       },
-      ignoreElements: (el) => {
-        return (
-          el.classList.contains("no-print") ||
-          el.classList.contains("interactive-controls")
-        );
-      },
+      ignoreElements: shouldIgnoreElement,
     });
 
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
@@ -420,12 +488,7 @@ export async function generateMultiPagePdfFromElements(
           });
           sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
         },
-        ignoreElements: (el) => {
-          return (
-            el.classList.contains("no-print") ||
-            el.classList.contains("interactive-controls")
-          );
-        },
+        ignoreElements: shouldIgnoreElement,
       });
 
       if (!canvas || canvas.width === 0 || canvas.height === 0) {

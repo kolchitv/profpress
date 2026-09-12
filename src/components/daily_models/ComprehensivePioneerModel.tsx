@@ -294,7 +294,7 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
               />
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-black font-serif text-slate-950 tracking-wider">
+            <h1 className="text-3xl md:text-4xl font-black font-serif text-slate-950">
               النشـيد الوطنـي
             </h1>
 
@@ -335,7 +335,7 @@ export const ComprehensivePioneerModel: React.FC<ComprehensivePioneerModelProps>
 
             <div className="space-y-2 pt-2">
               <div className="text-sm font-bold text-slate-700">بـشـعـار:</div>
-              <div className="text-2xl font-black text-slate-950 font-serif tracking-widest flex items-center justify-center gap-6">
+              <div className="text-2xl font-black text-slate-950 font-serif flex items-center justify-center gap-6">
                 <span>الله</span>
                 <span>•</span>
                 <span>الـوطـن</span>

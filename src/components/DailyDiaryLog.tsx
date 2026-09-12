@@ -1054,7 +1054,7 @@ const CoverPage: React.FC<{ config: DailyLogBookConfig; teacherProfile: TeacherP
       {/* Main Title Badge (Matching PDF Page 1) */}
       <div className="my-6 z-10 space-y-4">
         <div className="inline-block bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white px-8 py-5 rounded-3xl shadow-xl border-4 border-amber-400 max-w-xl mx-auto transform hover:scale-[1.01] transition">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-wide leading-tight drop-shadow-md">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight drop-shadow-md">
             المذكرة اليومية لأنشطة
             <br />
             الدعم التربوي المكثف
@@ -1097,7 +1097,7 @@ const CoverPage: React.FC<{ config: DailyLogBookConfig; teacherProfile: TeacherP
       {/* Footer Branding with Madrastna */}
       <div className="z-10 pt-4 border-t-2 border-emerald-800/20 flex flex-col items-center justify-center gap-1.5">
         <div className="flex items-center gap-2 text-emerald-900 font-black text-lg">
-          <span className="tracking-widest">مـدرستـنـا</span>
+          <span>مـدرستـنـا</span>
           <span className="font-mono text-base font-normal text-emerald-700">madrastna</span>
         </div>
         <p className="text-[11px] font-mono text-slate-500 font-semibold">www.madrastna.ma</p>
@@ -1130,7 +1130,7 @@ const BasmalaPage: React.FC = () => {
           </div>
 
           <div className="border-y-4 border-amber-500/70 py-8 px-6 bg-gradient-to-r from-amber-50/50 via-blue-50/30 to-amber-50/50 rounded-2xl">
-            <h2 className="text-3xl md:text-5xl font-black text-blue-950 font-serif leading-relaxed tracking-wider drop-shadow-xs">
+            <h2 className="text-3xl md:text-5xl font-black text-blue-950 font-serif leading-relaxed drop-shadow-xs">
               بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
             </h2>
           </div>
@@ -1569,7 +1569,7 @@ const BackCoverPage: React.FC = () => {
       {/* Footer Branding with Madrastna */}
       <div className="z-10 pb-6 flex flex-col items-center justify-center gap-1.5 border-t border-slate-200 pt-6">
         <div className="flex items-center gap-2 text-emerald-900 font-black text-xl">
-          <span className="tracking-widest">مـدرستـنـا</span>
+          <span>مـدرستـنـا</span>
           <span className="font-mono text-base font-normal text-emerald-700">madrastna</span>
         </div>
         <p className="text-xs font-mono text-slate-500 font-semibold">www.madrastna.ma</p>

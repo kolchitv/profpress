@@ -268,7 +268,7 @@ export const KickoffProceduresModel: React.FC<KickoffProceduresModelProps> = ({ 
           <div className="text-center space-y-2 pb-2">
             {/* Official Title Ribbon */}
             <div className="inline-block border-2 border-slate-950 bg-amber-100 px-6 py-1.5 rounded-xl shadow-xs">
-              <h1 className="text-lg md:text-xl font-black text-slate-950 tracking-wide font-cairo">
+              <h1 className="text-lg md:text-xl font-black text-slate-950 font-cairo">
                 إجراءات بداية السنة الدراسية
               </h1>
             </div>

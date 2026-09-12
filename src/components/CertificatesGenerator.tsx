@@ -304,7 +304,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
 
           {/* Certificate Main Body */}
           <div className="text-center py-6 space-y-4 my-auto relative z-10">
-            <div className="inline-block px-8 py-1.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white font-black text-2xl md:text-3xl rounded-full shadow-xs tracking-wide font-cairo">
+            <div className="inline-block px-8 py-1.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white font-black text-2xl md:text-3xl rounded-full shadow-xs font-cairo">
               {certTitles[certType]}
             </div>
 
@@ -385,7 +385,7 @@ export const CertificatesGenerator: React.FC<CertificatesGeneratorProps> = ({
               </div>
 
               <div className="text-center py-6 space-y-4 my-auto">
-                <div className="inline-block px-8 py-1.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white font-black text-2xl rounded-full tracking-wide">
+                <div className="inline-block px-8 py-1.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white font-black text-2xl rounded-full">
                   شهادة تفوق وامتياز
                 </div>
 

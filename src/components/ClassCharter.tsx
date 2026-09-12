@@ -245,7 +245,7 @@ export const ClassCharter: React.FC<ClassCharterProps> = ({ teacherProfile }) =>
           </div>
 
           <div className="inline-block bg-gradient-to-r from-blue-950 via-indigo-900 to-blue-950 text-white px-8 py-2 rounded-full shadow-sm mb-2 mt-1">
-            <h1 className="text-xl md:text-3xl font-black font-cairo tracking-wide">
+            <h1 className="text-xl md:text-3xl font-black font-cairo">
               ميثاق وقوانين جماعة الفصل
             </h1>
           </div>

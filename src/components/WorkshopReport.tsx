@@ -437,7 +437,7 @@ export const WorkshopReport: React.FC<WorkshopReportProps> = ({ teacherProfile }
           <div className="relative z-10 space-y-3.5">
             {/* Header: Centered Large Title & Subtitle (مطابق للصورة) */}
             <div className="text-center pt-2 pb-1 space-y-1">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 font-cairo tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 font-cairo">
                 {reportData.title}
               </h1>
               <p className="text-xs sm:text-sm font-bold text-blue-700 font-cairo">

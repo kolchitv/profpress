@@ -1368,12 +1368,12 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
               className="h-12 md:h-14 w-auto max-w-full object-contain"
             />
           </div>
-          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1">
+          <div className="flex items-center justify-between font-bold text-slate-800 text-[11px] px-1" dir="rtl">
             <div className="text-right space-y-0.5">
               <p><span className="text-slate-600 font-medium">الأكاديمية الجهوية للتربية والتكوين :</span> {teacherProfile?.academy || "...................................."}</p>
               <p><span className="text-slate-600 font-medium">المديرية الإقليمية :</span> {teacherProfile?.directorate || "...................................."}</p>
             </div>
-            <div className="text-left space-y-0.5">
+            <div className="text-right space-y-0.5" dir="rtl">
               <p><span className="text-slate-600 font-medium">المؤسسة التعليمية :</span> {meta.schoolName || teacherProfile?.institution || "...................................."}</p>
               <p><span className="text-slate-600 font-medium">السنة الدراسية :</span> {meta.schoolYear || teacherProfile?.schoolYear || "2026/2027"}</p>
             </div>
@@ -1381,7 +1381,7 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
         </div>
 
         {/* Two Rounded Info Boxes (Teacher & Class) */}
-        <div className="grid grid-cols-2 gap-4 text-xs md:text-sm font-bold text-slate-900">
+        <div className="grid grid-cols-2 gap-4 text-xs md:text-sm font-bold text-slate-900" dir="rtl">
           {/* Right Box: Teacher info */}
           <div className="border border-black rounded-xl p-3 space-y-1.5 text-right">
             <div className="flex items-center gap-1">
@@ -1416,9 +1416,12 @@ export const PositioningGridsEditor: React.FC<PositioningGridsEditorProps> = ({
         </div>
 
         {/* Center Title in a Rounded Box */}
-        <div className="flex justify-center pt-1 pb-1">
+        <div className="flex justify-center pt-1 pb-1" dir="rtl">
           <div className="border-2 border-black rounded-2xl px-6 md:px-10 py-1.5 bg-slate-50 text-center shadow-xs">
-            <h2 className="text-base md:text-lg font-black text-black tracking-wide">
+            <h2
+              className="text-base md:text-lg font-black text-black font-cairo"
+              style={{ letterSpacing: "normal", fontVariantLigatures: "normal" }}
+            >
               {meta.title}
             </h2>
           </div>

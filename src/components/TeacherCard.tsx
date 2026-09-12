@@ -372,10 +372,10 @@ export const TeacherCard: React.FC<TeacherCardProps> = ({
 
           <div className="flex items-center justify-between pt-2 border-t border-slate-200">
             <div className="flex-1 text-center">
-              <h1 className="text-xl md:text-2xl font-black font-cairo text-slate-900 tracking-wide">
+              <h1 className="text-xl md:text-2xl font-black font-cairo text-slate-900">
                 البطاقة الشخصية للأستاذ(ة)
               </h1>
-              <p className="text-xs font-bold text-slate-600 tracking-wider">
+              <p className="text-xs font-bold text-slate-600">
                 FICHE PERSONNELLE DE L'ENSEIGNANT(E)
               </p>
             </div>
