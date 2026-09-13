@@ -23,6 +23,12 @@ import {
   Calculator,
   Compass,
   AlertCircle,
+  Copy,
+  Check,
+  Globe,
+  FileCheck,
+  BookmarkCheck,
+  HelpCircle,
 } from "lucide-react";
 import { TabKey, GradeLevelId, EducationalResourceItem } from "../types";
 import { EDUCATIONAL_LEVELS_DATA } from "../data/educationalLevelsData";
@@ -33,6 +39,21 @@ interface EducationalBranchPageProps {
   onOpenPrintPreview?: () => void;
 }
 
+const MOROCCAN_REGIONS = [
+  "الدار البيضاء - سطات",
+  "الرباط - سلا - القنيطرة",
+  "مراكش - آسفي",
+  "فاس - مكناس",
+  "طنجة - تطوان - الحسيمة",
+  "سوس - ماسة",
+  "الشرق",
+  "بني ملال - خنيفرة",
+  "درعة - تافيلالت",
+  "كلميم - واد نون",
+  "العيون - الساقية الحمراء",
+  "الداخلة - وادي الذهب",
+];
+
 export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
   levelId,
   onNavigateToTab,
@@ -42,13 +63,15 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
 
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activePreviewResource, setActivePreviewResource] = useState<EducationalResourceItem | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // Quick calculator for Middle 3AC and 2BAC
-  const [c1Score, setC1Score] = useState<number | string>(14);
-  const [c2Score, setC2Score] = useState<number | string>(15);
-  const [examScore, setExamScore] = useState<number | string>(13.5);
+  // Quick calculator scores (Primary 6, Middle 3AC, and High 2BAC)
+  const [c1Score, setC1Score] = useState<number | string>(levelId === "primary_6" ? 7.5 : 14);
+  const [c2Score, setC2Score] = useState<number | string>(levelId === "primary_6" ? 7.0 : 15);
+  const [examScore, setExamScore] = useState<number | string>(levelId === "primary_6" ? 6.5 : 13.5);
   const [calculatedAverage, setCalculatedAverage] = useState<number | null>(null);
 
   // Sister levels in the same cycle for quick navigation
@@ -64,30 +87,52 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
       selectedSubject === "all" ||
       res.subject === selectedSubject ||
       res.subject === "عام";
+    const matchesRegion =
+      selectedRegion === "all" ||
+      res.title.includes(selectedRegion) ||
+      res.description.includes(selectedRegion) ||
+      res.tags.some((t) => t.includes(selectedRegion));
     const matchesSearch =
       searchQuery.trim() === "" ||
       res.title.includes(searchQuery) ||
       res.description.includes(searchQuery) ||
       res.tags.some((t) => t.includes(searchQuery));
-    return matchesCategory && matchesSubject && matchesSearch;
+    return matchesCategory && matchesSubject && matchesRegion && matchesSearch;
   });
 
-  // Calculate average for middle 3AC or 2BAC
+  // Calculate average for primary 4, primary 5, primary 6, middle 3AC or 2BAC
   const handleCalculateGpa = () => {
     const c1 = Number(c1Score) || 0;
     const c2 = Number(c2Score) || 0;
     const ex = Number(examScore) || 0;
 
-    if (levelId === "middle_3") {
-      // 3AC formula: 30% Local + 30% Continuous + 40% Regional
+    if (levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5") {
+      // Primary 1, 2, 3, 4 and 5 formula: (Semester 1 + Semester 2) / 2 (Scale 0 to 10)
+      const total = (c1 + c2) / 2;
+      setCalculatedAverage(Math.round(total * 100) / 100);
+    } else if (levelId === "primary_6") {
+      // Primary 6 formula (Morocco):
+      // 25% Continuous Assessment + 25% Local Exam (January) + 50% Regional Exam (June)
+      // Max score 10 in primary scale
+      const total = c1 * 0.25 + c2 * 0.25 + ex * 0.5;
+      setCalculatedAverage(Math.round(total * 100) / 100);
+    } else if (levelId === "middle_3") {
+      // 3AC formula: 30% Local + 30% Continuous + 40% Regional (Max score 20)
       const continuousAvg = (c1 + c2) / 2;
       const total = continuousAvg * 0.3 + c1 * 0.3 + ex * 0.4;
       setCalculatedAverage(Math.round(total * 100) / 100);
     } else if (levelId === "high_2bac") {
-      // 2BAC formula: 25% Continuous + 25% Regional (1BAC) + 50% National
+      // 2BAC formula: 25% Continuous + 25% Regional (1BAC) + 50% National (Max score 20)
       const total = c1 * 0.25 + c2 * 0.25 + ex * 0.5;
       setCalculatedAverage(Math.round(total * 100) / 100);
     }
+  };
+
+  const handleCopyBlogUrl = () => {
+    const url = levelData.blogSourceUrl || (levelId === "primary_6" ? "https://profpressma.blogspot.com/p/6primaire.html" : levelId === "primary_5" ? "https://profpressma.blogspot.com/p/5primaire.html" : levelId === "primary_4" ? "https://profpressma.blogspot.com/p/4primaire.html" : levelId === "primary_3" ? "https://profpressma.blogspot.com/p/3primaire.html" : levelId === "primary_2" ? "https://profpressma.blogspot.com/p/2primaire.html" : levelId === "primary_1" ? "https://profpressma.blogspot.com/p/1primaire.html" : "https://profpressma.blogspot.com");
+    navigator.clipboard.writeText(url);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   const CycleIcon =
@@ -111,25 +156,99 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
             <span>الرئيسية</span>
           </button>
           <span className="text-slate-300">/</span>
-          <span className="text-slate-500">{levelData.cycleTitle}</span>
+          <button
+            type="button"
+            onClick={() => onNavigateToTab(levelData.cycle === "primary" ? "primaire_hub" : "home")}
+            className="hover:text-blue-600 transition cursor-pointer"
+          >
+            {levelData.cycleTitle}
+          </button>
           <span className="text-slate-300">/</span>
-          <span className="text-blue-900 font-black">{levelData.title}</span>
+          <span className={`${levelId === "primary_1" ? "text-rose-900" : levelId === "primary_2" ? "text-amber-900" : levelId === "primary_3" ? "text-emerald-900" : levelId === "primary_4" ? "text-blue-900" : levelId === "primary_5" ? "text-teal-900" : levelId === "primary_6" ? "text-purple-900" : "text-blue-900"} font-black`}>{levelData.title}</span>
         </div>
 
-        <button
-          type="button"
-          id="back-to-home-btn"
-          onClick={() => onNavigateToTab("home")}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition cursor-pointer"
-        >
-          <span>العودة للرئيسية</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2">
+          {levelData.blogSourceUrl && (
+            <button
+              type="button"
+              id={`btn-copy-${levelId}-url`}
+              onClick={handleCopyBlogUrl}
+              className={`flex items-center gap-1.5 text-xs font-bold ${levelId === "primary_1" ? "text-rose-700 bg-rose-50 hover:bg-rose-100 border-rose-200" : levelId === "primary_2" ? "text-amber-700 bg-amber-50 hover:bg-amber-100 border-amber-200" : levelId === "primary_3" ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border-emerald-200" : levelId === "primary_4" ? "text-blue-700 bg-blue-50 hover:bg-blue-100 border-blue-200" : levelId === "primary_5" ? "text-teal-700 bg-teal-50 hover:bg-teal-100 border-teal-200" : "text-purple-700 bg-purple-50 hover:bg-purple-100 border-purple-200"} px-3 py-1.5 rounded-xl border transition cursor-pointer`}
+              title={`نسخ رابط صفحة ${levelData.title} على بروف بريس`}
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">تم نسخ الرابط</span>
+                </>
+              ) : (
+                <>
+                  <Copy className={`w-3.5 h-3.5 ${levelId === "primary_1" ? "text-rose-600" : levelId === "primary_2" ? "text-amber-600" : levelId === "primary_3" ? "text-emerald-600" : levelId === "primary_4" ? "text-blue-600" : levelId === "primary_5" ? "text-teal-600" : "text-purple-600"}`} />
+                  <span>رابط بروف بريس {levelId === "primary_1" ? "1primaire" : levelId === "primary_2" ? "2primaire" : levelId === "primary_3" ? "3primaire" : levelId === "primary_4" ? "4primaire" : levelId === "primary_5" ? "5primaire" : levelId === "primary_6" ? "6primaire" : levelData.shortTitle}</span>
+                </>
+              )}
+            </button>
+          )}
+
+          <button
+            type="button"
+            id="back-to-hub-btn"
+            onClick={() => onNavigateToTab(levelData.cycle === "primary" ? "primaire_hub" : "home")}
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition cursor-pointer"
+          >
+            <span>العودة للمستويات</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
-      {/* 2. Hero Level Header */}
-      <div className="bg-gradient-to-l from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-md relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+      {/* 2. Profpress Official Direct Blog Banner */}
+      {levelData.blogSourceUrl && (
+        <div className={`bg-gradient-to-r ${levelId === "primary_1" ? "from-rose-700 via-pink-800 to-rose-800 border-rose-400/30" : levelId === "primary_2" ? "from-amber-700 via-orange-800 to-amber-800 border-amber-400/30" : levelId === "primary_3" ? "from-emerald-700 via-teal-800 to-emerald-800 border-emerald-400/30" : levelId === "primary_4" ? "from-blue-700 via-indigo-800 to-blue-800 border-blue-400/30" : levelId === "primary_5" ? "from-teal-700 via-cyan-800 to-teal-800 border-teal-400/30" : "from-purple-700 via-indigo-700 to-purple-800 border-purple-400/30"} text-white rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-xs">
+              <Globe className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md">
+                  الصفحة الرسمية
+                </span>
+                <span className="text-xs text-white/90 font-mono font-bold">
+                  {levelData.blogSourceUrl.replace("https://", "")}
+                </span>
+              </div>
+              <h3 className="text-sm md:text-base font-black text-white mt-0.5">
+                فضاء {levelData.title} - موقع بروف بريس التربوي المغربي
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href={levelData.blogSourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`bg-white hover:bg-slate-50 ${levelId === "primary_1" ? "text-rose-900" : levelId === "primary_2" ? "text-amber-900" : levelId === "primary_3" ? "text-emerald-900" : levelId === "primary_4" ? "text-blue-900" : levelId === "primary_5" ? "text-teal-900" : "text-purple-900"} font-black px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs flex items-center gap-1.5`}
+            >
+              <span>فتح الصفحة الأصلية</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <button
+              type="button"
+              onClick={handleCopyBlogUrl}
+              className="bg-black/20 hover:bg-black/30 text-white font-bold px-3 py-2 rounded-xl text-xs transition cursor-pointer border border-white/20 flex items-center gap-1.5"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>مشاركة</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Hero Level Header */}
+      <div className={`bg-gradient-to-l ${levelId === "primary_6" ? "from-slate-900 via-purple-950 to-slate-900" : levelId === "primary_5" ? "from-slate-900 via-teal-950 to-slate-900" : "from-slate-900 via-blue-950 to-slate-900"} text-white rounded-3xl p-6 md:p-8 shadow-md relative overflow-hidden`}>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
@@ -186,14 +305,14 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               onClick={() => onNavigateToTab("timetable")}
               className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-4 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Clock className="w-4 h-4 text-blue-300" />
+              <Clock className="w-4 h-4 text-purple-300" />
               <span>استعمال زمن هذا القسم</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 3. Certifying Exam Alert Box (for 6th Primary, 3AC, 1BAC, 2BAC) */}
+      {/* 4. Certifying Exam Alert Box (for 6th Primary, 3AC, 1BAC, 2BAC) */}
       {levelData.featuredExam && (
         <div className="bg-amber-50 border-2 border-amber-300/80 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
           <div className="flex items-start gap-3">
@@ -213,7 +332,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                 {levelData.featuredExam.name}
               </h3>
               <p className="text-xs text-amber-800 mt-0.5">
-                تتوفر المنصة على الأطر المرجعية المحينة، بنك الامتحانات المصححة مع عناصر الإجابة الرسمية وسلم التنقيط.
+                تتوفر المنصة على الأطر المرجعية المحينة، بنك الامتحانات المصححة مع عناصر الإجابة الرسمية وسلم التنقيط لجميع جهات المغرب الـ 12.
               </p>
             </div>
           </div>
@@ -236,11 +355,63 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
         </div>
       )}
 
-      {/* 4. Sister Levels Switcher (Quickly navigate between other grades in this cycle) */}
+      {/* 5. 12 Moroccan Regional Academies Exam Bank Selector (for Primary 6) */}
+      {levelId === "primary_6" && (
+        <div className="bg-white border border-purple-200 rounded-2xl p-5 shadow-2xs space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+                <Compass className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm md:text-base font-black text-slate-900">
+                  بنك الامتحانات الإقليمية الموحدة لجهات المملكة الـ 12 (شهادة الدروس الابتدائية)
+                </h3>
+                <p className="text-xs text-slate-500">
+                  اختر جهتك لتصفية الامتحانات الإقليمية والنماذج الرسمية المصححة
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg self-start sm:self-auto">
+              12 جهة بالمملكة
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            <button
+              type="button"
+              onClick={() => setSelectedRegion("all")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                selectedRegion === "all"
+                  ? "bg-purple-700 text-white shadow-xs"
+                  : "bg-slate-50 text-slate-700 hover:bg-purple-50 hover:text-purple-700 border border-slate-200"
+              }`}
+            >
+              كافة الجهات
+            </button>
+            {MOROCCAN_REGIONS.map((region) => (
+              <button
+                key={region}
+                type="button"
+                onClick={() => setSelectedRegion(region)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  selectedRegion === region
+                    ? "bg-purple-700 text-white shadow-xs"
+                    : "bg-slate-50 text-slate-700 hover:bg-purple-50 hover:text-purple-700 border border-slate-200"
+                }`}
+              >
+                جهة {region}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 6. Sister Levels Switcher (Quickly navigate between other grades in this cycle) */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs">
         <div className="flex items-center justify-between gap-2 mb-2 px-1">
           <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-blue-600" />
+            <Layers className="w-3.5 h-3.5 text-purple-600" />
             <span>الانتقال السريع بين مستويات {levelData.cycleTitle}:</span>
           </span>
           <span className="text-[11px] text-slate-500">
@@ -258,8 +429,8 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                 onClick={() => onNavigateToTab(sister.id as TabKey)}
                 className={`p-2.5 rounded-xl border text-xs font-bold text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 ${
                   isCurrent
-                    ? "bg-blue-600 text-white border-blue-600 shadow-xs"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200"
+                    ? "bg-purple-700 text-white border-purple-700 shadow-xs"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200"
                 }`}
               >
                 <span>{sister.shortTitle}</span>
@@ -274,78 +445,115 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
         </div>
       </div>
 
-      {/* 5. Integrated Calculator Tool (for Middle 3AC and 2BAC) */}
-      {(levelId === "middle_3" || levelId === "high_2bac") && (
+      {/* 7. Integrated Calculator Tool (for Primary 1, Primary 2, Primary 3, Primary 4, Primary 5, Primary 6, Middle 3AC and 2BAC) */}
+      {(levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" || levelId === "middle_3" || levelId === "high_2bac") && (
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs">
           <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+              <div className={`w-8 h-8 rounded-xl ${levelId === "primary_1" ? "bg-rose-100 text-rose-700" : levelId === "primary_2" ? "bg-amber-100 text-amber-700" : levelId === "primary_3" ? "bg-emerald-100 text-emerald-700" : levelId === "primary_4" ? "bg-blue-100 text-blue-700" : levelId === "primary_5" ? "bg-teal-100 text-teal-700" : "bg-purple-100 text-purple-700"} flex items-center justify-center`}>
                 <Calculator className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="text-sm md:text-base font-black text-slate-900">
-                  {levelId === "middle_3"
+                  {levelId === "primary_1"
+                    ? "حاسبة المعدل السنوي للمراقبة المستمرة (الأول ابتدائي)"
+                    : levelId === "primary_2"
+                    ? "حاسبة المعدل السنوي للمراقبة المستمرة (الثاني ابتدائي)"
+                    : levelId === "primary_3"
+                    ? "حاسبة المعدل السنوي للمراقبة المستمرة (الثالث ابتدائي)"
+                    : levelId === "primary_4"
+                    ? "حاسبة المعدل السنوي للمراقبة المستمرة (الرابع ابتدائي)"
+                    : levelId === "primary_5"
+                    ? "حاسبة المعدل السنوي للمراقبة المستمرة (الخامس ابتدائي)"
+                    : levelId === "primary_6"
+                    ? "حاسبة معدل النجاح بالسادس ابتدائي والامتحان الإقليمي الموحد"
+                    : levelId === "middle_3"
                     ? "حاسبة معدل شهادة السلك الإعدادي (الثالثة إعدادي)"
                     : "حاسبة المعدل العام للباكالوريا (المراقبة + الجهوي + الوطني)"}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  احسب النقطة الإجمالية المتوقعة وفق النسب والمعاملات الرسمية للوزارة
+                  {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5"
+                    ? "معادلة الانتقال: (معدل الدورة الأولى + معدل الدورة الثانية) ÷ 2 - عتبة الانتقال: 5.00 / 10"
+                    : levelId === "primary_6"
+                    ? "معادلة وزارة التربية الوطنية: 25% مراقبة مستمرة + 25% امتحان محلي (يناير) + 50% امتحان إقليمي (يونيو) - عتبة النجاح: 5/10 أو 10/20"
+                    : "احسب النقطة الإجمالية المتوقعة وفق النسب والمعاملات الرسمية للوزارة"}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className={`grid grid-cols-1 ${levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" ? "sm:grid-cols-2" : "sm:grid-cols-3"} gap-3.5`}>
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                {levelId === "middle_3"
+                {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5"
+                  ? "معدل المراقبة المستمرة - الدورة الأولى"
+                  : levelId === "primary_6"
+                  ? "معدل المراقبة المستمرة السنوية (25%)"
+                  : levelId === "middle_3"
                   ? "معدل المراقبة المستمرة (30%)"
                   : "معدل المراقبة المستمرة 2BAC (25%)"}
               </label>
               <input
                 type="number"
-                step="0.25"
+                step="0.01"
                 min="0"
-                max="20"
+                max={levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? 10 : 20}
                 value={c1Score}
                 onChange={(e) => setC1Score(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
               />
+              <span className="text-[10px] text-slate-400 block mt-1 text-center">
+                {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? "سلم التنقيط: من 0 إلى 10" : "سلم التنقيط: من 0 إلى 20"}
+              </span>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                {levelId === "middle_3"
+                {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5"
+                  ? "معدل المراقبة المستمرة - الدورة الثانية"
+                  : levelId === "primary_6"
+                  ? "معدل الامتحان الموحد المحلي - يناير (25%)"
+                  : levelId === "middle_3"
                   ? "معدل الامتحان المحلي يناير (30%)"
                   : "معدل الامتحان الجهوي 1BAC (25%)"}
               </label>
               <input
                 type="number"
-                step="0.25"
+                step="0.01"
                 min="0"
-                max="20"
+                max={levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? 10 : 20}
                 value={c2Score}
                 onChange={(e) => setC2Score(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
               />
+              <span className="text-[10px] text-slate-400 block mt-1 text-center">
+                {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? "سلم التنقيط: من 0 إلى 10" : "سلم التنقيط: من 0 إلى 20"}
+              </span>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {levelId === "middle_3"
-                  ? "معدل الامتحان الجهوي يونيو (40%)"
-                  : "معدل الامتحان الوطني الموحد (50%)"}
-              </label>
-              <input
-                type="number"
-                step="0.25"
-                min="0"
-                max="20"
-                value={examScore}
-                onChange={(e) => setExamScore(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
-              />
-            </div>
+            {levelId !== "primary_1" && levelId !== "primary_2" && levelId !== "primary_3" && levelId !== "primary_4" && levelId !== "primary_5" && (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {levelId === "primary_6"
+                    ? "معدل الامتحان الموحد الإقليمي - يونيو (50%)"
+                    : levelId === "middle_3"
+                    ? "معدل الامتحان الجهوي يونيو (40%)"
+                    : "معدل الامتحان الوطني الموحد (50%)"}
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={levelId === "primary_6" ? 10 : 20}
+                  value={examScore}
+                  onChange={(e) => setExamScore(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 text-center focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
+                />
+                <span className="text-[10px] text-slate-400 block mt-1 text-center">
+                  {levelId === "primary_6" ? "سلم التنقيط: من 0 إلى 10" : "سلم التنقيط: من 0 إلى 20"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
@@ -353,27 +561,49 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               type="button"
               id="calc-gpa-btn"
               onClick={handleCalculateGpa}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer shadow-xs"
+              className={`${levelId === "primary_1" ? "bg-rose-700 hover:bg-rose-800" : levelId === "primary_2" ? "bg-amber-700 hover:bg-amber-800" : levelId === "primary_3" ? "bg-emerald-700 hover:bg-emerald-800" : levelId === "primary_4" ? "bg-blue-700 hover:bg-blue-800" : levelId === "primary_5" ? "bg-teal-700 hover:bg-teal-800" : "bg-purple-700 hover:bg-purple-800"} text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer shadow-xs`}
             >
-              احتساب المعدل النهائي
+              احتساب المعدل النهائي والنتيجة
             </button>
 
             {calculatedAverage !== null && (
               <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-1.5">
                 <span className="text-xs font-bold text-emerald-900">
-                  المعدل العام التقديري:
+                  المعدل العام النهائي:
                 </span>
                 <span className="text-lg font-black text-emerald-700 font-mono">
-                  {calculatedAverage} / 20
+                  {calculatedAverage} / {levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? 10 : 20}
                 </span>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-md font-black ${
-                    calculatedAverage >= 10
+                  className={`text-xs px-2.5 py-0.5 rounded-md font-black ${
+                    (levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5" || levelId === "primary_6" ? calculatedAverage >= 5 : calculatedAverage >= 10)
                       ? "bg-emerald-600 text-white"
                       : "bg-red-500 text-white"
                   }`}
                 >
-                  {calculatedAverage >= 10 ? "مؤهل للنجاح ✓" : "بحاجة لدعم"}
+                  {levelId === "primary_1"
+                    ? calculatedAverage >= 5
+                      ? "ناجح ومؤهل للمستوى الثاني ابتدائي ✓"
+                      : "دون عتبة الانتقال"
+                    : levelId === "primary_2"
+                    ? calculatedAverage >= 5
+                      ? "ناجح ومؤهل للمستوى الثالث ابتدائي ✓"
+                      : "دون عتبة الانتقال"
+                    : levelId === "primary_3"
+                    ? calculatedAverage >= 5
+                      ? "ناجح ومؤهل للمستوى الرابع ابتدائي ✓"
+                      : "دون عتبة الانتقال"
+                    : levelId === "primary_4"
+                    ? calculatedAverage >= 5
+                      ? "ناجح ومؤهل للمستوى الخامس ابتدائي ✓"
+                      : "دون عتبة الانتقال"
+                    : levelId === "primary_5"
+                    ? calculatedAverage >= 5
+                      ? "ناجح ومؤهل للمستوى السادس ابتدائي ✓"
+                      : "دون عتبة الانتقال"
+                    : (levelId === "primary_6" ? calculatedAverage >= 5 : calculatedAverage >= 10)
+                    ? "ناجح ومؤهل للأولى إعدادي ✓"
+                    : "دون عتبة النجاح"}
                 </span>
               </div>
             )}
@@ -381,7 +611,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
         </div>
       )}
 
-      {/* 6. Filter & Search Controls */}
+      {/* 8. Filter & Search Controls */}
       <div id="level-resources-section" className="space-y-4">
         <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -391,10 +621,10 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               <input
                 type="text"
                 id="search-level-resources-input"
-                placeholder={`ابحث في وثائق وجذاذات وفروض ${levelData.title}...`}
+                placeholder={`ابحث في وثائق وجذاذات وفروض وامتحانات ${levelData.title}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pr-10 pl-4 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-cairo"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pr-10 pl-4 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500 font-cairo"
               />
             </div>
 
@@ -407,7 +637,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                 id="select-subject-filter"
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-cairo"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 font-cairo"
               >
                 <option value="all">جميع المواد الدراسية</option>
                 {levelData.subjects.map((sub) => (
@@ -423,11 +653,11 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
           <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
             {[
               { id: "all", label: "كافة الوثائق والمراجع" },
+              { id: "exams", label: "الامتحانات والفروض" },
               { id: "lessons", label: "الجذاذات والدروس" },
-              { id: "exams", label: "الفروض والامتحانات" },
-              { id: "planning", label: "التوازيع السنوية والمرحلية" },
-              { id: "guidelines", label: "الأطر المرجعية ودلائل الأستاذ" },
-              { id: "textbooks", label: "الكراسات المعتمدة" },
+              { id: "guidelines", label: "الأطر المرجعية والخرائط الذهنية" },
+              { id: "planning", label: "التوازيع السنوية والمجالية" },
+              { id: "textbooks", label: "دلائل الأستاذ والكراسات" },
             ].map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
@@ -438,7 +668,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                     isActive
-                      ? "bg-blue-900 text-white shadow-xs"
+                      ? "bg-purple-900 text-white shadow-xs"
                       : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200"
                   }`}
                 >
@@ -449,7 +679,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
           </div>
         </div>
 
-        {/* 7. Resources Grid */}
+        {/* 9. Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredResources.map((item) => (
             <div
@@ -458,7 +688,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-100">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-100">
                     {item.subject}
                   </span>
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
@@ -466,7 +696,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                   </span>
                 </div>
 
-                <h3 className="text-sm md:text-base font-black text-slate-900 group-hover:text-blue-700 transition leading-snug">
+                <h3 className="text-sm md:text-base font-black text-slate-900 group-hover:text-purple-700 transition leading-snug">
                   {item.title}
                 </h3>
 
@@ -495,7 +725,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePreviewResource(item)}
-                    className="p-1.5 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-700 transition cursor-pointer"
                     title="معاينة تفاصيل الوثيقة"
                   >
                     <BookOpen className="w-3.5 h-3.5" />
@@ -505,7 +735,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                     onClick={() => {
                       if (onOpenPrintPreview) onOpenPrintPreview();
                     }}
-                    className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                    className="bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer shadow-2xs"
                   >
                     <Download className="w-3 h-3" />
                     <span>تحميل / طباعة A4</span>
@@ -530,9 +760,10 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               onClick={() => {
                 setSearchQuery("");
                 setSelectedSubject("all");
+                setSelectedRegion("all");
                 setActiveCategory("all");
               }}
-              className="bg-blue-50 text-blue-700 font-bold text-xs px-4 py-2 rounded-xl hover:bg-blue-100 transition cursor-pointer"
+              className="bg-purple-50 text-purple-700 font-bold text-xs px-4 py-2 rounded-xl hover:bg-purple-100 transition cursor-pointer"
             >
               إعادة ضبط الفلاتر
             </button>
@@ -540,12 +771,12 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
         )}
       </div>
 
-      {/* 8. Modal to Preview Details of Resource */}
+      {/* 10. Modal to Preview Details of Resource */}
       {activePreviewResource && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scaleUp text-right">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">
                 {activePreviewResource.subject} • {activePreviewResource.format}
               </span>
               <button
@@ -591,7 +822,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                   setActivePreviewResource(null);
                   if (onOpenPrintPreview) onOpenPrintPreview();
                 }}
-                className="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-black py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="flex-1 bg-purple-700 hover:bg-purple-800 text-white font-black py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Printer className="w-4 h-4" />
                 <span>طباعة الوثيقة A4</span>
@@ -610,3 +841,4 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
     </div>
   );
 };
+

@@ -63,7 +63,7 @@ export interface EducationalResourceItem {
   category: "lessons" | "exams" | "planning" | "guidelines" | "textbooks";
   subject: string;
   semester?: "s1" | "s2" | "annual";
-  format: "PDF" | "DOCX" | "A4 Print" | "Interactive";
+  format: "PDF" | "DOCX" | "A4 Print" | "Interactive" | "XLSX" | string;
   description: string;
   downloadUrl?: string;
   updatedDate: string;
@@ -97,6 +97,7 @@ export interface EducationalLevelInfo {
     dateDescription: string;
     countdownDays?: number;
   };
+  blogSourceUrl?: string;
   pioneerFeatures?: string[];
   resources: EducationalResourceItem[];
 }
