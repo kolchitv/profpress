@@ -51,6 +51,21 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
       ],
     },
     {
+      key: "mindmaps" as TabKey,
+      title: "بنك الخطاطات الذهنية لحصص التهيئة والدعم (المستوى الأول + TaRL)",
+      badge: "حصري • 72 حصة تفاعلية",
+      badgeColor: "bg-amber-100 text-amber-950 border-amber-300 font-black",
+      icon: Sparkles,
+      iconBg: "bg-indigo-600 text-white",
+      description:
+        "المنصة الشاملة للخطاطات الذهنية البصرية لتخطيط حصص فترة التهيئة والدعم المكثف: 24 حصة للفرنسية (Français 1AEP)، 24 حصة للرياضيات، 24 حصة للغة العربية، بالإضافة إلى خطاطة طارل السحابية (TaRL Français).",
+      features: [
+        "تغطية كاملة لأسابيع فترة الدعم الأربعة (24 حصة لكل مادة) مع الأهداف والمدد الزمنية",
+        "مطابقة بصرية دقيقة للتصميم المعتمد مع إمكانية التعديل، التخصيص، والحفظ المحلي",
+        "طباعة ورقية عالية الجودة A4 ونماذج فارغة جاهزة للتعبئة اليدوية",
+      ],
+    },
+    {
       key: "positioning_grids" as TabKey,
       title: "شبكة تفريغ روائز الموضعة (TaRL) - شتنبر 2026",
       badge: "حصري ومطابق للوزارة",

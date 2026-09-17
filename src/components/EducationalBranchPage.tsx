@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -29,14 +29,21 @@ import {
   FileCheck,
   BookmarkCheck,
   HelpCircle,
+  Plus,
+  Edit3,
 } from "lucide-react";
-import { TabKey, GradeLevelId, EducationalResourceItem } from "../types";
+import { TabKey, GradeLevelId, EducationalResourceItem, AdminSession } from "../types";
 import { EDUCATIONAL_LEVELS_DATA } from "../data/educationalLevelsData";
+import { EducationalResourceReaderModal } from "./EducationalResourceReaderModal";
+import { EducationalResourceEditorModal } from "./EducationalResourceEditorModal";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { getDownloadGatewaySettings } from "../utils/downloadGatewaySettings";
 
 interface EducationalBranchPageProps {
   levelId: GradeLevelId;
   onNavigateToTab: (tab: TabKey) => void;
   onOpenPrintPreview?: () => void;
+  adminSession?: AdminSession | null;
 }
 
 const MOROCCAN_REGIONS = [
@@ -58,15 +65,107 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
   levelId,
   onNavigateToTab,
   onOpenPrintPreview,
+  adminSession,
 }) => {
   const levelData = EDUCATIONAL_LEVELS_DATA[levelId] || EDUCATIONAL_LEVELS_DATA["primary_1"];
+
+  // Local state for dynamic resources to allow editing and saving
+  const [resourcesList, setResourcesList] = useState<EducationalResourceItem[]>(() => {
+    try {
+      const storageKey = `profpress_resources_${levelId}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge with initial data
+          const existingIds = new Set(parsed.map((r: EducationalResourceItem) => r.id));
+          const newFromInitial = levelData.resources.filter((r) => !existingIds.has(r.id));
+          return [...parsed, ...newFromInitial];
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return levelData.resources;
+  });
+
+  // Keep in sync if level changes
+  useEffect(() => {
+    try {
+      const storageKey = `profpress_resources_${levelId}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((r: EducationalResourceItem) => r.id));
+          const newFromInitial = levelData.resources.filter((r) => !existingIds.has(r.id));
+          setResourcesList([...parsed, ...newFromInitial]);
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setResourcesList(levelData.resources);
+  }, [levelId, levelData.resources]);
+
+  const handleSaveResource = (updatedResource: EducationalResourceItem) => {
+    const exists = resourcesList.some((r) => r.id === updatedResource.id);
+    let updatedList: EducationalResourceItem[];
+    if (exists) {
+      updatedList = resourcesList.map((r) =>
+        r.id === updatedResource.id ? updatedResource : r
+      );
+    } else {
+      updatedList = [updatedResource, ...resourcesList];
+    }
+    setResourcesList(updatedList);
+    try {
+      localStorage.setItem(
+        `profpress_resources_${levelId}`,
+        JSON.stringify(updatedList)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Also update active preview if open
+    if (activeReaderResource && activeReaderResource.id === updatedResource.id) {
+      setActiveReaderResource(updatedResource);
+    }
+  };
 
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activePreviewResource, setActivePreviewResource] = useState<EducationalResourceItem | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Reader Modal State (Opens resource in a dedicated window/modal)
+  const [activeReaderResource, setActiveReaderResource] =
+    useState<EducationalResourceItem | null>(null);
+
+  // Editor Modal State
+  const [editingResource, setEditingResource] = useState<{
+    isOpen: boolean;
+    resource: EducationalResourceItem | null;
+  }>({
+    isOpen: false,
+    resource: null,
+  });
+
+  // Download Gateway State for direct card download button
+  const [gatewayDownload, setGatewayDownload] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    format: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+    format: "pdf",
+  });
 
   // Quick calculator scores (Primary 6, Middle 3AC, and High 2BAC)
   const [c1Score, setC1Score] = useState<number | string>(levelId === "primary_6" ? 7.5 : 14);
@@ -79,8 +178,8 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
     (lvl) => lvl.cycle === levelData.cycle
   );
 
-  // Filter resources
-  const filteredResources = levelData.resources.filter((res) => {
+  // Filter resources from local dynamic list
+  const filteredResources = resourcesList.filter((res) => {
     const matchesCategory =
       activeCategory === "all" || res.category === activeCategory;
     const matchesSubject =
@@ -107,22 +206,16 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
     const ex = Number(examScore) || 0;
 
     if (levelId === "primary_1" || levelId === "primary_2" || levelId === "primary_3" || levelId === "primary_4" || levelId === "primary_5") {
-      // Primary 1, 2, 3, 4 and 5 formula: (Semester 1 + Semester 2) / 2 (Scale 0 to 10)
       const total = (c1 + c2) / 2;
       setCalculatedAverage(Math.round(total * 100) / 100);
     } else if (levelId === "primary_6") {
-      // Primary 6 formula (Morocco):
-      // 25% Continuous Assessment + 25% Local Exam (January) + 50% Regional Exam (June)
-      // Max score 10 in primary scale
       const total = c1 * 0.25 + c2 * 0.25 + ex * 0.5;
       setCalculatedAverage(Math.round(total * 100) / 100);
     } else if (levelId === "middle_3") {
-      // 3AC formula: 30% Local + 30% Continuous + 40% Regional (Max score 20)
       const continuousAvg = (c1 + c2) / 2;
       const total = continuousAvg * 0.3 + c1 * 0.3 + ex * 0.4;
       setCalculatedAverage(Math.round(total * 100) / 100);
     } else if (levelId === "high_2bac") {
-      // 2BAC formula: 25% Continuous + 25% Regional (1BAC) + 50% National (Max score 20)
       const total = c1 * 0.25 + c2 * 0.25 + ex * 0.5;
       setCalculatedAverage(Math.round(total * 100) / 100);
     }
@@ -133,6 +226,28 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleCardDownloadClick = (item: EducationalResourceItem) => {
+    const gwSettings = getDownloadGatewaySettings();
+    if (gwSettings.isEnabled) {
+      setGatewayDownload({
+        isOpen: true,
+        title: item.downloadLabel || item.title,
+        url: item.downloadUrl || "#",
+        format: item.format.toLowerCase().includes("doc") ? "word" : "pdf",
+      });
+    } else {
+      if (!item.downloadUrl || item.downloadUrl === "#") {
+        if (onOpenPrintPreview) {
+          onOpenPrintPreview();
+        } else {
+          window.print();
+        }
+      } else {
+        window.open(item.downloadUrl, "_blank", "noopener,noreferrer");
+      }
+    }
   };
 
   const CycleIcon =
@@ -628,7 +743,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               />
             </div>
 
-            {/* Subject Selector */}
+            {/* Subject Selector & Add Topic Button */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-500 font-bold whitespace-nowrap">
                 المادة:
@@ -646,6 +761,21 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                   </option>
                 ))}
               </select>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setEditingResource({
+                    isOpen: true,
+                    resource: null,
+                  })
+                }
+                className="bg-purple-700 hover:bg-purple-800 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs whitespace-nowrap"
+                title="إضافة موضوع أو وثيقة جديدة لهذا المستوى"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">إضافة وثيقة / رابط</span>
+              </button>
             </div>
           </div>
 
@@ -684,23 +814,46 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
           {filteredResources.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md transition flex flex-col justify-between group"
+              className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-md transition flex flex-col justify-between group hover:border-purple-300"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-100">
                     {item.subject}
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
-                    {item.format}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                      {item.format}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEditingResource({
+                          isOpen: true,
+                          resource: item,
+                        })
+                      }
+                      className="p-1 rounded-md text-slate-400 hover:text-purple-700 hover:bg-purple-50 transition cursor-pointer"
+                      title="تعديل هذا الموضوع وروابط التحميل"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                <h3 className="text-sm md:text-base font-black text-slate-900 group-hover:text-purple-700 transition leading-snug">
+                {/* Clickable title opening in dedicated reader window */}
+                <h3
+                  onClick={() => setActiveReaderResource(item)}
+                  className="text-sm md:text-base font-black text-slate-900 group-hover:text-purple-700 transition leading-snug cursor-pointer hover:underline"
+                  title="انقر لفتح الموضوع في نافذة مخصصة"
+                >
                   {item.title}
                 </h3>
 
-                <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                <p
+                  onClick={() => setActiveReaderResource(item)}
+                  className="text-xs text-slate-600 leading-relaxed line-clamp-3 cursor-pointer"
+                >
                   {item.description}
                 </p>
 
@@ -724,20 +877,19 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setActivePreviewResource(item)}
-                    className="p-1.5 rounded-lg bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-700 transition cursor-pointer"
-                    title="معاينة تفاصيل الوثيقة"
+                    onClick={() => setActiveReaderResource(item)}
+                    className="p-2 rounded-xl bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 transition cursor-pointer"
+                    title="فتح الموضوع في نافذة مخصصة مع خيارات التعديل"
                   >
-                    <BookOpen className="w-3.5 h-3.5" />
+                    <BookOpen className="w-4 h-4" />
                   </button>
+
                   <button
                     type="button"
-                    onClick={() => {
-                      if (onOpenPrintPreview) onOpenPrintPreview();
-                    }}
-                    className="bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                    onClick={() => handleCardDownloadClick(item)}
+                    className="bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
                   >
-                    <Download className="w-3 h-3" />
+                    <Download className="w-3.5 h-3.5" />
                     <span>تحميل / طباعة A4</span>
                   </button>
                 </div>
@@ -771,72 +923,57 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
         )}
       </div>
 
-      {/* 10. Modal to Preview Details of Resource */}
-      {activePreviewResource && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scaleUp text-right">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">
-                {activePreviewResource.subject} • {activePreviewResource.format}
-              </span>
-              <button
-                type="button"
-                onClick={() => setActivePreviewResource(null)}
-                className="text-slate-400 hover:text-slate-700 transition cursor-pointer p-1 rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
+      {/* Reader Modal (Opens topic in a dedicated clean window/modal) */}
+      {activeReaderResource && (
+        <EducationalResourceReaderModal
+          resource={activeReaderResource}
+          levelId={levelId}
+          isOpen={Boolean(activeReaderResource)}
+          onClose={() => setActiveReaderResource(null)}
+          onEdit={(res) => {
+            setEditingResource({
+              isOpen: true,
+              resource: res,
+            });
+          }}
+          onOpenPrintPreview={onOpenPrintPreview}
+          canEdit={true}
+        />
+      )}
 
-            <h3 className="text-lg font-black text-slate-900">
-              {activePreviewResource.title}
-            </h3>
+      {/* Editor Modal for Resources and Download Links */}
+      {editingResource.isOpen && (
+        <EducationalResourceEditorModal
+          isOpen={editingResource.isOpen}
+          onClose={() =>
+            setEditingResource({
+              isOpen: false,
+              resource: null,
+            })
+          }
+          onSave={handleSaveResource}
+          initialResource={editingResource.resource}
+          levelTitle={levelData.title}
+          subjectsList={["عام", ...levelData.subjects]}
+        />
+      )}
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {activePreviewResource.description}
-            </p>
-
-            <div className="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 border border-slate-200/80">
-              <div className="flex justify-between">
-                <span className="text-slate-500">المستوى:</span>
-                <span className="font-bold text-slate-800">{levelData.title}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">السلك التعليمي:</span>
-                <span className="font-bold text-slate-800">{levelData.cycleTitle}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">الصيغة:</span>
-                <span className="font-bold text-slate-800">{activePreviewResource.format}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">تاريخ التحديث:</span>
-                <span className="font-bold text-slate-800">{activePreviewResource.updatedDate}</span>
-              </div>
-            </div>
-
-            <div className="pt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setActivePreviewResource(null);
-                  if (onOpenPrintPreview) onOpenPrintPreview();
-                }}
-                className="flex-1 bg-purple-700 hover:bg-purple-800 text-white font-black py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-              >
-                <Printer className="w-4 h-4" />
-                <span>طباعة الوثيقة A4</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePreviewResource(null)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
-              >
-                إغلاق
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Download Gateway Modal for direct card downloads */}
+      {gatewayDownload.isOpen && (
+        <DownloadGatewayModal
+          isOpen={gatewayDownload.isOpen}
+          onClose={() =>
+            setGatewayDownload({
+              isOpen: false,
+              title: "",
+              url: "",
+              format: "pdf",
+            })
+          }
+          fileTitle={gatewayDownload.title}
+          targetDownloadUrl={gatewayDownload.url}
+          fileType={gatewayDownload.format}
+        />
       )}
     </div>
   );

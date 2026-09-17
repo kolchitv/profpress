@@ -7,7 +7,9 @@ import {
   PrimaryDownloadFile,
   PrimaryImageBanner,
   PrimaryExamSpec,
+  InspectionExamSession,
 } from "../data/primaryKnowledgeData";
+import { GoogleDriveExamSessionsGrid, GoogleDriveIcon } from "./GoogleDriveExamSessionsGrid";
 import { AdminSession } from "../types";
 import { getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
 import { getDownloadGatewaySettings, DOWNLOAD_GATEWAY_EVENT } from "../utils/downloadGatewaySettings";
@@ -62,8 +64,14 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
   // 1. Local Storage Persistence
   const [data, setData] = useState<PrimaryKnowledgePageData>(() => {
     try {
-      const saved = localStorage.getItem("profpress_primary_knowledge_data_v1");
-      if (saved) return JSON.parse(saved);
+      const saved = localStorage.getItem("profpress_primary_knowledge_data_v2");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Ensure default subjects with examSessions are preserved
+        if (parsed.subjects && parsed.subjects.length > 0) {
+          return parsed;
+        }
+      }
     } catch (e) {
       console.error("Failed to load primary knowledge data from storage", e);
     }
@@ -87,7 +95,7 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
   const handleSaveData = (newData: PrimaryKnowledgePageData) => {
     setData(newData);
     try {
-      localStorage.setItem("profpress_primary_knowledge_data_v1", JSON.stringify(newData));
+      localStorage.setItem("profpress_primary_knowledge_data_v2", JSON.stringify(newData));
     } catch (e) {
       console.error("Failed to save primary knowledge data", e);
     }
@@ -100,13 +108,13 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Active Subject Action Modal (Reading / QCM / Downloads)
+  // Active Subject Action Modal (Reading / QCM / Downloads / Sessions)
   const [activeActionModal, setActiveActionModal] = useState<{
     subject: PrimarySubjectCard;
     action: PrimarySubjectAction;
   } | null>(null);
 
-  const [modalTab, setModalTab] = useState<"summary" | "article" | "qcm">("summary");
+  const [modalTab, setModalTab] = useState<"summary" | "article" | "qcm" | "sessions">("summary");
 
   // QCM Interactive state
   const [currentQcmIdx, setCurrentQcmIdx] = useState(0);
@@ -270,10 +278,43 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
     }
 
     setActiveActionModal({ subject, action });
-    setModalTab(action.qcmQuestions && action.qcmQuestions.length > 0 ? "qcm" : "summary");
+    if (action.examSessions && action.examSessions.length > 0) {
+      setModalTab("sessions");
+    } else if (action.qcmQuestions && action.qcmQuestions.length > 0) {
+      setModalTab("qcm");
+    } else {
+      setModalTab("summary");
+    }
     setCurrentQcmIdx(0);
     setSelectedAnswers({});
     setShowQcmResults(false);
+  };
+
+  // Update Sessions for an action
+  const handleUpdateSessionsForAction = (
+    subjectId: string,
+    actionId: string,
+    updatedSessions: InspectionExamSession[]
+  ) => {
+    const updatedSubjects = data.subjects.map((sub) => {
+      if (sub.id !== subjectId) return sub;
+      const updatedActions = sub.actions.map((act) => {
+        if (act.id !== actionId) return act;
+        return { ...act, examSessions: updatedSessions };
+      });
+      return { ...sub, actions: updatedActions };
+    });
+
+    const updatedData = { ...data, subjects: updatedSubjects };
+    handleSaveData(updatedData);
+
+    if (activeActionModal && activeActionModal.action.id === actionId) {
+      setActiveActionModal({
+        ...activeActionModal,
+        action: { ...activeActionModal.action, examSessions: updatedSessions },
+      });
+    }
+    showToast("تم تحديث وحفظ نماذج امتحانات Google Drive بنجاح!");
   };
 
   // Trigger Download via Gateway or Direct
@@ -584,6 +625,14 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
                       <span className="font-black text-gray-800 text-xs sm:text-sm">
                         {act.title}
                       </span>
+
+                      {/* Google Drive Sessions Badge */}
+                      {act.examSessions && act.examSessions.length > 0 && (
+                        <span className="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1 mt-1 font-black shadow-2xs">
+                          <GoogleDriveIcon className="w-2.5 h-2.5" />
+                          <span>{act.examSessions.length} دورات درايف</span>
+                        </span>
+                      )}
 
                       {/* Custom external link hint if present */}
                       {act.customUrl && act.customUrl !== "#" && (
@@ -919,6 +968,24 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
                   </span>
                 )}
               </button>
+
+              <button
+                type="button"
+                onClick={() => setModalTab("sessions")}
+                className={`py-3 px-4 text-xs sm:text-sm font-black border-b-2 transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                  modalTab === "sessions"
+                    ? "border-blue-600 text-blue-700 bg-white"
+                    : "border-transparent text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <GoogleDriveIcon className="w-3.5 h-3.5 text-indigo-600" />
+                <span>أرشيف دورات Google Drive</span>
+                {activeActionModal.action.examSessions && (
+                  <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full font-bold">
+                    {activeActionModal.action.examSessions.length}
+                  </span>
+                )}
+              </button>
             </div>
 
             {/* Modal Scrollable Content */}
@@ -959,6 +1026,35 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
                       </strong>
                     </div>
                   </div>
+
+                  {/* Quick Google Drive Sessions Banner if available */}
+                  {activeActionModal.action.examSessions &&
+                    activeActionModal.action.examSessions.length > 0 && (
+                      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                            <GoogleDriveIcon className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <span className="font-black text-xs sm:text-sm text-indigo-950 block">
+                              نماذج امتحانات Google Drive متوفرة ({activeActionModal.action.examSessions.length} دورات)
+                            </span>
+                            <span className="text-[11px] text-indigo-700">
+                              تتضمن دورات 2017 إلى 2024 مع عناصر الإجابة والتحميل المباشر.
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setModalTab("sessions")}
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black px-4 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer shrink-0 shadow-2xs"
+                        >
+                          <GoogleDriveIcon className="w-3.5 h-3.5" />
+                          <span>عرض وتحميل النماذج</span>
+                        </button>
+                      </div>
+                    )}
 
                   {/* External link button if configured */}
                   {activeActionModal.action.customUrl &&
@@ -1195,6 +1291,49 @@ export const PrimaryKnowledgeInspectionView: React.FC<Props> = ({
                       </p>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* 4. Google Drive Exam Sessions Tab */}
+              {modalTab === "sessions" && (
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-md relative overflow-hidden">
+                    <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-indigo-300 shrink-0 shadow-inner">
+                          <GoogleDriveIcon className="w-7 h-7" />
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="font-black text-base sm:text-lg text-white">
+                            نماذج واختبارات مباراة التفتيش على Google Drive
+                          </h4>
+                          <p className="text-xs text-indigo-200 leading-relaxed max-w-xl">
+                            أرشيف شامل لجميع دورات وسنوات مباراة التفتيش التربوي ({activeActionModal.subject.title}) مع الروابط الرسمية على جوجل درايف وإمكانية التحرير والإضافة المباشرة.
+                          </p>
+                        </div>
+                      </div>
+
+                      {isEditActive && (
+                        <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3 py-1 rounded-full font-bold shrink-0">
+                          وضع الإدارة والتعديل نشط
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* The Interactive & Editable Google Drive Sessions Grid */}
+                  <GoogleDriveExamSessionsGrid
+                    sessions={activeActionModal.action.examSessions || []}
+                    subjectTitle={activeActionModal.subject.title}
+                    isEditable={isEditActive}
+                    onUpdateSessions={(updated) =>
+                      handleUpdateSessionsForAction(
+                        activeActionModal.subject.id,
+                        activeActionModal.action.id,
+                        updated
+                      )
+                    }
+                  />
                 </div>
               )}
             </div>

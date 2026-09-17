@@ -19,6 +19,8 @@ export type TabKey =
   | "holidays"
   | "certificates"
   | "remarks"
+  | "mindmaps" // قسم الخطاطات الذهنية الشامل (Schémas & Cartes Mentales)
+  | "tarl_french_mindmap" // خطاطة ذهنية طارل الفرنسية (Carte Mentale TaRL Français)
   | "print_preview"
   | "contact"
   // التعليم الابتدائي
@@ -66,6 +68,10 @@ export interface EducationalResourceItem {
   format: "PDF" | "DOCX" | "A4 Print" | "Interactive" | "XLSX" | string;
   description: string;
   downloadUrl?: string;
+  downloadLabel?: string;
+  downloads?: DownloadLinkItem[];
+  content?: string;
+  author?: string;
   updatedDate: string;
   downloadsCount: number;
   featured?: boolean;

@@ -3,7 +3,9 @@ import {
   PrimarySubjectAction,
   ActionAttachedImage,
   PrimaryDownloadFile,
+  InspectionExamSession,
 } from "../data/primaryKnowledgeData";
+import { GoogleDriveExamSessionsGrid, GoogleDriveIcon } from "./GoogleDriveExamSessionsGrid";
 import { RichArticleEditor } from "./RichArticleEditor";
 import {
   X,
@@ -20,6 +22,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Eye,
+  Layers,
 } from "lucide-react";
 
 interface Props {
@@ -45,11 +48,12 @@ export const SubjectActionEditorModal: React.FC<Props> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [activeTab, setActiveTab] = useState<"content" | "images" | "downloads" | "qcm">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "images" | "downloads" | "qcm" | "sessions">("content");
   const [formData, setFormData] = useState<PrimarySubjectAction>(() => ({
     ...action,
     images: action.images ? [...action.images] : [],
     downloadFiles: action.downloadFiles ? [...action.downloadFiles] : [],
+    examSessions: action.examSessions ? [...action.examSessions] : [],
     qcmQuestions: action.qcmQuestions ? [...action.qcmQuestions] : [],
   }));
 
@@ -295,6 +299,24 @@ export const SubjectActionEditorModal: React.FC<Props> = ({
             {formData.qcmQuestions && formData.qcmQuestions.length > 0 && (
               <span className="bg-amber-100 text-amber-800 text-[10px] font-black px-1.5 py-0.2 rounded-full">
                 {formData.qcmQuestions.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("sessions")}
+            className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === "sessions"
+                ? "border-purple-600 text-purple-700 bg-white rounded-t-xl"
+                : "border-transparent text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <GoogleDriveIcon className="w-4 h-4 text-indigo-600" />
+            <span>دورات ونماذج Google Drive</span>
+            {formData.examSessions && formData.examSessions.length > 0 && (
+              <span className="bg-indigo-100 text-indigo-800 text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                {formData.examSessions.length}
               </span>
             )}
           </button>
@@ -844,6 +866,34 @@ export const SubjectActionEditorModal: React.FC<Props> = ({
                     <p className="text-xs text-slate-500 font-bold">لا توجد أسئلة QCM مضافة لهذا المكون بعد.</p>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: GOOGLE DRIVE EXAM SESSIONS */}
+          {activeTab === "sessions" && (
+            <div className="space-y-6">
+              <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <GoogleDriveIcon className="w-5 h-5" />
+                  <div>
+                    <h4 className="font-black text-sm text-indigo-950">
+                      إدارة دورات ونماذج الامتحانات المربوطة بـ Google Drive
+                    </h4>
+                    <p className="text-xs text-indigo-800/80">
+                      يمكنك هنا إضافة وتعديل روابط Google Drive لدورات وسنوات مباراة التفتيش (مثل: دورة أبريل 2024، دورة 2023، ...)
+                    </p>
+                  </div>
+                </div>
+
+                <GoogleDriveExamSessionsGrid
+                  sessions={formData.examSessions || []}
+                  subjectTitle={subjectTitle}
+                  isEditable={true}
+                  onUpdateSessions={(updated) =>
+                    setFormData((prev) => ({ ...prev, examSessions: updated }))
+                  }
+                />
               </div>
             </div>
           )}

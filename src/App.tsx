@@ -20,6 +20,8 @@ import { OrientationPlanningPage } from "./components/OrientationPlanningPage";
 import { ExplicitTeachingPage } from "./components/ExplicitTeachingPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { DailyDiaryLog } from "./components/DailyDiaryLog";
+import { MindMapsHub } from "./components/MindMapsHub";
+import { TarlFrenchMindMap } from "./components/TarlFrenchMindMap";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
 import { OrientationPage } from "./components/OrientationPage";
@@ -428,6 +430,22 @@ export default function App() {
             <AiPedagogyAssistant teacherProfile={profile} />
           )}
 
+          {activeTab === "mindmaps" && (
+            <MindMapsHub
+              teacherProfile={profile}
+              initialCategory="french_level1"
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === "tarl_french_mindmap" && (
+            <MindMapsHub
+              teacherProfile={profile}
+              initialCategory="tarl_french"
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
           {activeTab === "print_preview" && (
             <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center shadow-xs space-y-4">
               <div className="w-16 h-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
@@ -478,6 +496,7 @@ export default function App() {
               levelId={activeTab as GradeLevelId}
               onNavigateToTab={setActiveTab}
               onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
+              adminSession={adminSession}
             />
           )}
 
