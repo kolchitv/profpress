@@ -49,6 +49,7 @@ import {
   Mail,
   MessageCircle,
   Files,
+  Ruler,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 import { SmartToolsModal } from "./SmartToolsModal";
@@ -222,8 +223,31 @@ export const HomePage: React.FC<HomePageProps> = ({
           "هندسة الملف التراكمي للأستاذ وأثره في الترقية وتقويم الأداء المهني.",
         ],
         tips: "ركز على وثائق التدبير والتخطيط التراكمي لإبراز تطور الممارسات المهنية أثناء زيارات التفتيش.",
-        actionLabel: "تصفح دروس التعليم الصريح",
-        targetTab: "explicit_teaching",
+        actionLabel: "تصفح بنك الوثائق التربوية",
+        targetTab: "pedagogical_docs",
+      },
+    },
+    {
+      id: "pedagogical_docs",
+      title: "الوثائق التربوية",
+      targetTab: "pedagogical_docs",
+      icon: Files,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-50",
+      borderHover: "hover:border-teal-400",
+      borderBottomColor: "border-b-teal-500",
+      description: "حزمة الوثائق التربوية، حصص الدعم المكثف، استعمالات الزمن TaRL، ميثاق القسم، والملف التراكمي",
+      badge: "وثائق ومطبوعات",
+      content: {
+        subtitle: "مكتبة الوثائق والسجلات التربوية المعتمدة للتحرير والطباعة الفورية A4",
+        highlights: [
+          "حصص الدعم المكثف لجميع المستويات (1 إلى 6) لغتي العربية والفرنسية والرياضيات.",
+          "نماذج استعمال الزمن لفترة الدعم (TaRL والدعم المكثف) - 7 نماذج قابلة للتعديل والطباعة والتصدير.",
+          "روائز الموضعة TaRL، تقارير الورشات 3P، المذكرة اليومية، والملف التراكمي الشامل للريادة.",
+        ],
+        tips: "تصفح وحرر كافة وثائق وسجلات المنصة الداخلية المعدة للطباعة الفورية.",
+        actionLabel: "فتح بنك الوثائق التربوية",
+        targetTab: "pedagogical_docs",
       },
     },
     {
@@ -323,29 +347,6 @@ export const HomePage: React.FC<HomePageProps> = ({
       },
     },
     {
-      id: "pedagogical_docs",
-      title: "الوثائق التربوية",
-      targetTab: "pedagogical_docs",
-      icon: Files,
-      iconColor: "text-teal-600",
-      iconBg: "bg-teal-50",
-      borderHover: "hover:border-teal-400",
-      borderBottomColor: "border-b-teal-500",
-      description: "حزمة الوثائق التربوية، سجلات الريادة، روائز TaRL، استعمالات الزمن، والشواهد التقديرية للطباعة والتعديل",
-      badge: "وثائق الموقع",
-      content: {
-        subtitle: "مكتبة الوثائق والسجلات التربوية المعتمدة للتحرير والطباعة الفورية",
-        highlights: [
-          "روائز الموضعة TaRL، تقارير الورشات 3P، وسجلات الملف التراكمي الشامل.",
-          "استعمالات الزمن، ميثاق القسم، البطاقة الشخصية، وواجهات الملفات والبحوث.",
-          "شبكات التفريغ والتقويم، لائحة العطل الرسمية 2026/2027، وشواهد التقدير للطباعة بصيغة A4.",
-        ],
-        tips: "تصفح وحرر كافة وثائق وسجلات المنصة الداخلية المعدة للطباعة الفورية.",
-        actionLabel: "فتح بنك الوثائق التربوية",
-        targetTab: "pedagogical_docs",
-      },
-    },
-    {
       id: "professional_exams",
       title: "امتحانات مهنية",
       targetTab: "professional_exams",
@@ -412,6 +413,48 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Documents & Generators List (Core platform offerings)
   const teacherDocuments = [
     {
+      id: "remediation_mindmaps_doc",
+      tab: "mindmaps" as TabKey,
+      title: "خطاطات الدعم المكثف لجميع المواد والمستويات (Cartes Mentales PPTX)",
+      category: "الخطاطات الذهنية والريادة",
+      cycle: ["primary"],
+      badge: "432 عرضاً تفاعلياً وخطاطة",
+      badgeColor: "bg-indigo-100 text-indigo-900 border-indigo-300 font-bold",
+      description:
+        "الحقيبة الرسمية لخطاطات وعروض الدعم المكثف طارل لجميع المستويات (1 إلى 6) في الرياضيات واللغة العربية والفرنسية: عروض PPTX جاهزة للمسلاط الضوئي من منصة يلا تعليم والسحابة R2 مع مراحل النمذجة والممارسة الموجهة والمستقلة.",
+      icon: Presentation,
+      iconColor: "text-indigo-700",
+      iconBg: "bg-indigo-50",
+    },
+    {
+      id: "intensive_support_doc",
+      tab: "intensive_support" as TabKey,
+      title: "حصص الدعم المكثف لجميع المستويات (1 إلى 6)",
+      category: "الدعم المكثف ومؤسسات الريادة",
+      cycle: ["primary"],
+      badge: "حصص مفصلة 1AEP-6AEP",
+      badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300 font-bold",
+      description:
+        "دليل وبرمجة حصص الدعم المكثف الشاملة لمستويات التعليم الابتدائي الستة في اللغتين العربية والفرنسية والرياضيات، مع سيناريوهات الحصص ودلائل الأنشطة التفريدية وروابط التحميل المباشرة.",
+      icon: Layers,
+      iconColor: "text-emerald-700",
+      iconBg: "bg-emerald-50",
+    },
+    {
+      id: "explicit_teaching_doc",
+      tab: "explicit_teaching" as TabKey,
+      title: "الحقيبة البيداغوجية لدروس التعليم الصريح (PPT)",
+      category: "التعليم الصريح والريادة",
+      cycle: ["primary", "middle"],
+      badge: "عروض للمسلاط الضوئي",
+      badgeColor: "bg-amber-100 text-amber-900 border-amber-300 font-bold",
+      description:
+        "دروس وعروض تفاعلية بصيغة بوربوينت PPTX جاهزة للمسلاط الضوئي وكراسات المتعلم لمستويات 1 إلى 6 وفق استراتيجيات النمذجة (أنا أعمل)، الممارسة الموجهة (نحن نعمل)، والممارسة المستقلة.",
+      icon: Presentation,
+      iconColor: "text-amber-700",
+      iconBg: "bg-amber-50",
+    },
+    {
       id: "daily_log",
       tab: "daily_log" as TabKey,
       title: "المذكرة اليومية لأنشطة الدعم التربوي المكثف (10 صفحات)",
@@ -424,6 +467,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       icon: BookOpen,
       iconColor: "text-emerald-700",
       iconBg: "bg-emerald-50",
+    },
+    {
+      id: "timetable",
+      tab: "timetable" as TabKey,
+      title: "نماذج استعمال الزمن لفترة الدعم (TaRL والدعم المكثف)",
+      category: "التنظيم التربوي",
+      cycle: ["primary", "middle", "high"],
+      badge: "21 نموذجاً + حزمة Drive (14 Word)",
+      badgeColor: "bg-blue-100 text-blue-900 border-blue-300 font-bold",
+      description:
+        "21 نموذجاً رسمياً معتمداً لاستعمال الزمن لفترة الدعم المكثف طارل، تشمل حزمة مدونة تعليم كم (14 نموذج Word .docx على Google Drive) ونماذج يانبوع التربية السبعة مع إمكانية التعديل الشامل وتصدير Word و PDF و Excel.",
+      icon: Calendar,
+      iconColor: "text-blue-700",
+      iconBg: "bg-blue-50",
     },
     {
       id: "workshop_report",
@@ -452,20 +509,6 @@ export const HomePage: React.FC<HomePageProps> = ({
       icon: FolderKanban,
       iconColor: "text-blue-700",
       iconBg: "bg-blue-50",
-    },
-    {
-      id: "timetable",
-      tab: "timetable" as TabKey,
-      title: "استعمال الزمن الذكي (Emploi du temps)",
-      category: "التنظيم التربوي",
-      cycle: ["primary", "middle", "high"],
-      badge: "جاهز للطباعة A4",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-300",
-      description:
-        "مولد جداول الحصص الأسبوعية بنظام التفويج والدوامين وصيغ مؤسسات الريادة والتعليم العادي، مع تصدير عالي الدقة وتخصيص المواد.",
-      icon: Calendar,
-      iconColor: "text-amber-700",
-      iconBg: "bg-amber-50",
     },
     {
       id: "card",
@@ -583,6 +626,16 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Smart Tools (Matching Screenshot 2 + Profpress.net)
   const smartTools: SmartToolItem[] = [
+    {
+      id: "number_line",
+      title: "خط الأعداد والكسور",
+      icon: Ruler,
+      iconColor: "text-purple-600",
+      iconBg: "bg-purple-50",
+      shortDesc: "وسيلة تفاعلية لتمثيل الأعداد الصحيحة، الكسور، المعكوس الجمعي والقيمة المطلقة",
+      actionType: "modal",
+      externalUrl: "https://profpressma.blogspot.com/search?q=%D8%AE%D8%B7+%D8%A7%D9%84%D8%A3%D8%B9%D8%AF%D8%A7%D8%AF",
+    },
     {
       id: "game",
       title: "لعبة الفرنسية",
@@ -737,6 +790,15 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Most Read / Trending (Matching Screenshot 3)
   const trendingItems = [
+    {
+      id: "intensive_support_trending",
+      title: "حصص الدعم المكثف (جميع المستويات)",
+      icon: Layers,
+      iconColor: "text-amber-600",
+      iconBg: "bg-amber-50",
+      subtext: "24 يوماً • عروض PPTX وجذاذات وكراسات الريادة",
+      action: () => onNavigateToTab("intensive_support"),
+    },
     {
       id: "pedagogical_docs_trending",
       title: "الوثائق التربوية",
@@ -935,11 +997,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، مباراة التعليم، جذاذات وفروض...) */}
+      {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، الوثائق التربوية، التعليم الصريح...) */}
       {/* ========================================================================= */}
       <section className="no-print">
-        {/* 7 Responsive Rounded Cards Bar matching Screenshot with solid colored bottom borders */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        {/* 8 Responsive Rounded Cards Bar with solid colored bottom borders */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {portalCategories.map((item) => {
             const Icon = item.icon;
             const handleClick = () => {
@@ -949,6 +1011,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onNavigateToTab("news");
               } else if (item.id === "articles") {
                 onNavigateToTab("articles");
+              } else if (item.id === "pedagogical_docs") {
+                onNavigateToTab("pedagogical_docs");
+              } else if (item.id === "explicit_teaching") {
+                onNavigateToTab("explicit_teaching");
               } else if (item.id === "recruitment" || item.id === "inspection") {
                 onNavigateToTab("competitions");
               } else if (item.id === "orientation") {
@@ -990,7 +1056,102 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. EDUCATIONAL CYCLES & BRANCHES (شجرة الأسلاك والأقسام التعليمية - التصميم الأفقي الشامل) */}
+      {/* 2. CORE TEACHER DOCUMENTS & GENERATORS (وثائق وسجلات الأستاذ المعتمدة والدعم المكثف) */}
+      {/* ========================================================================= */}
+      <section className="no-print space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-blue-900 text-white flex items-center justify-center">
+                <FileText className="w-4 h-4" />
+              </div>
+              <h2 className="text-base md:text-lg font-black text-slate-900 font-cairo">
+                وثائق وسجلات الأستاذ المعتمدة (توليد، تعديل، وطباعة A4)
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              اختر أي وثيقة لبدء تحرير بياناتك وتصديرها بصيغة A4 مطابقة للدفتر الوزاري ولمؤسسات الريادة وفترة الدعم المكثف
+            </p>
+          </div>
+
+          {/* Quick Search & Cycle reset */}
+          <div className="flex items-center gap-2">
+            <div className="relative w-full sm:w-64">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن وثيقة، استعمال زمن، ميثاق..."
+                className="w-full bg-white border border-slate-300 rounded-xl pr-9 pl-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
+            </div>
+
+            {selectedCycle !== "all" && (
+              <button
+                type="button"
+                onClick={() => setSelectedCycle("all")}
+                className="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer shrink-0"
+              >
+                عرض الكل
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Documents Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredDocuments.map((doc) => {
+            const Icon = doc.icon;
+            return (
+              <div
+                key={doc.id}
+                onClick={() => onNavigateToTab(doc.tab)}
+                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group hover:border-blue-400 relative cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div
+                      className={`w-11 h-11 rounded-xl ${doc.iconBg} ${doc.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span
+                      className={`text-[10px] font-black px-2 py-0.5 rounded-full border shadow-2xs ${doc.badgeColor}`}
+                    >
+                      {doc.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-black text-slate-900 group-hover:text-blue-900 transition-colors font-cairo mb-1.5">
+                    {doc.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed text-justify mb-4">
+                    {doc.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    {doc.category}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onNavigateToTab(doc.tab)}
+                    className="bg-blue-900 hover:bg-blue-800 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs group-hover:bg-blue-700"
+                  >
+                    <span>فتح وتعديل</span>
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3. EDUCATIONAL CYCLES & BRANCHES (شجرة الأسلاك والأقسام التعليمية - التصميم الأفقي الشامل) */}
       {/* ========================================================================= */}
       <section className="no-print space-y-4">
         {/* Full-Width Horizontal Tree */}
@@ -1101,101 +1262,6 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. CORE TEACHER DOCUMENTS & GENERATORS (وثائق الأستاذ المتاحة في المنصة) */}
-      {/* ========================================================================= */}
-      <section className="no-print space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-900 text-white flex items-center justify-center">
-                <FileText className="w-4 h-4" />
-              </div>
-              <h2 className="text-base md:text-lg font-black text-slate-900 font-cairo">
-                وثائق وسجلات الأستاذ المعتمدة (توليد، تعديل، وطباعة A4)
-              </h2>
-            </div>
-            <p className="text-xs text-slate-500 mt-1">
-              اختر أي وثيقة لبدء تحرير بياناتك وتصديرها بصيغة A4 مطابقة للدفتر الوزاري ولمؤسسات الريادة
-            </p>
-          </div>
-
-          {/* Quick Search & Cycle reset */}
-          <div className="flex items-center gap-2">
-            <div className="relative w-full sm:w-64">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن وثيقة، استعمال زمن، ميثاق..."
-                className="w-full bg-white border border-slate-300 rounded-xl pr-9 pl-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
-            </div>
-
-            {selectedCycle !== "all" && (
-              <button
-                type="button"
-                onClick={() => setSelectedCycle("all")}
-                className="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer shrink-0"
-              >
-                عرض الكل
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Documents Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredDocuments.map((doc) => {
-            const Icon = doc.icon;
-            return (
-              <div
-                key={doc.id}
-                onClick={() => onNavigateToTab(doc.tab)}
-                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group hover:border-blue-400 relative cursor-pointer"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div
-                      className={`w-11 h-11 rounded-xl ${doc.iconBg} ${doc.iconColor} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span
-                      className={`text-[10px] font-black px-2 py-0.5 rounded-full border shadow-2xs ${doc.badgeColor}`}
-                    >
-                      {doc.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="text-sm font-black text-slate-900 group-hover:text-blue-900 transition-colors font-cairo mb-1.5">
-                    {doc.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed text-justify mb-4">
-                    {doc.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <span className="text-[11px] text-slate-500 font-medium">
-                    {doc.category}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTab(doc.tab)}
-                    className="bg-blue-900 hover:bg-blue-800 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs group-hover:bg-blue-700"
-                  >
-                    <span>فتح وتعديل</span>
-                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
       {/* 4. TWO COLUMNS: SMART TOOLS (الصورة 2) & MOST READ / TRENDING (الصورة 3) */}
       {/* ========================================================================= */}
       <section className="no-print grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1205,7 +1271,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="bg-[#fef2f2] border-b border-red-100 py-3.5 px-4 text-center flex items-center justify-center gap-2">
             <span className="text-rose-600 text-lg">✏️</span>
             <h3 className="text-base md:text-lg font-black text-red-800 font-cairo">
-              أدوات الموقع الذكية
+              أدوات تربوية ووسائل تعليمية ذكية
             </h3>
           </div>
 

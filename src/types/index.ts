@@ -16,11 +16,15 @@ export type TabKey =
   | "covers"
   | "grids"
   | "positioning_grids"
+  | "level1_tracking_grid" // شبكة تتبع تقدم تحكم تلاميذ المستوى الأول (عربية - فرنسية - رياضيات)
+  | "math_tracking_grids" // شبكات التتبع لمادة الرياضيات لجميع المستويات والمسارات (المستوى 2، 3-4، 5-6، مسار التميز)
   | "holidays"
   | "certificates"
   | "remarks"
   | "mindmaps" // قسم الخطاطات الذهنية الشامل (Schémas & Cartes Mentales)
   | "tarl_french_mindmap" // خطاطة ذهنية طارل الفرنسية (Carte Mentale TaRL Français)
+  | "number_line" // وسيلة تعليمية: تمثيل الأعداد على خط الأعداد (Droite graduée et fractions)
+  | "intensive_support" // حقيبة وملف حصص الدعم المكثف لجميع المستويات (Soutien Intensif TaRL)
   | "print_preview"
   | "contact"
   // التعليم الابتدائي
@@ -603,5 +607,78 @@ export type DailyLogModelId =
   | "triple_subjects" // مذكرة المواد الثلاثية (عربية - رياضيات - فرنسية)
   | "grade_1_prep" // مذكرة المستوى الأول (أنشطة التهيئة والاستئناس)
   | "explicit_teaching"; // مذكرة التدريس الصريح (يوم واحد / يومان / التوقيت الوزاري)
+
+// ==========================================
+// INTENSIVE SUPPORT TYPES (حصص الدعم المكثف لجميع المستويات)
+// https://www.escuila.info/p/soutien-intensif.html
+// ==========================================
+export type IntensiveLevelId = 1 | 2 | 3 | 4 | 5 | 6;
+export type IntensiveSubjectId = "all" | "arabic" | "math" | "french";
+export type IntensiveResourceType = "all" | "pptx" | "lesson_plan" | "workbook" | "grids";
+
+export interface IntensiveSessionItem {
+  id: string;
+  level: IntensiveLevelId;
+  subject: "arabic" | "math" | "french";
+  sessionNumber: number; // 1 to 24
+  dayNumber: number; // 1 to 24
+  weekNumber: number; // 1 to 4
+  title: string;
+  track: string; // e.g. "المسار 1", "المسار 2", "المسار 3", "جميع المسارات"
+  buildingBlock: string; // اللبنة (مثلا: الحروف، الكلمات، الفقرة، العمليات الحسابية)
+  durationMinutes: number; // مدة الحصة (مثلا: 45، 60، 90 دقيقة)
+  objectives: string[];
+  stages: {
+    title: string;
+    description: string;
+    timing: string;
+  }[];
+  workbookPage?: string;
+  hasPptx: boolean;
+  hasLessonPlan: boolean;
+  pptxTitle: string;
+  lessonPlanTitle: string;
+  downloadUrlPptx: string;
+  downloadUrlPlan: string;
+  downloadUrlWorkbook?: string;
+  notes?: string;
+}
+
+export interface IntensiveSubjectPackage {
+  subjectId: "arabic" | "math" | "french";
+  subjectNameAr: string;
+  subjectNameFr: string;
+  color: string;
+  iconName: string;
+  totalSessions: number;
+  weeksCount: number;
+  tracks: string[];
+  description: string;
+  bundleDownloadPptxUrl: string;
+  bundleDownloadWordUrl: string;
+  bundleDownloadPdfUrl: string;
+  workbookDownloadUrl: string;
+  sessions: IntensiveSessionItem[];
+}
+
+export interface IntensiveLevelData {
+  level: IntensiveLevelId;
+  titleAr: string;
+  titleFr: string;
+  shortTitle: string;
+  badge: string;
+  colorTheme: {
+    bg: string;
+    border: string;
+    text: string;
+    accent: string;
+    lightBg: string;
+  };
+  overview: string;
+  pioneerGuidelines: string[];
+  totalSessionsPerSubject: number;
+  totalSessionsCombined: number;
+  subjects: Record<"arabic" | "math" | "french", IntensiveSubjectPackage>;
+}
 
 

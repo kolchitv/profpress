@@ -20,6 +20,9 @@ import {
   Presentation,
   ArrowRight,
   BookOpen,
+  Calculator,
+  Ruler,
+  Layers,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 
@@ -35,6 +38,36 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
   onOpenPrintPreview,
 }) => {
   const pedagogicalDocuments = [
+    {
+      key: "intensive_support" as TabKey,
+      title: "ملف وحقيبة حصص الدعم المكثف لجميع المستويات (1 إلى 6)",
+      badge: "جديد الريادة • 24 يوماً كاملة",
+      badgeColor: "bg-amber-100 text-amber-950 border-amber-300 font-black",
+      icon: Layers,
+      iconBg: "bg-indigo-700 text-white",
+      description:
+        "الحقيبة الرسمية الشاملة لجميع حصص الدعم المكثف (24 يوماً) بمؤسسات الريادة لجميع مستويات الابتدائي (1، 2، 3، 4، 5، 6): عروض PPTX تفاعلية للسبورات، جذاذات الحصص Word و PDF، كراسات المتعلم، ومصفوفات المحتويات للمواد الثلاث (العربية، الرياضيات، والفرنسية) وفق ملف escuila.info/p/soutien-intensif.html.",
+      features: [
+        "عروض PPTX للسبورات التفاعلية وجذاذات يومية لـ 24 حصة كاملة",
+        "تغطية شاملة للمواد الثلاث: اللغة العربية، الرياضيات، واللغة الفرنسية",
+        "روابط تحميل ومعاينة سريعة وتصفية ذكية حسب المستوى والمادة",
+      ],
+    },
+    {
+      key: "timetable" as TabKey,
+      title: "نماذج استعمال الزمن لفترة الدعم (TaRL والدعم المكثف) ومؤسسات الريادة",
+      badge: "7 نماذج معتمدة • Word & PDF",
+      badgeColor: "bg-blue-100 text-blue-950 border-blue-300 font-black",
+      icon: Calendar,
+      iconBg: "bg-blue-700 text-white",
+      description:
+        "النماذج الرسمية السبعة لاستعمالات الزمن الخاصة بفترة الدعم المكثف طارل (TaRL) ومؤسسات الريادة وفق موقع يانبوع التربية والتوجيهات الوزارية: التوقيت المسترسل (فوجين)، التوقيت العادي (فترتان - 4 أفواج)، أستاذ التخصص (عربية / فرنسية ورياضيات)، المستوى الأول 1AEP، المستويات العليا (4-6)، وأسبوع الموضعة مع التعديل والتصدير لـ Word و PDF و Excel.",
+      features: [
+        "7 نماذج وزارية متكاملة وقابلة للتعديل والتخصيص الفوري",
+        "تغطية صيغ التوقيت: المسترسل (صباحي/مسائي)، فترتان، و 4 أفواج متناوبة",
+        "تصدير Word (.doc) و PDF عالي الدقة و Excel مع مساحات التوقيع والمصادقة الرسمية",
+      ],
+    },
     {
       key: "daily_log" as TabKey,
       title: "المذكرة اليومية لأنشطة الدعم التربوي المكثف (TaRL & الريادة)",
@@ -81,18 +114,63 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
       ],
     },
     {
+      key: "level1_tracking_grid" as TabKey,
+      title: "شبكة تتبع تقدم تحكم تلاميذ المستوى الأول (1AEP)",
+      badge: "وثيقة رسمية معتمدة",
+      badgeColor: "bg-rose-100 text-rose-900 border-rose-300 font-black",
+      icon: FileCheck2,
+      iconBg: "bg-rose-600 text-white",
+      description:
+        "الشبكة الرسمية لتتبع تقدم تحكم تلاميذ المستوى الأول خلال الأسابيع الأربعة (اللغة العربية: الحروف والمعجم، الفرنسية: Lettre & Vocabulaire، الرياضيات: أعداد من رقم واحد) مع الرائز القبلي والبعدي وحساب نسب التحكم.",
+      features: [
+        "3 شبكات مستقلة ومجتمعة (عربية، فرنسية، رياضيات)",
+        "تعبئة تفاعلية بـ 30 تلميذاً وحساب آلي لنسبة التحكم %",
+        "نمط الطباعة الفارغة وتصدير Excel و PDF مقاس A4 لاندسكيب",
+      ],
+    },
+    {
+      key: "math_tracking_grids" as TabKey,
+      title: "شبكات تتبع مادة الرياضيات (جميع المستويات والمسارات)",
+      badge: "وثيقة رسمية معتمدة",
+      badgeColor: "bg-blue-100 text-blue-900 border-blue-300 font-black",
+      icon: Calculator,
+      iconBg: "bg-blue-600 text-white",
+      description:
+        "الشبكات الرسمية الأربع لتتبع تقدم تحكم المتعلمين في مادة الرياضيات: المستوى 2 (لبنة الجمع)، المستويان 3 و 4 (جمع، طرح، ضرب)، المستويان 5 و 6 (المسار 1 و 2)، والمستويان 5 و 6 (مسار التميز: كسرية، عشرية، هندسة وقياس) مع حساب آلي لنسب التصديق (+) و (-).",
+      features: [
+        "النماذج الأربعة الرسمية كاملة وفق مقاربة طارل والريادة",
+        "حساب آلي لنسبة التصديق % معتمدة سؤال العمليات والإنشاءات الهندسية",
+        "تصدير Excel لـ 4 صفحات وطباعة A4 Landscape عالية الجودة",
+      ],
+    },
+    {
+      key: "number_line" as TabKey,
+      title: "وسيلة تمثيل الأعداد والكسور على خط الأعداد",
+      badge: "أداة ديداكتيكية تفاعلية",
+      badgeColor: "bg-purple-100 text-purple-900 border-purple-300 font-black",
+      icon: Ruler,
+      iconBg: "bg-purple-600 text-white",
+      description:
+        "أداة رقمية ديداكتيكية تفاعلية لتمثيل الأعداد الصحيحة الطبيعية والنسبية، تدريج المستقيم، تمثيل الكسور الاعتيادية والعشرية، وحساب المعكوس الجمعي (-x) والقيمة المطلقة (|x|).",
+      features: [
+        "تمثيل بصري تفاعلي مع تقسيم الوحدة حتى 12 جزءاً وتغيير المدى",
+        "حساب آني للقيمة المطلقة والمعكوس وتصنيف العدد شفهياً وكتابياً",
+        "عرض بملء الشاشة مخصص للسبورات التفاعلية والفصول الرقمية",
+      ],
+    },
+    {
       key: "workshop_report" as TabKey,
-      title: "تقرير ورشات التقويم والمحطات 3P",
-      badge: "جديد الريادة",
-      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      title: "تقارير الورشات التذكيرية لدعم التعلمات الأساس (الأيام 1، 2، 3 الشاملة)",
+      badge: "النماذج الرسمية الأربعة",
+      badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300 font-black",
       icon: ClipboardList,
       iconBg: "bg-emerald-600 text-white",
       description:
-        "توثيق المحاور البيداغوجية، مسارات الرياضيات واللغة العربية، وأهداف التكوين وفق النماذج الرسمية المعتمدة لمدارس الريادة.",
+        "التقارير الرسمية المعتمدة للورشات التذكيرية لدعم التعلمات الأساس بمؤسسات الريادة: اليوم الأول (روائز الموضعة والتفييء)، اليوم الثاني (هندسة المسارات والبنية الزمنية)، اليوم الثالث (الديداكتيك والأنشطة والتقويم)، والتقرير الإجمالي الشامل.",
       features: [
-        "مطابقة لمعايير المفتش المواكب",
-        "تنسيق جداول المسارات الصريحة",
-        "توليد فوري للتقرير بصيغة A4",
+        "4 نماذج وزارية رسمية كاملة وقابلة للتعديل الشامل",
+        "تصدير عالي الدقة PDF (3 صفحات منسقة) و Word (.doc) وطباعة A4",
+        "زخارف بيداغوجية مغربية رسمية وأنماط ألوان مخصصة",
       ],
     },
     {
@@ -108,21 +186,6 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
         "6 محاور مهنية كاملة",
         "واجهات مطابقة للمعايير الوطنية",
         "توثيق الأثر والترقية المهنية",
-      ],
-    },
-    {
-      key: "timetable" as TabKey,
-      title: "استعمال الزمن وجدول الحصص الأسبوعي",
-      badge: "القانوني 30 ساعة",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-200",
-      icon: Calendar,
-      iconBg: "bg-amber-500 text-slate-950",
-      description:
-        "إعداد جدول الحصص الأسبوعي للتعليم الابتدائي بصيغة قانونية محكمة (30 ساعة) مع قوالب جاهزة لجميع المستويات من الأول إلى السادس.",
-      features: [
-        "قوالب جاهزة لكافة المستويات",
-        "توزيع الحصص الصباحية والمسائية",
-        "مساحات التوقيع والمصادقة الرسمية",
       ],
     },
     {
@@ -357,7 +420,11 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
                   onClick={() => onNavigateToTab(doc.key)}
                   className="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2 px-3 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
                 >
-                  <span>تجهيز الوثيقة</span>
+                  <span>
+                    {doc.key === "intensive_support"
+                      ? "فتح وتصفح حقيبة الدعم المكثف (1 إلى 6)"
+                      : "تجهيز الوثيقة"}
+                  </span>
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
 

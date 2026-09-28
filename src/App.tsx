@@ -7,6 +7,8 @@ import { ClassCharter } from "./components/ClassCharter";
 import { CoverGenerator } from "./components/CoverGenerator";
 import { EvaluationGrid } from "./components/EvaluationGrid";
 import { PositioningGridsEditor } from "./components/PositioningGridsEditor";
+import { Level1TrackingGrid } from "./components/Level1TrackingGrid";
+import { MathTrackingGridsHub } from "./components/MathTrackingGridsHub";
 import { HolidaysCalendar } from "./components/HolidaysCalendar";
 import { CertificatesGenerator } from "./components/CertificatesGenerator";
 import { AiPedagogyAssistant } from "./components/AiPedagogyAssistant";
@@ -22,6 +24,8 @@ import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { MindMapsHub } from "./components/MindMapsHub";
 import { TarlFrenchMindMap } from "./components/TarlFrenchMindMap";
+import { NumberLineTool } from "./components/NumberLineTool";
+import { IntensiveSupportHub } from "./components/IntensiveSupportHub";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
 import { OrientationPage } from "./components/OrientationPage";
@@ -79,6 +83,7 @@ export default function App() {
           "orientation_planning",
           "explicit_teaching",
           "pedagogical_docs",
+          "intensive_support",
           "daily_log",
           "workshop_report",
           "portfolio",
@@ -88,6 +93,9 @@ export default function App() {
           "covers",
           "grids",
           "positioning_grids",
+          "level1_tracking_grid",
+          "math_tracking_grids",
+          "number_line",
           "holidays",
           "certificates",
           "remarks",
@@ -418,6 +426,20 @@ export default function App() {
             <PositioningGridsEditor teacherProfile={profile} />
           )}
 
+          {activeTab === "level1_tracking_grid" && (
+            <Level1TrackingGrid
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === "math_tracking_grids" && (
+            <MathTrackingGridsHub
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
           {activeTab === "holidays" && (
             <HolidaysCalendar teacherProfile={profile} />
           )}
@@ -433,7 +455,7 @@ export default function App() {
           {activeTab === "mindmaps" && (
             <MindMapsHub
               teacherProfile={profile}
-              initialCategory="french_level1"
+              initialCategory="remediation_intensive"
               onNavigateToTab={setActiveTab}
             />
           )}
@@ -443,6 +465,18 @@ export default function App() {
               teacherProfile={profile}
               initialCategory="tarl_french"
               onNavigateToTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === "number_line" && (
+            <NumberLineTool />
+          )}
+
+          {activeTab === "intensive_support" && (
+            <IntensiveSupportHub
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+              onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
             />
           )}
 

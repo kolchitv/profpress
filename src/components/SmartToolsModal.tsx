@@ -26,8 +26,10 @@ import {
   ChevronRight,
   School,
   AlertCircle,
+  Ruler,
 } from "lucide-react";
 import { TabKey } from "../types";
+import { NumberLineTool } from "./NumberLineTool";
 
 export interface SmartToolItem {
   id: string;
@@ -1706,13 +1708,39 @@ export const SmartToolsModal: React.FC<SmartToolsModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* ========================================================= */}
+          {/* TOOL 16: NUMBER LINE (وسيلة تمثيل الأعداد على خط الأعداد) */}
+          {/* ========================================================= */}
+          {toolId === "number_line" && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-xs">
+                <span className="font-bold text-purple-900">
+                  وسيلة تعليمية تفاعلية لتمثيل الأعداد الصحيحة والكسور والمعكوس الجمعي والقيمة المطلقة على خط الأعداد.
+                </span>
+                {onNavigateToTab && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onNavigateToTab("number_line");
+                    }}
+                    className="bg-purple-700 hover:bg-purple-600 text-white font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer shrink-0 shadow-2xs"
+                  >
+                    عرض كصفحة مستقلة ↗
+                  </button>
+                )}
+              </div>
+              <NumberLineTool isModalMode={true} onCloseModal={onClose} />
+            </div>
+          )}
         </div>
 
-        {/* Footer with Quick Switcher between 15 Tools */}
+        {/* Footer with Quick Switcher between Tools */}
         <div className="p-3 bg-slate-50 border-t border-slate-200 shrink-0 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <span className="text-[11px] font-bold text-slate-600">
-              التنقل المباشر بين أدوات الموقع الذكية (15 أداة):
+              التنقل المباشر بين أدوات الموقع التربوية والذكية:
             </span>
             <button
               type="button"

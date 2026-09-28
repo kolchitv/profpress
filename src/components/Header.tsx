@@ -31,6 +31,8 @@ import {
   ShieldCheck,
   BookOpen,
   School,
+  Ruler,
+  Layers,
 } from "lucide-react";
 import { TabKey, AdminSession } from "../types";
 
@@ -76,12 +78,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Pedagogical documents list consolidated under "وثائق تربوية"
   const pedagogicalDocs = [
-    { key: "mindmaps" as TabKey, label: "خطاطات ذهنية (فترة الدعم + TaRL)", icon: Sparkles, badge: "جديد 72 حصة" },
+    { key: "intensive_support" as TabKey, label: "حصص الدعم المكثف (جميع المستويات)", icon: Layers, badge: "جديد 1-6" },
+    { key: "mindmaps" as TabKey, label: "خطاطات ذهنية وعروض الدعم (جميع المواد 1-6)", icon: Sparkles, badge: "جديد 432 حصة" },
+    { key: "number_line" as TabKey, label: "خط الأعداد والكسور", icon: Ruler, badge: "أداة تفاعلية" },
     { key: "daily_log" as TabKey, label: "المذكرة اليومية (الدعم المكثف)", icon: BookOpen, badge: "10 صفحات" },
     { key: "positioning_grids" as TabKey, label: "روائز الموضعة TaRL", icon: FileSpreadsheet, badge: "شتنبر 2026" },
     { key: "workshop_report" as TabKey, label: "تقرير الورشات", icon: ClipboardList, badge: "جديد 3P" },
     { key: "portfolio" as TabKey, label: "الملف التراكمي", icon: FolderKanban, badge: "الريادة" },
-    { key: "timetable" as TabKey, label: "استعمال الزمن", icon: Calendar },
+    { key: "timetable" as TabKey, label: "استعمال الزمن (TaRL والدعم المكثف)", icon: Calendar, badge: "7 نماذج" },
     { key: "card" as TabKey, label: "البطاقة الشخصية", icon: UserCheck },
     { key: "charter" as TabKey, label: "ميثاق القسم", icon: Scroll },
     { key: "covers" as TabKey, label: "واجهات الملفات", icon: FileText },
@@ -272,136 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span>مقالات</span>
           </button>
 
-          {/* 4. مباراة التعليم */}
-          <button
-            key="competitions"
-            id="nav-tab-competitions"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("competitions");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "competitions"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <GraduationCap className={`w-4 h-4 ${activeTab === "competitions" ? "text-amber-300" : "text-blue-600"}`} />
-            <span>مباراة التعليم</span>
-          </button>
-
-          {/* 4.1 مباراة التفتيش */}
-          <button
-            key="inspection_competition"
-            id="nav-tab-inspection-competition"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("inspection_competition");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "inspection_competition"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <UserCheck className={`w-4 h-4 ${activeTab === "inspection_competition" ? "text-amber-300" : "text-emerald-600"}`} />
-            <span>مباراة التفتيش</span>
-            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full font-bold">
-              CFIE
-            </span>
-          </button>
-
-          {/* 4.2 مباراة التوجيه والتخطيط */}
-          <button
-            key="orientation_planning"
-            id="nav-tab-orientation-planning"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("orientation_planning");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "orientation_planning"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <Compass className={`w-4 h-4 ${activeTab === "orientation_planning" ? "text-amber-300" : "text-indigo-600"}`} />
-            <span>التوجيه والتخطيط</span>
-            <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full font-bold">
-              COPE
-            </span>
-          </button>
-
-          {/* 4.3 امتحانات مهنية */}
-          <button
-            key="professional_exams"
-            id="nav-tab-professional-exams"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("professional_exams");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "professional_exams"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <Award className={`w-4 h-4 ${activeTab === "professional_exams" ? "text-amber-300" : "text-amber-600"}`} />
-            <span>امتحانات مهنية</span>
-            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
-              جميع الأسلاك
-            </span>
-          </button>
-
-          {/* 4.4 فضاء التعليم الابتدائي */}
-          <button
-            key="primaire"
-            id="nav-tab-primaire"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("primaire");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "primaire" ||
-              activeTab === "primary_1" ||
-              activeTab === "primary_2" ||
-              activeTab === "primary_3" ||
-              activeTab === "primary_4" ||
-              activeTab === "primary_5" ||
-              activeTab === "primary_6"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <School className={`w-4 h-4 ${activeTab === "primaire" ? "text-amber-300" : "text-blue-600"}`} />
-            <span>التعليم الابتدائي</span>
-            <span className="text-[10px] bg-blue-100 text-blue-900 px-1.5 py-0.2 rounded-full font-bold">
-              1AEP-6AEP
-            </span>
-          </button>
-
-          {/* 4.4 دروس التعليم الصريح */}
-          <button
-            key="explicit_teaching"
-            id="nav-tab-explicit-teaching"
-            onClick={() => {
-              setIsDocsDropdownOpen(false);
-              onSelectTab("explicit_teaching");
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
-              activeTab === "explicit_teaching"
-                ? "bg-blue-700 text-white shadow-xs"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <Presentation className={`w-4 h-4 ${activeTab === "explicit_teaching" ? "text-amber-300" : "text-amber-600"}`} />
-            <span>التعليم الصريح</span>
-            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
-              الريادة
-            </span>
-          </button>
-
-          {/* 5. وثائق تربوية (تجميع جميع الوثائق) */}
+          {/* 4. وثائق تربوية والدعم المكثف (تجميع جميع الوثائق) - بعد قسم مقالات مباشرة */}
           <div className="relative shrink-0" ref={dropdownRef}>
             <div className="flex items-center">
               <button
@@ -420,10 +295,10 @@ export const Header: React.FC<HeaderProps> = ({
                     ? "bg-blue-700 text-white shadow-xs"
                     : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 border-l border-slate-200"
                 }`}
-                title="تجميع كافة الوثائق التربوية للأستاذ"
+                title="تجميع كافة الوثائق التربوية للأستاذ والدعم المكثف"
               >
                 <Files className={`w-4 h-4 ${isPedagogicalDocActive ? "text-amber-300" : "text-emerald-600"}`} />
-                <span>وثائق تربوية</span>
+                <span>الوثائق التربوية</span>
                 {activeDocItem && activeTab !== "pedagogical_docs" ? (
                   <span className="hidden sm:inline-block text-[11px] bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md font-black mr-1">
                     {activeDocItem.label}
@@ -434,7 +309,7 @@ export const Header: React.FC<HeaderProps> = ({
                       isPedagogicalDocActive ? "bg-amber-400 text-slate-950" : "bg-emerald-100 text-emerald-800"
                     }`}
                   >
-                    11 وثيقة
+                    16 وثيقة
                   </span>
                 )}
               </button>
@@ -455,7 +330,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Dropdown Menu listing all 11 consolidated documents */}
+            {/* Dropdown Menu listing all consolidated documents */}
             {isDocsDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 py-2 divide-y divide-slate-100 animate-fadeIn text-right">
                 <div className="px-3 py-2 bg-blue-50/70 rounded-t-xl flex items-center justify-between">
@@ -518,6 +393,135 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+
+          {/* 5. دروس التعليم الصريح - بعد الوثائق التربوية ومقالات */}
+          <button
+            key="explicit_teaching"
+            id="nav-tab-explicit-teaching"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("explicit_teaching");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "explicit_teaching"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Presentation className={`w-4 h-4 ${activeTab === "explicit_teaching" ? "text-amber-300" : "text-amber-600"}`} />
+            <span>التعليم الصريح</span>
+            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
+              الريادة
+            </span>
+          </button>
+
+          {/* 6. فضاء التعليم الابتدائي */}
+          <button
+            key="primaire"
+            id="nav-tab-primaire"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("primaire");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "primaire" ||
+              activeTab === "primary_1" ||
+              activeTab === "primary_2" ||
+              activeTab === "primary_3" ||
+              activeTab === "primary_4" ||
+              activeTab === "primary_5" ||
+              activeTab === "primary_6"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <School className={`w-4 h-4 ${activeTab === "primaire" ? "text-amber-300" : "text-blue-600"}`} />
+            <span>التعليم الابتدائي</span>
+            <span className="text-[10px] bg-blue-100 text-blue-900 px-1.5 py-0.2 rounded-full font-bold">
+              1AEP-6AEP
+            </span>
+          </button>
+
+          {/* 7. مباراة التعليم */}
+          <button
+            key="competitions"
+            id="nav-tab-competitions"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("competitions");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "competitions"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <GraduationCap className={`w-4 h-4 ${activeTab === "competitions" ? "text-amber-300" : "text-blue-600"}`} />
+            <span>مباراة التعليم</span>
+          </button>
+
+          {/* 8. مباراة التفتيش */}
+          <button
+            key="inspection_competition"
+            id="nav-tab-inspection-competition"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("inspection_competition");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "inspection_competition"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <UserCheck className={`w-4 h-4 ${activeTab === "inspection_competition" ? "text-amber-300" : "text-emerald-600"}`} />
+            <span>مباراة التفتيش</span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full font-bold">
+              CFIE
+            </span>
+          </button>
+
+          {/* 9. مباراة التوجيه والتخطيط */}
+          <button
+            key="orientation_planning"
+            id="nav-tab-orientation-planning"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("orientation_planning");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "orientation_planning"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Compass className={`w-4 h-4 ${activeTab === "orientation_planning" ? "text-amber-300" : "text-indigo-600"}`} />
+            <span>التوجيه والتخطيط</span>
+            <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full font-bold">
+              COPE
+            </span>
+          </button>
+
+          {/* 10. امتحانات مهنية */}
+          <button
+            key="professional_exams"
+            id="nav-tab-professional-exams"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("professional_exams");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "professional_exams"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Award className={`w-4 h-4 ${activeTab === "professional_exams" ? "text-amber-300" : "text-amber-600"}`} />
+            <span>امتحانات مهنية</span>
+            <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
+              جميع الأسلاك
+            </span>
+          </button>
 
           {/* 6. صفحة الاتصال والملاحظات */}
           <button

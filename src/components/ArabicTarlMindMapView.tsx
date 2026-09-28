@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Printer,
   Sparkles,
@@ -49,6 +49,13 @@ export const ArabicTarlMindMapView: React.FC<ArabicTarlMindMapViewProps> = ({
     const idx = ARABIC_TARL_MINDMAPS.findIndex((s) => s.id === initialSessionId);
     return idx >= 0 ? idx : 0;
   });
+
+  useEffect(() => {
+    if (initialSessionId) {
+      const idx = sessions.findIndex((s) => s.id === initialSessionId);
+      if (idx >= 0) setSelectedIdx(idx);
+    }
+  }, [initialSessionId, sessions]);
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
