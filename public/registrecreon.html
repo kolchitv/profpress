@@ -154,14 +154,16 @@
                     <tr id="headerRow1">
                         <th rowspan="2" class="student-name-col w-12 text-center">الرقم</th>
                         <th rowspan="2" class="student-name-col border-l-2 border-gray-300">اسم التلميذ(ة)</th>
+                        <th rowspan="2" class="bg-gray-50 border-l-2 border-gray-300 min-w-[110px]">تاريخ الازدياد</th>
+                        <th rowspan="2" class="bg-gray-50 border-l-2 border-gray-300 min-w-[80px]">القسم</th>
                         <!-- Weeks headers will be injected here -->
-                        <th colspan="4" class="bg-gray-100 border-r-2 border-gray-300">المجموع الشهري (Total)</th>
+                        <th id="totalsHeader" colspan="4" class="bg-gray-100 border-r-2 border-gray-300">المجموع الشهري (Total)</th>
                         <th rowspan="2" class="w-16">إجراء</th>
                     </tr>
                     <!-- Second Header Row: Days of Week and Totals Sub-headers -->
                     <tr id="headerRow2">
                         <!-- Days headers will be injected here -->
-                        <th class="border-r-2 border-gray-300 w-12 text-gray-700 bg-gray-50" title="Total Présences">P</th>
+                        <th id="totalsSubHeaderP" class="border-r-2 border-gray-300 w-12 text-gray-700 bg-gray-50" title="Total Présences">P</th>
                         <th class="w-12 text-red-700 bg-red-50" title="Absences Matin">|</th>
                         <th class="w-12 text-orange-700 bg-orange-50" title="Absences Après-midi">-</th>
                         <th class="w-12 text-red-900 bg-red-100" title="Absences Journée">+</th>
@@ -267,6 +269,14 @@
                     <option value="F">أنثى (Fille)</option>
                 </select>
             </div>
+            <div class="mb-4">
+                <label for="studentDobInput" class="block text-gray-700 text-sm font-bold mb-2">تاريخ الازدياد:</label>
+                <input type="date" id="studentDobInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500">
+            </div>
+            <div class="mb-6">
+                <label for="studentClassInput" class="block text-gray-700 text-sm font-bold mb-2">القسم:</label>
+                <input type="text" id="studentClassInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500" placeholder="مثال: الأول ابتدائي">
+            </div>
             <div class="flex justify-end gap-2">
                 <button id="cancelAddBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition font-bold">إلغاء</button>
                 <button id="confirmAddBtn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded transition font-bold">إضافة التلميذ</button>
@@ -281,9 +291,9 @@
         month: parseInt(document.getElementById('monthSelect').value),
         year: parseInt(document.getElementById('yearSelect').value),
         students: [
-            { id: 1, name: 'أحمد محمد', gender: 'M' },
-            { id: 2, name: 'فاطمة الزهراء', gender: 'F' },
-            { id: 3, name: 'يوسف بن علي', gender: 'M' },
+            { id: 1, name: 'أحمد محمد', gender: 'M', dob: '2016-05-12', classroom: 'الخامس أ' },
+            { id: 2, name: 'فاطمة الزهراء', gender: 'F', dob: '2017-02-20', classroom: 'الرابع ب' },
+            { id: 3, name: 'يوسف بن علي', gender: 'M', dob: '2016-11-05', classroom: 'الخامس أ' },
         ],
         attendance: {}, // Format: { studentId_YYYY_MM_DD: 'status' }
         // The 4 specific days of study (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
@@ -314,6 +324,8 @@
     const confirmAddBtn = document.getElementById('confirmAddBtn');
     const studentNameInput = document.getElementById('studentNameInput');
     const studentGenderInput = document.getElementById('studentGenderInput');
+    const studentDobInput = document.getElementById('studentDobInput');
+    const studentClassInput = document.getElementById('studentClassInput');
 
     let genderChartInstance = null; // To hold the Chart.js instance
 
@@ -361,34 +373,28 @@
             weeks[d.weekNum].push(d);
         });
 
-        // Clear existing dynamic headers (keep first 2 cols and last 5 cols)
-        while (headerRow1.children.length > 3) {
-            headerRow1.insertBefore(headerRow1.children[2], headerRow1.children[headerRow1.children.length-2]);
-            headerRow1.removeChild(headerRow1.children[2]);
-        }
-        while (headerRow2.children.length > 4) { // Keep 4 total cols
-            headerRow2.removeChild(headerRow2.firstChild);
-        }
+        // Clear existing dynamic headers safely using classes
+        document.querySelectorAll('.dynamic-header-1').forEach(e => e.remove());
+        document.querySelectorAll('.dynamic-header-2').forEach(e => e.remove());
+
+        const totalsHeader = document.getElementById('totalsHeader');
+        const totalsSubHeaderP = document.getElementById('totalsSubHeaderP');
 
         // Generate Headers
-        let insertIndex1 = 2; // After ID and Name
-        let insertIndex2 = 0; // Start of row 2
-
         Object.keys(weeks).forEach(weekNum => {
             const daysInWeek = weeks[weekNum];
             
             // Top Header (Week)
             const thWeek = document.createElement('th');
             thWeek.colSpan = daysInWeek.length;
-            thWeek.className = 'bg-gray-50 border-gray-300 py-2';
+            thWeek.className = 'dynamic-header-1 bg-gray-50 border-gray-300 py-2';
             thWeek.textContent = `الأسبوع ${weekNum}`;
-            headerRow1.insertBefore(thWeek, headerRow1.children[insertIndex1]);
-            insertIndex1++;
+            headerRow1.insertBefore(thWeek, totalsHeader);
 
             // Bottom Header (Days) - Removed day name
             daysInWeek.forEach(day => {
                 const thDay = document.createElement('th');
-                thDay.className = 'w-12 text-sm font-bold bg-white p-2 text-gray-800';
+                thDay.className = 'dynamic-header-2 w-12 text-sm font-bold bg-white p-2 text-gray-800';
                 thDay.textContent = day.day;
                 
                 // Add right border to the last day of the week to visually separate weeks
@@ -396,8 +402,7 @@
                     thDay.classList.add('border-l-2', 'border-gray-300'); // Left border in RTL is visually right
                 }
 
-                headerRow2.insertBefore(thDay, headerRow2.children[insertIndex2]);
-                insertIndex2++;
+                headerRow2.insertBefore(thDay, totalsSubHeaderP);
             });
         });
     }
@@ -421,6 +426,18 @@
             tdName.className = 'student-name-col bg-white font-bold border-l-2 border-gray-300 text-right pr-4';
             tdName.textContent = student.name;
             tr.appendChild(tdName);
+
+            // DOB Cell
+            const tdDob = document.createElement('td');
+            tdDob.className = 'bg-white text-center border-l-2 border-gray-300 text-xs text-gray-600';
+            tdDob.textContent = student.dob || '-';
+            tr.appendChild(tdDob);
+
+            // Classroom Cell
+            const tdClass = document.createElement('td');
+            tdClass.className = 'bg-white text-center border-l-2 border-gray-300 text-xs text-gray-700 font-semibold';
+            tdClass.textContent = student.classroom || '-';
+            tr.appendChild(tdClass);
 
             // Stats counters for this student this month
             let stats = { present: 0, 'absent-morning': 0, 'absent-afternoon': 0, 'absent-full': 0 };
@@ -658,6 +675,8 @@
     // Add Student
     function openModal() {
         studentNameInput.value = '';
+        studentDobInput.value = '';
+        studentClassInput.value = '';
         addStudentModal.classList.remove('hidden');
         studentNameInput.focus();
     }
@@ -669,10 +688,18 @@
     function addStudent() {
         const name = studentNameInput.value.trim();
         const gender = studentGenderInput.value;
+        const dob = studentDobInput.value;
+        const classroom = studentClassInput.value.trim();
         
         if (name) {
             const newId = state.students.length > 0 ? Math.max(...state.students.map(s => s.id)) + 1 : 1;
-            state.students.push({ id: newId, name: name, gender: gender });
+            state.students.push({ 
+                id: newId, 
+                name: name, 
+                gender: gender,
+                dob: dob,
+                classroom: classroom 
+            });
             updateView();
             closeModal();
         } else {
