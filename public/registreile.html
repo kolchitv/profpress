@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل حضور التلاميذ (4 أيام/الأسبوع)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f3f4f6; }
+        .table-container { overflow-x: auto; }
+        table { border-collapse: separate; border-spacing: 0; min-width: 1000px; }
+        th, td { border: 1px solid #e5e7eb; padding: 0.5rem; text-align: center; vertical-align: middle; }
+        th { background-color: #f9fafb; font-weight: 600; color: #374151; position: sticky; top: 0; z-index: 10; }
+        .student-name-col { position: sticky; right: 0; background-color: white; z-index: 20; text-align: right; min-width: 150px; }
+        th.student-name-col { z-index: 30; background-color: #f9fafb; }
+        
+        /* Status Colors */
+        .status-present { background-color: #dcfce7; color: #166534; }
+        .status-absent { background-color: #fee2e2; color: #991b1b; }
+        .status-late { background-color: #fef9c3; color: #854d0e; }
+        .status-excused { background-color: #e0e7ff; color: #3730a3; }
+        
+        /* Tooltip */
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Status Toggle Button */
+        .status-btn {
+            width: 100%;
+            height: 100%;
+            min-height: 2rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+        .status-btn:hover { border-color: #9ca3af; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    
+    <!-- Header -->
+    <header class="bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="bg-brand-100 text-brand-600 p-3 rounded-full">
+                <i class="fa-solid fa-book-open text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">سجل الحضور والغياب</h1>
+                <p class="text-sm text-gray-500">نظام 4 أيام دراسية في الأسبوع</p>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded border border-gray-200">
+                <label for="monthSelect" class="font-semibold text-gray-700 whitespace-nowrap">الشهر:</label>
+                <select id="monthSelect" class="bg-transparent border-none focus:ring-0 text-gray-900 font-bold cursor-pointer outline-none">
+                    <option value="9">سبتمبر</option>
+                    <option value="10">أكتوبر</option>
+                    <option value="11">نوفمبر</option>
+                    <option value="12">ديسمبر</option>
+                    <option value="1">يناير</option>
+                    <option value="2">فبراير</option>
+                    <option value="3">مارس</option>
+                    <option value="4">أبريل</option>
+                    <option value="5">مايو</option>
+                    <option value="6">يونيو</option>
+                    <option value="7">يوليو</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded border border-gray-200">
+                <label for="yearSelect" class="font-semibold text-gray-700 whitespace-nowrap">السنة:</label>
+                <input type="number" id="yearSelect" class="w-20 bg-transparent border-none focus:ring-0 text-gray-900 font-bold outline-none text-left" value="2026">
+            </div>
+            <button id="addStudentBtn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                إضافة تلميذ
+            </button>
+            <button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition shadow-sm flex items-center gap-2 tooltip relative">
+                <i class="fa-solid fa-download"></i>
+                <span class="tooltip-text">طباعة أو حفظ كـ PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Legend -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-wrap gap-6 text-sm border border-gray-100 justify-center">
+        <div class="flex items-center gap-2"><span class="w-6 h-6 rounded status-present inline-block flex items-center justify-center font-bold border border-green-200"></span> <span class="text-gray-600">حاضر (Présent)</span></div>
+        <div class="flex items-center gap-2"><span class="w-6 h-6 rounded status-absent-morning inline-block flex items-center justify-center font-bold border border-red-200 text-red-700">|</span> <span class="text-gray-600">غياب صباح (Matin)</span></div>
+        <div class="flex items-center gap-2"><span class="w-6 h-6 rounded status-absent-afternoon inline-block flex items-center justify-center font-bold border border-orange-200 text-orange-700">-</span> <span class="text-gray-600">غياب مساء (Après-midi)</span></div>
+        <div class="flex items-center gap-2"><span class="w-6 h-6 rounded status-absent-full inline-block flex items-center justify-center font-bold border border-red-400 text-red-900">+</span> <span class="text-gray-600">غياب يوم (Journée)</span></div>
+        <div class="text-gray-400 text-xs flex items-center ml-auto">
+            <i class="fa-solid fa-circle-info ml-1"></i>
+            انقر على الخانة لتغيير الحالة
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+        <div class="table-container p-4">
+            <table id="attendanceTable" class="w-full text-sm text-gray-700">
+                <thead>
+                    <!-- First Header Row: Months and Totals -->
+                    <tr id="headerRow1">
+                        <th rowspan="2" class="student-name-col w-12 text-center">الرقم</th>
+                        <th rowspan="2" class="student-name-col border-l-2 border-gray-300">اسم التلميذ(ة)</th>
+                        <th rowspan="2" class="bg-gray-50 border-l-2 border-gray-300 min-w-[110px]">تاريخ الازدياد</th>
+                        <th rowspan="2" class="bg-gray-50 border-l-2 border-gray-300 min-w-[80px]">القسم</th>
+                        <!-- Weeks headers will be injected here -->
+                        <th id="totalsHeader" colspan="4" class="bg-gray-100 border-r-2 border-gray-300">المجموع الشهري (Total)</th>
+                        <th rowspan="2" class="w-16">إجراء</th>
+                    </tr>
+                    <!-- Second Header Row: Days of Week and Totals Sub-headers -->
+                    <tr id="headerRow2">
+                        <!-- Days headers will be injected here -->
+                        <th id="totalsSubHeaderP" class="border-r-2 border-gray-300 w-12 text-gray-700 bg-gray-50" title="Total Présences">P</th>
+                        <th class="w-12 text-red-700 bg-red-50" title="Absences Matin">|</th>
+                        <th class="w-12 text-orange-700 bg-orange-50" title="Absences Après-midi">-</th>
+                        <th class="w-12 text-red-900 bg-red-100" title="Absences Journée">+</th>
+                    </tr>
+                </thead>
+                <tbody id="studentList">
+                    <!-- Student rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Statistics Section -->
+    <div class="mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-10">
+        <div class="bg-gray-800 text-white p-4 flex items-center gap-3">
+            <i class="fa-solid fa-chart-line text-xl"></i>
+            <h2 class="text-xl font-bold">إحصائيات الشهر (Indiquer pour le mois)</h2>
+        </div>
+        
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Side: Registry Stats (Cards) -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Stat Card 1 -->
+                <div class="bg-blue-50 rounded-lg p-5 border border-blue-100 flex flex-col justify-center shadow-sm transition hover:shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-blue-800 text-sm font-bold uppercase tracking-wider">Nombre d'élèves inscrits</span>
+                        <i class="fa-solid fa-users text-blue-300 text-2xl"></i>
+                    </div>
+                    <span class="text-gray-500 text-xs mb-2 font-semibold">مجموع التلاميذ المسجلين</span>
+                    <span id="statInscrits" class="text-4xl font-black text-blue-600">0</span>
+                </div>
+                
+                <!-- Stat Card 2 -->
+                <div class="bg-indigo-50 rounded-lg p-5 border border-indigo-100 flex flex-col justify-center shadow-sm transition hover:shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-indigo-800 text-sm font-bold uppercase tracking-wider">Nombre maximal de présences</span>
+                        <i class="fa-solid fa-calendar-check text-indigo-300 text-2xl"></i>
+                    </div>
+                    <span class="text-gray-500 text-xs mb-2 font-semibold">الحضور الأقصى الممكن (أنصاف أيام)</span>
+                    <span id="statMaxPresences" class="text-4xl font-black text-indigo-600">0</span>
+                </div>
+
+                <!-- Stat Card 3 -->
+                <div class="bg-red-50 rounded-lg p-5 border border-red-100 flex flex-col justify-center shadow-sm transition hover:shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-red-800 text-sm font-bold uppercase tracking-wider">Nombre d'absences constatées</span>
+                        <i class="fa-solid fa-user-xmark text-red-300 text-2xl"></i>
+                    </div>
+                    <span class="text-gray-500 text-xs mb-2 font-semibold">الغيابات المسجلة (أنصاف أيام)</span>
+                    <span id="statAbsences" class="text-4xl font-black text-red-600">0</span>
+                </div>
+
+                <!-- Stat Cards 4 & 5 (Percentages) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-100 flex flex-col justify-center items-center text-center shadow-sm transition hover:shadow-md">
+                        <span class="text-green-800 text-xs font-bold mb-1 uppercase">Pourcentage présence</span>
+                        <span id="statPourcentagePresence" class="text-2xl font-black text-green-600">0%</span>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4 border border-orange-100 flex flex-col justify-center items-center text-center shadow-sm transition hover:shadow-md">
+                        <span class="text-orange-800 text-xs font-bold mb-1 uppercase">Pourcentage d'absence</span>
+                        <span id="statPourcentageAbsence" class="text-2xl font-black text-orange-600">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Gender Chart -->
+            <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 flex flex-col items-center shadow-sm">
+                <h3 class="font-bold text-gray-800 text-lg mb-1 border-b-2 border-brand-500 pb-2 w-full text-center">توزيع الذكور والإناث</h3>
+                
+                <div class="flex justify-between w-full text-sm font-bold mt-4 px-2 bg-white rounded p-2 border border-gray-100 shadow-sm">
+                    <div class="text-blue-600 flex flex-col items-center w-1/2 border-l border-gray-200">
+                        <i class="fa-solid fa-person text-2xl mb-1"></i>
+                        <span>ذكور: <span id="statMales" class="text-lg">0</span></span>
+                    </div>
+                    <div class="text-pink-600 flex flex-col items-center w-1/2">
+                        <i class="fa-solid fa-person-dress text-2xl mb-1"></i>
+                        <span>إناث: <span id="statFemales" class="text-lg">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="w-full h-48 mt-6 relative flex justify-center">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform transition-all">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-brand-600"></i>
+                إضافة تلميذ جديد
+            </h2>
+            <div class="mb-4">
+                <label for="studentNameInput" class="block text-gray-700 text-sm font-bold mb-2">الاسم الكامل:</label>
+                <input type="text" id="studentNameInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500" placeholder="مثال: أحمد محمد">
+            </div>
+            <div class="mb-6">
+                <label for="studentGenderInput" class="block text-gray-700 text-sm font-bold mb-2">الجنس:</label>
+                <select id="studentGenderInput" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500 cursor-pointer bg-white">
+                    <option value="M">ذكر (Garçon)</option>
+                    <option value="F">أنثى (Fille)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="studentDobInput" class="block text-gray-700 text-sm font-bold mb-2">تاريخ الازدياد:</label>
+                <input type="date" id="studentDobInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500">
+            </div>
+            <div class="mb-6">
+                <label for="studentClassInput" class="block text-gray-700 text-sm font-bold mb-2">القسم:</label>
+                <input type="text" id="studentClassInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500" placeholder="مثال: الأول ابتدائي">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button id="cancelAddBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition font-bold">إلغاء</button>
+                <button id="confirmAddBtn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded transition font-bold">إضافة التلميذ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State management
+    const state = {
+        month: parseInt(document.getElementById('monthSelect').value),
+        year: parseInt(document.getElementById('yearSelect').value),
+        students: [
+            { id: 1, name: 'أحمد محمد', gender: 'M', dob: '2016-05-12', classroom: 'الخامس أ' },
+            { id: 2, name: 'فاطمة الزهراء', gender: 'F', dob: '2017-02-20', classroom: 'الرابع ب' },
+            { id: 3, name: 'يوسف بن علي', gender: 'M', dob: '2016-11-05', classroom: 'الخامس أ' },
+        ],
+        attendance: {}, // Format: { studentId_YYYY_MM_DD: 'status' }
+        // The 4 specific days of study (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
+        // Defaulting to typical French system adapted (e.g., Lundi, Mardi, Jeudi, Vendredi)
+        // Let's assume Mon(1), Tue(2), Thu(4), Fri(5) for a typical 4-day week
+        studyDaysOfWeek: [1, 2, 4, 5]
+    };
+
+    const statusTypes = ['none', 'absent-morning', 'absent-afternoon', 'absent-full'];
+    const statusConfig = {
+        'none': { label: '', class: 'bg-transparent text-transparent hover:bg-gray-100' },
+        'absent-morning': { label: '|', class: 'bg-red-50 text-red-700 border border-red-200 font-bold' },
+        'absent-afternoon': { label: '-', class: 'bg-orange-50 text-orange-700 border border-orange-200 font-bold' },
+        'absent-full': { label: '+', class: 'bg-red-100 text-red-900 border border-red-400 font-bold' }
+    };
+
+    // DOM Elements
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    const headerRow1 = document.getElementById('headerRow1');
+    const headerRow2 = document.getElementById('headerRow2');
+    const studentList = document.getElementById('studentList');
+    
+    // Modal Elements
+    const addStudentModal = document.getElementById('addStudentModal');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const cancelAddBtn = document.getElementById('cancelAddBtn');
+    const confirmAddBtn = document.getElementById('confirmAddBtn');
+    const studentNameInput = document.getElementById('studentNameInput');
+    const studentGenderInput = document.getElementById('studentGenderInput');
+    const studentDobInput = document.getElementById('studentDobInput');
+    const studentClassInput = document.getElementById('studentClassInput');
+
+    let genderChartInstance = null; // To hold the Chart.js instance
+
+    // Helper to get days in month
+    function getDaysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    // Helper to get valid study days for the current month/year
+    function getStudyDaysForMonth() {
+        const daysInMonth = getDaysInMonth(state.month, state.year);
+        const studyDays = [];
+        let currentWeek = 1;
+        let prevDayOfWeek = -1;
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(state.year, state.month - 1, day);
+            const dayOfWeek = date.getDay();
+
+            if (state.studyDaysOfWeek.includes(dayOfWeek)) {
+                // Determine week number grouping
+                if (prevDayOfWeek > -1 && dayOfWeek < prevDayOfWeek) {
+                    currentWeek++;
+                }
+                
+                studyDays.push({
+                    date: date,
+                    day: day,
+                    dayOfWeek: dayOfWeek,
+                    weekNum: currentWeek,
+                    dateString: `${state.year}_${state.month}_${day}`
+                });
+                prevDayOfWeek = dayOfWeek;
+            }
+        }
+        return studyDays;
+    }
+
+    // Render Table Headers based on study days
+    function renderHeaders(studyDays) {
+        // Group days by week
+        const weeks = {};
+        studyDays.forEach(d => {
+            if (!weeks[d.weekNum]) weeks[d.weekNum] = [];
+            weeks[d.weekNum].push(d);
+        });
+
+        // Clear existing dynamic headers safely using classes
+        document.querySelectorAll('.dynamic-header-1').forEach(e => e.remove());
+        document.querySelectorAll('.dynamic-header-2').forEach(e => e.remove());
+
+        const totalsHeader = document.getElementById('totalsHeader');
+        const totalsSubHeaderP = document.getElementById('totalsSubHeaderP');
+
+        // Generate Headers
+        Object.keys(weeks).forEach(weekNum => {
+            const daysInWeek = weeks[weekNum];
+            
+            // Top Header (Week)
+            const thWeek = document.createElement('th');
+            thWeek.colSpan = daysInWeek.length;
+            thWeek.className = 'dynamic-header-1 bg-gray-50 border-gray-300 py-2';
+            thWeek.textContent = `الأسبوع ${weekNum}`;
+            headerRow1.insertBefore(thWeek, totalsHeader);
+
+            // Bottom Header (Days) - Removed day name
+            daysInWeek.forEach(day => {
+                const thDay = document.createElement('th');
+                thDay.className = 'dynamic-header-2 w-12 text-sm font-bold bg-white p-2 text-gray-800';
+                thDay.textContent = day.day;
+                
+                // Add right border to the last day of the week to visually separate weeks
+                if (day === daysInWeek[daysInWeek.length - 1]) {
+                    thDay.classList.add('border-l-2', 'border-gray-300'); // Left border in RTL is visually right
+                }
+
+                headerRow2.insertBefore(thDay, totalsSubHeaderP);
+            });
+        });
+    }
+
+    // Render Students List and their attendance cells
+    function renderStudents(studyDays) {
+        studentList.innerHTML = '';
+        
+        state.students.forEach((student, index) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 transition-colors';
+            
+            // ID Cell
+            const tdId = document.createElement('td');
+            tdId.className = 'student-name-col bg-white text-gray-500 text-xs font-mono';
+            tdId.textContent = index + 1;
+            tr.appendChild(tdId);
+
+            // Name Cell
+            const tdName = document.createElement('td');
+            tdName.className = 'student-name-col bg-white font-bold border-l-2 border-gray-300 text-right pr-4';
+            tdName.textContent = student.name;
+            tr.appendChild(tdName);
+
+            // DOB Cell
+            const tdDob = document.createElement('td');
+            tdDob.className = 'bg-white text-center border-l-2 border-gray-300 text-xs text-gray-600';
+            tdDob.textContent = student.dob || '-';
+            tr.appendChild(tdDob);
+
+            // Classroom Cell
+            const tdClass = document.createElement('td');
+            tdClass.className = 'bg-white text-center border-l-2 border-gray-300 text-xs text-gray-700 font-semibold';
+            tdClass.textContent = student.classroom || '-';
+            tr.appendChild(tdClass);
+
+            // Stats counters for this student this month
+            let stats = { present: 0, 'absent-morning': 0, 'absent-afternoon': 0, 'absent-full': 0 };
+
+            // Attendance Cells for each study day
+            studyDays.forEach(day => {
+                const tdDay = document.createElement('td');
+                const isLastDayOfWeek = studyDays.findIndex(d => d === day) < studyDays.length - 1 && studyDays[studyDays.findIndex(d => d === day) + 1].weekNum !== day.weekNum;
+                // Add border if it's the end of a week
+                if(isLastDayOfWeek || day === studyDays[studyDays.length-1]) {
+                     tdDay.className = 'p-1 border-l-2 border-gray-300 relative';
+                } else {
+                     tdDay.className = 'p-1 relative';
+                }
+               
+
+                const attKey = `${student.id}_${day.dateString}`;
+                const currentStatus = state.attendance[attKey] || 'none';
+                
+                // Update stats
+                if (currentStatus !== 'none') {
+                    stats[currentStatus]++;
+                }
+
+                const btn = document.createElement('button');
+                btn.className = `status-btn ${statusConfig[currentStatus].class}`;
+                btn.textContent = statusConfig[currentStatus].label;
+                btn.title = `انقر لتغيير حالة ${student.name} يوم ${day.day}/${state.month}`;
+                
+                btn.onclick = () => toggleStatus(attKey, btn);
+                
+                tdDay.appendChild(btn);
+                tr.appendChild(tdDay);
+            });
+
+            // Totals Cells
+            // Calculate total presences (total half days possible - half days absent)
+            // A full day has 2 half days.
+            let totalPossibleHalfDays = studyDays.length * 2;
+            let totalAbsentHalfDays = stats['absent-morning'] + stats['absent-afternoon'] + (stats['absent-full'] * 2);
+            stats.present = (totalPossibleHalfDays - totalAbsentHalfDays) / 2; // Convert back to full days for display if needed, or keep as half days. We'll display equivalent full days.
+
+            const totals = [
+                { type: 'present', val: stats.present, class: 'bg-gray-50 text-gray-800 font-bold border-r-2 border-gray-300' },
+                { type: 'absent-morning', val: stats['absent-morning'], class: 'bg-red-50 text-red-700 font-bold' },
+                { type: 'absent-afternoon', val: stats['absent-afternoon'], class: 'bg-orange-50 text-orange-700 font-bold' },
+                { type: 'absent-full', val: stats['absent-full'], class: 'bg-red-100 text-red-900 font-bold' }
+            ];
+
+            totals.forEach(t => {
+                const tdTot = document.createElement('td');
+                tdTot.className = t.class;
+                tdTot.textContent = t.val > 0 ? t.val : '-';
+                tdTot.id = `total_${student.id}_${t.type}`;
+                tr.appendChild(tdTot);
+            });
+
+            // Actions Cell
+            const tdAction = document.createElement('td');
+            const delBtn = document.createElement('button');
+            delBtn.className = 'text-red-400 hover:text-red-600 p-2 rounded transition';
+            delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+            delBtn.title = "حذف التلميذ";
+            delBtn.onclick = () => removeStudent(student.id);
+            tdAction.appendChild(delBtn);
+            tr.appendChild(tdAction);
+
+            studentList.appendChild(tr);
+        });
+    }
+
+    // Toggle Status Logic
+    function toggleStatus(attKey, btnElement) {
+        const currentStatus = state.attendance[attKey] || 'none';
+        const currentIndex = statusTypes.indexOf(currentStatus);
+        const nextIndex = (currentIndex + 1) % statusTypes.length;
+        const nextStatus = statusTypes[nextIndex];
+
+        // Update state
+        state.attendance[attKey] = nextStatus;
+
+        // Update DOM for button
+        btnElement.className = `status-btn ${statusConfig[nextStatus].class}`;
+        btnElement.textContent = statusConfig[nextStatus].label;
+
+        // Recalculate totals for this student
+        updateStudentTotals(attKey.split('_')[0]);
+    }
+
+    // Update Totals without re-rendering everything
+    function updateStudentTotals(studentId) {
+        let stats = { present: 0, 'absent-morning': 0, 'absent-afternoon': 0, 'absent-full': 0 };
+        const prefix = `${studentId}_${state.year}_${state.month}_`;
+        
+        let studyDaysCount = getStudyDaysForMonth().length;
+
+        Object.keys(state.attendance).forEach(key => {
+            if (key.startsWith(prefix)) {
+                const status = state.attendance[key];
+                if (status !== 'none') stats[status]++;
+            }
+        });
+        
+        let totalPossibleHalfDays = studyDaysCount * 2;
+        let totalAbsentHalfDays = stats['absent-morning'] + stats['absent-afternoon'] + (stats['absent-full'] * 2);
+        stats.present = (totalPossibleHalfDays - totalAbsentHalfDays) / 2;
+
+        ['present', 'absent-morning', 'absent-afternoon', 'absent-full'].forEach(type => {
+            const el = document.getElementById(`total_${studentId}_${type}`);
+            if (el) {
+                el.textContent = stats[type] > 0 ? stats[type] : (type === 'present' ? stats.present : '-');
+            }
+        });
+        
+        updateMonthlyStatistics();
+    }
+    
+    // Update Monthly Statistics Table
+    function updateMonthlyStatistics() {
+        const studyDaysCount = getStudyDaysForMonth().length;
+        const inscritsCount = state.students.length;
+        
+        // Calculate Genders
+        let malesCount = 0;
+        let femalesCount = 0;
+        state.students.forEach(s => {
+            if (s.gender === 'F') femalesCount++;
+            else malesCount++; // Default to M if old data doesn't have gender
+        });
+
+        // 1. Nombre d'élèves inscrits
+        document.getElementById('statInscrits').textContent = inscritsCount;
+        
+        // 2. Nombre maximal de présences (demi-journées)
+        // Usually calculated in half-days in the French system
+        const maxPresencesHalfDays = inscritsCount * studyDaysCount * 2; 
+        document.getElementById('statMaxPresences').textContent = maxPresencesHalfDays;
+        
+        // 3. Nombre d'absences constatées (demi-journées)
+        let totalAbsencesHalfDays = 0;
+        
+        const prefix = `_${state.year}_${state.month}_`;
+        Object.keys(state.attendance).forEach(key => {
+            if (key.includes(prefix)) {
+                const status = state.attendance[key];
+                if (status === 'absent-morning' || status === 'absent-afternoon') {
+                    totalAbsencesHalfDays += 1;
+                } else if (status === 'absent-full') {
+                    totalAbsencesHalfDays += 2;
+                }
+            }
+        });
+        
+        document.getElementById('statAbsences').textContent = totalAbsencesHalfDays;
+        
+        // 4 & 5. Pourcentages
+        if (maxPresencesHalfDays > 0) {
+            const pctAbsence = (totalAbsencesHalfDays / maxPresencesHalfDays) * 100;
+            const pctPresence = 100 - pctAbsence;
+            
+            document.getElementById('statPourcentagePresence').textContent = pctPresence.toFixed(2) + '%';
+            document.getElementById('statPourcentageAbsence').textContent = pctAbsence.toFixed(2) + '%';
+        } else {
+            document.getElementById('statPourcentagePresence').textContent = '0%';
+            document.getElementById('statPourcentageAbsence').textContent = '0%';
+        }
+        
+        updateChartUI(malesCount, femalesCount);
+    }
+
+    // Initialize or Update Chart.js
+    function updateChartUI(males, females) {
+        document.getElementById('statMales').textContent = males;
+        document.getElementById('statFemales').textContent = females;
+        
+        const ctx = document.getElementById('genderChart').getContext('2d');
+        
+        if (genderChartInstance) {
+            // Update existing chart
+            genderChartInstance.data.datasets[0].data = [males, females];
+            genderChartInstance.update();
+        } else {
+            // Create new chart
+            genderChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ذكور', 'إناث'],
+                    datasets: [{
+                        data: [males, females],
+                        backgroundColor: ['#3b82f6', '#ec4899'], // Blue and Pink
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { 
+                                font: { family: "'Cairo', sans-serif", size: 12 },
+                                padding: 20
+                            } 
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' تلميذ(ة)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Main render function
+    function updateView() {
+        const studyDays = getStudyDaysForMonth();
+        renderHeaders(studyDays);
+        renderStudents(studyDays);
+        updateMonthlyStatistics();
+        saveState();
+    }
+
+    // Add Student
+    function openModal() {
+        studentNameInput.value = '';
+        studentDobInput.value = '';
+        studentClassInput.value = '';
+        addStudentModal.classList.remove('hidden');
+        studentNameInput.focus();
+    }
+
+    function closeModal() {
+        addStudentModal.classList.add('hidden');
+    }
+
+    function addStudent() {
+        const name = studentNameInput.value.trim();
+        const gender = studentGenderInput.value;
+        const dob = studentDobInput.value;
+        const classroom = studentClassInput.value.trim();
+        
+        if (name) {
+            const newId = state.students.length > 0 ? Math.max(...state.students.map(s => s.id)) + 1 : 1;
+            state.students.push({ 
+                id: newId, 
+                name: name, 
+                gender: gender,
+                dob: dob,
+                classroom: classroom 
+            });
+            updateView();
+            closeModal();
+        } else {
+            alert('الرجاء إدخال اسم التلميذ');
+        }
+    }
+
+    function removeStudent(id) {
+        if (confirm('هل أنت متأكد من حذف هذا التلميذ؟')) {
+            state.students = state.students.filter(s => s.id !== id);
+            // Clean up attendance records for this student
+            Object.keys(state.attendance).forEach(key => {
+                if (key.startsWith(`${id}_`)) {
+                    delete state.attendance[key];
+                }
+            });
+            updateView();
+        }
+    }
+
+    // Local Storage Management
+    function saveState() {
+        localStorage.setItem('attendanceApp_state', JSON.stringify({
+            students: state.students,
+            attendance: state.attendance
+        }));
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem('attendanceApp_state');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.students) state.students = parsed.students;
+                if (parsed.attendance) state.attendance = parsed.attendance;
+            } catch (e) {
+                console.error("Error loading saved data", e);
+            }
+        }
+        
+        // Set current month/year on load
+        const today = new Date();
+        // Fallback to September 2026 as requested implicitly by current date context
+        state.month = today.getMonth() + 1;
+        state.year = today.getFullYear();
+        
+        monthSelect.value = state.month;
+        yearSelect.value = state.year;
+    }
+
+    // Event Listeners
+    monthSelect.addEventListener('change', (e) => {
+        state.month = parseInt(e.target.value);
+        updateView();
+    });
+
+    yearSelect.addEventListener('change', (e) => {
+        state.year = parseInt(e.target.value);
+        updateView();
+    });
+
+    addStudentBtn.addEventListener('click', openModal);
+    cancelAddBtn.addEventListener('click', closeModal);
+    confirmAddBtn.addEventListener('click', addStudent);
+    
+    studentNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addStudent();
+    });
+
+    // Simple print function for Export button
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        window.print();
+    });
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+        loadState();
+        updateView();
+    });
+
+</script>
+</body>
+</html>
