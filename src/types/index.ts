@@ -658,6 +658,7 @@ export interface IntensiveSubjectPackage {
   bundleDownloadWordUrl: string;
   bundleDownloadPdfUrl: string;
   workbookDownloadUrl: string;
+  googleDriveFolderUrl?: string;
   sessions: IntensiveSessionItem[];
 }
 

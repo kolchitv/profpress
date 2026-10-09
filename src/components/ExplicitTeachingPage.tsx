@@ -72,7 +72,54 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        const isLegacyProfpressUrl = (url?: string) =>
+          Boolean(url && (url.includes("profpress.net/search/label") || url.includes("profpressma.blogspot.com/search/label")));
+
+        if (isLegacyProfpressUrl(parsed.officialUrl)) {
+          parsed.officialUrl = DEFAULT_EXPLICIT_TEACHING_DATA.officialUrl;
+        }
+
+        if (Array.isArray(parsed.packages)) {
+          parsed.packages = parsed.packages.map((pkg: any) => {
+            const defPkg = DEFAULT_EXPLICIT_TEACHING_DATA.packages.find((p) => p.id === pkg.id);
+            return {
+              ...pkg,
+              arabicDriveUrl: isLegacyProfpressUrl(pkg.arabicDriveUrl)
+                ? defPkg?.arabicDriveUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+                : pkg.arabicDriveUrl,
+              frenchDriveUrl: isLegacyProfpressUrl(pkg.frenchDriveUrl)
+                ? defPkg?.frenchDriveUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+                : pkg.frenchDriveUrl,
+              mathDriveUrl: isLegacyProfpressUrl(pkg.mathDriveUrl)
+                ? defPkg?.mathDriveUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+                : pkg.mathDriveUrl,
+              guideBookletUrl: isLegacyProfpressUrl(pkg.guideBookletUrl)
+                ? defPkg?.guideBookletUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+                : pkg.guideBookletUrl,
+              studentBookletUrl: isLegacyProfpressUrl(pkg.studentBookletUrl)
+                ? defPkg?.studentBookletUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+                : pkg.studentBookletUrl,
+            };
+          });
+        }
+
+        if (Array.isArray(parsed.lessons)) {
+          parsed.lessons = parsed.lessons.map((les: any) => ({
+            ...les,
+            pptUrl: isLegacyProfpressUrl(les.pptUrl)
+              ? "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+              : les.pptUrl,
+            pdfUrl: isLegacyProfpressUrl(les.pdfUrl)
+              ? "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+              : les.pdfUrl,
+            driveUrl: isLegacyProfpressUrl(les.driveUrl)
+              ? "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"
+              : les.driveUrl,
+          }));
+        }
+
+        return parsed;
       }
     } catch (e) {
       console.error("Failed to load explicit teaching data from storage", e);
@@ -150,9 +197,9 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
       title: "",
       titleFr: "",
       objective: "",
-      pptUrl: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B5%D8%B1%D9%8A%D8%AD",
-      pdfUrl: "https://www.profpress.net/search/label/%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B5%D8%B1%D9%8A%D8%AD",
-      driveUrl: "https://drive.google.com",
+      pptUrl: "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS",
+      pdfUrl: "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS",
+      driveUrl: "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS",
       fileSize: "4.5 MB (PPTX)",
       durationMinutes: 45,
       keyConcepts: [],
@@ -369,13 +416,13 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
 
               <div className="flex flex-wrap items-center gap-3 mt-5">
                 <a
-                  href={pageData.officialUrl}
+                  href={pageData.officialUrl || "https://drive.google.com/drive/folders/1SJ0z_27SuMt4mrgP4MRQP7YWNTPGRzPS"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>تصفح المقال الأصلي على بروف بريس</span>
+                  <FolderDown className="w-4 h-4" />
+                  <span>فتح مجلد Google Drive الشامل لمستلزمات التعليم الصريح</span>
                 </a>
 
                 <span className="text-slate-400 text-xs flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-2 rounded-xl">

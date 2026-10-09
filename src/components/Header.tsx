@@ -394,7 +394,34 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* 5. دروس التعليم الصريح - بعد الوثائق التربوية ومقالات */}
+          {/* 5. خانة الدعم المكثف (قبل قسم التعليم الصريح مباشرة كما هو مطلوب) */}
+          <button
+            key="intensive_support"
+            id="nav-tab-intensive-support"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("intensive_support");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "intensive_support"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <Layers
+              className={`w-4 h-4 ${
+                activeTab === "intensive_support"
+                  ? "text-amber-300"
+                  : "text-emerald-600"
+              }`}
+            />
+            <span>الدعم المكثف</span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full font-bold">
+              حصص 1-6
+            </span>
+          </button>
+
+          {/* 6. دروس التعليم الصريح - بعد خانة الدعم المكثف */}
           <button
             key="explicit_teaching"
             id="nav-tab-explicit-teaching"

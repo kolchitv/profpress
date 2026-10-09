@@ -8,6 +8,194 @@ import {
 export const ESCUILA_SOURCE_URL =
   "https://www.escuila.info/p/soutien-intensif.html#google_vignette";
 
+export const ESCUILA_MINDMAPS_URL =
+  "https://www.escuila.info/p/cartes-mentales-rem.html";
+
+export interface EscuilaLevelCard {
+  levelNumber: number;
+  levelNameAr: string;
+  levelNameFr: string;
+  driveFolderUrl: string;
+}
+
+export interface EscuilaSubjectGroup {
+  id: "arabic" | "french" | "math";
+  titleAr: string;
+  titleFr: string;
+  cssClass: string;
+  headerBg: string;
+  badgeColor: string;
+  levels: EscuilaLevelCard[];
+}
+
+export const ESCUILA_SUPPORT_PAGE_CONTENT = {
+  headerTitle: "حصص الدعم المكثف",
+  pageFullTitle: "جميع حصص الدعم المكثف - دعم التعلمات الأساس 2026/2027",
+  introText:
+    "نقدم لكم في هذه الصفحة روابط تحميل جميع ملفات حصص الدعم المكثف في مواد اللغة العربية واللغة الفرنسية والرياضيات، من المستوى الأول إلى المستوى السادس ابتدائي. اختر المادة ثم المستوى المطلوب للوصول إلى الملفات مباشرة.",
+  mindmapsNotice: "لتحميل الخطاطات الذهنية من هنا 👈 خطاطات الدعم المكثف",
+  sourceUrl: ESCUILA_SOURCE_URL,
+  mindmapsUrl: ESCUILA_MINDMAPS_URL,
+  subjects: [
+    {
+      id: "arabic",
+      titleAr: "اللغة العربية",
+      titleFr: "Langue Arabe",
+      cssClass: "arabic",
+      headerBg: "bg-[#0b6ecf]",
+      badgeColor: "bg-emerald-600",
+      levels: [
+        {
+          levelNumber: 1,
+          levelNameAr: "المستوى الأول",
+          levelNameFr: "1AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1oF1wbcRuckQb9hUxhJWRPgHqrf6jjsJW?usp=drive_link",
+        },
+        {
+          levelNumber: 2,
+          levelNameAr: "المستوى الثاني",
+          levelNameFr: "2AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1n7My6yZH3A1zybsZcghPnNlAUqbC4X6Q?usp=drive_link",
+        },
+        {
+          levelNumber: 3,
+          levelNameAr: "المستوى الثالث",
+          levelNameFr: "3AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1h5AgU6I5_kwuk0Vl3tdMmduExwI76xwJ?usp=drive_link",
+        },
+        {
+          levelNumber: 4,
+          levelNameAr: "المستوى الرابع",
+          levelNameFr: "4AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1Xx20Q9MMTj3-TAUYqRVRv5DUi3Keq1QV?usp=drive_link",
+        },
+        {
+          levelNumber: 5,
+          levelNameAr: "المستوى الخامس",
+          levelNameFr: "5AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1T8cSU3XN4WE4gAJ0H8BdXI87i9J7KiqI?usp=drive_link",
+        },
+        {
+          levelNumber: 6,
+          levelNameAr: "المستوى السادس",
+          levelNameFr: "6AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1n4Sgo120gPxFU44m4X2AqOeiGU2vOOdB?usp=drive_link",
+        },
+      ],
+    },
+    {
+      id: "french",
+      titleAr: "اللغة الفرنسية",
+      titleFr: "Langue Française",
+      cssClass: "french",
+      headerBg: "bg-[#0b6ecf]",
+      badgeColor: "bg-blue-600",
+      levels: [
+        {
+          levelNumber: 1,
+          levelNameAr: "المستوى الأول",
+          levelNameFr: "1AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/16-AUrr9mGfPPF4dOUOSrDXyGAjbGUYfV?usp=drive_link",
+        },
+        {
+          levelNumber: 2,
+          levelNameAr: "المستوى الثاني",
+          levelNameFr: "2AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1oRw0YymCP4GcNk2Zz8KI1zc1ky_Tko6e?usp=drive_link",
+        },
+        {
+          levelNumber: 3,
+          levelNameAr: "المستوى الثالث",
+          levelNameFr: "3AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1iqGp7WKB1e5Cznq008iPIGArBCsvZy7z?usp=drive_link",
+        },
+        {
+          levelNumber: 4,
+          levelNameAr: "المستوى الرابع",
+          levelNameFr: "4AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1RSZkWgqtk-JV0RM8v_twOmgHuhuyM15y?usp=drive_link",
+        },
+        {
+          levelNumber: 5,
+          levelNameAr: "المستوى الخامس",
+          levelNameFr: "5AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1Fgo_LptEduQDBKDCa46qAxA-i5aSdIFj?usp=drive_link",
+        },
+        {
+          levelNumber: 6,
+          levelNameAr: "المستوى السادس",
+          levelNameFr: "6AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/18I49T58RW5ZB3FSrXniSWGg796gWVYIe?usp=drive_link",
+        },
+      ],
+    },
+    {
+      id: "math",
+      titleAr: "الرياضيات",
+      titleFr: "Mathématiques",
+      cssClass: "math",
+      headerBg: "bg-[#0b6ecf]",
+      badgeColor: "bg-amber-600",
+      levels: [
+        {
+          levelNumber: 1,
+          levelNameAr: "المستوى الأول",
+          levelNameFr: "1AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1xIchd3Y_9EQaFPR01Gi_zHCU-xYrP3cU?usp=drive_link",
+        },
+        {
+          levelNumber: 2,
+          levelNameAr: "المستوى الثاني",
+          levelNameFr: "2AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1a27zVg0tESXqKvk1l22dZZtozNbglIBz?usp=drive_link",
+        },
+        {
+          levelNumber: 3,
+          levelNameAr: "المستوى الثالث",
+          levelNameFr: "3AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1saE47KqcqvWFxxIV7owu0m9b8u1fAzwI?usp=drive_link",
+        },
+        {
+          levelNumber: 4,
+          levelNameAr: "المستوى الرابع",
+          levelNameFr: "4AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1Eyf92nrGL2q0R3r9J-hkNo1FIkboYvjZ?usp=drive_link",
+        },
+        {
+          levelNumber: 5,
+          levelNameAr: "المستوى الخامس",
+          levelNameFr: "5AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1fDSJMly4-WT6R_LUQvmoMU4arQLohd8y?usp=drive_link",
+        },
+        {
+          levelNumber: 6,
+          levelNameAr: "المستوى السادس",
+          levelNameFr: "6AEP",
+          driveFolderUrl:
+            "https://drive.google.com/drive/folders/1bKNfsBVGuLzKgOkxnWzbkXkYKr17VxnA?usp=drive_link",
+        },
+      ],
+    },
+  ] as EscuilaSubjectGroup[],
+};
+
 // Helper function to build 24 structured sessions for any level and subject
 function generateSessions(
   level: IntensiveLevelId,
