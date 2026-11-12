@@ -694,12 +694,15 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
                               <img
                                 src={topic.authorImage}
                                 alt={topic.author}
-                                className="w-4 h-4 rounded-full object-cover object-top ring-1 ring-blue-300"
+                                className="w-5 h-5 rounded-full object-cover object-top ring-1 ring-blue-300 shadow-2xs"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = "none";
+                                }}
                               />
                             ) : (
-                              <User className="w-3 h-3 text-slate-400" />
+                              <User className="w-3.5 h-3.5 text-slate-400" />
                             )}
-                            <span className="truncate max-w-[130px] font-medium">{topic.author}</span>
+                            <span className="truncate max-w-[140px] font-medium">{topic.author}</span>
                           </span>
                         </div>
 

@@ -10,7 +10,7 @@ const BASE_INITIAL_TOPICS: TopicItem[] = [
     date: "8 نونبر 2026",
     gregorianDate: "2026-11-08",
     author: "نورالدين الطويل",
-    authorImage: "/assets/aistudio/__________________2025_58781b70.jpg",
+    authorImage: "/authors/noureddine-touili.jpg",
     authorBio: "كاتب وباحث تربوي، مهتم بقضايا التربية والتعليم والعلاقة البيداغوجية بالمدرسة المغربية",
     urgent: false,
     featured: true,
