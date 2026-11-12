@@ -27,6 +27,7 @@ import {
   School,
   AlertCircle,
   Ruler,
+  UserCheck,
 } from "lucide-react";
 import { TabKey } from "../types";
 import { NumberLineTool } from "./NumberLineTool";
@@ -1732,6 +1733,51 @@ export const SmartToolsModal: React.FC<SmartToolsModalProps> = ({
                 )}
               </div>
               <NumberLineTool isModalMode={true} onCloseModal={onClose} />
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TOOL 17: ATTENDANCE REGISTER (سجل حضور وغياب التلاميذ - 4 أيام) */}
+          {/* ========================================================= */}
+          {toolId === "attendance_register" && (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-bold text-emerald-950">
+                    سجل حضور وغياب التلاميذ التفاعلي المعتمد (نظام 4 أيام/الأسبوع) مع مبيان النسب والحفظ التلقائي.
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => window.open("/registreile.html", "_blank")}
+                    className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1 rounded-lg text-xs transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>نافذة كاملة ↗</span>
+                  </button>
+                  {onNavigateToTab && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onNavigateToTab("attendance_register");
+                      }}
+                      className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer shrink-0 shadow-2xs"
+                    >
+                      عرض كصفحة مستقلة ↗
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <iframe
+                  src="/registreile.html"
+                  title="سجل حضور وغياب التلاميذ"
+                  className="w-full h-[620px] border-0"
+                />
+              </div>
             </div>
           )}
         </div>

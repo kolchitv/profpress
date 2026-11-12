@@ -63,6 +63,8 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
   const [author, setAuthor] = useState(
     initialTopic?.author || "وزارة التربية الوطنية والتعليم الأولي والرياضة"
   );
+  const [authorImage, setAuthorImage] = useState(initialTopic?.authorImage || "");
+  const [authorBio, setAuthorBio] = useState(initialTopic?.authorBio || "");
   const [urgent, setUrgent] = useState<boolean>(initialTopic?.urgent || false);
   const [summary, setSummary] = useState(initialTopic?.summary || "");
   const [content, setContent] = useState(initialTopic?.content || "");
@@ -170,6 +172,8 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
       date: date.trim(),
       gregorianDate: new Date().toISOString().split("T")[0],
       author: author.trim(),
+      authorImage: authorImage.trim() || undefined,
+      authorBio: authorBio.trim() || undefined,
       urgent,
       summary: summary.trim(),
       content: content.trim() || summary.trim(),
@@ -383,6 +387,45 @@ export const TopicEditorModal: React.FC<TopicEditorModalProps> = ({
                         value={author}
                         onChange={(e) => setAuthor(e.target.value)}
                         placeholder="وزارة التربية الوطنية"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        رابط أو مسار صورة الكاتب:
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {authorImage ? (
+                          <img
+                            src={authorImage}
+                            alt="معاينة الصورة"
+                            className="w-7 h-7 rounded-lg object-cover border border-slate-300 shrink-0"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
+                        ) : null}
+                        <input
+                          type="text"
+                          value={authorImage}
+                          onChange={(e) => setAuthorImage(e.target.value)}
+                          placeholder="مثال: /assets/aistudio/...jpg أو رابط خارجي"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        نبذة موجزة عن الكاتب (Bio):
+                      </label>
+                      <input
+                        type="text"
+                        value={authorBio}
+                        onChange={(e) => setAuthorBio(e.target.value)}
+                        placeholder="مثال: كاتب وباحث تربوي، أستاذ باحث..."
                         className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium"
                       />
                     </div>

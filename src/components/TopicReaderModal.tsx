@@ -194,8 +194,16 @@ export const TopicReaderModal: React.FC<TopicReaderModalProps> = ({
                   <Calendar className="w-3.5 h-3.5 text-slate-400" />
                   <span>{topic.date}</span>
                 </span>
-                <span className="text-xs text-slate-500 flex items-center gap-1">
-                  <User className="w-3.5 h-3.5 text-slate-400" />
+                <span className="text-xs text-slate-500 flex items-center gap-1.5">
+                  {topic.authorImage ? (
+                    <img
+                      src={topic.authorImage}
+                      alt={topic.author}
+                      className="w-5 h-5 rounded-full object-cover object-top ring-1 ring-blue-300"
+                    />
+                  ) : (
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                  )}
                   <span>{topic.author}</span>
                 </span>
                 {topic.urgent && (

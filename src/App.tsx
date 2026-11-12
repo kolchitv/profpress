@@ -25,6 +25,7 @@ import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { MindMapsHub } from "./components/MindMapsHub";
 import { TarlFrenchMindMap } from "./components/TarlFrenchMindMap";
 import { NumberLineTool } from "./components/NumberLineTool";
+import { AttendanceRegisterHub } from "./components/AttendanceRegisterHub";
 import { IntensiveSupportHub } from "./components/IntensiveSupportHub";
 import { ContactPage } from "./components/ContactPage";
 import { EducationalBranchPage } from "./components/EducationalBranchPage";
@@ -96,6 +97,8 @@ export default function App() {
           "level1_tracking_grid",
           "math_tracking_grids",
           "number_line",
+          "attendance_register",
+          "intensive_support",
           "holidays",
           "certificates",
           "remarks",
@@ -470,6 +473,10 @@ export default function App() {
 
           {activeTab === "number_line" && (
             <NumberLineTool />
+          )}
+
+          {activeTab === "attendance_register" && (
+            <AttendanceRegisterHub teacherProfile={profile} />
           )}
 
           {activeTab === "intensive_support" && (

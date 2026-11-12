@@ -26,11 +26,12 @@ import {
   Activity,
   LogOut,
   Users,
+  User,
 } from "lucide-react";
 import { TopicItem, TopicCategory, TabKey, AdminSession } from "../types";
 import { INITIAL_TOPICS } from "../data/announcementsData";
 import { TopicEditorModal } from "./TopicEditorModal";
-import { TopicReaderModal } from "./TopicReaderModal";
+import { TopicArticlePageView } from "./TopicArticlePageView";
 import { AdminControlPanel } from "./AdminControlPanel";
 import { AdminLoginModal } from "./AdminLoginModal";
 import { canUserDeleteArticles, isManagerEmail } from "../utils/adminAuth";
@@ -55,12 +56,14 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           const newFromInitial = INITIAL_TOPICS.filter((t) => !existingIds.has(t.id));
           const updatedSaved = parsed.map((item: TopicItem) => {
             const fresh = INITIAL_TOPICS.find((t) => t.id === item.id);
-            if (fresh && (!item.downloadUrl || item.downloadUrl === "#" || (fresh.downloads && fresh.downloads.length > 0 && (!item.downloads || item.downloads.length === 0)))) {
+            if (fresh) {
               return {
                 ...item,
+                authorImage: fresh.authorImage || item.authorImage,
+                authorBio: fresh.authorBio || item.authorBio,
                 downloadUrl: fresh.downloadUrl || item.downloadUrl,
                 downloadLabel: fresh.downloadLabel || item.downloadLabel,
-                downloads: fresh.downloads || item.downloads,
+                downloads: fresh.downloads && fresh.downloads.length > 0 ? fresh.downloads : item.downloads,
               };
             }
             return item;
@@ -141,6 +144,46 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<TopicItem | null>(null);
   const [readingTopic, setReadingTopic] = useState<TopicItem | null>(null);
+
+  // Check URL hash for direct article link (e.g. #article-al-moudaris-wa-al-moutaallim-nour-eddine-touili-2026-11-08)
+  useEffect(() => {
+    const handleHashCheck = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash) {
+        const found = topics.find(
+          (t) => t.id === hash || t.seo?.slug === hash || `article-${t.seo?.slug}` === hash
+        );
+        if (found) {
+          setReadingTopic(found);
+        }
+      }
+    };
+    handleHashCheck();
+    window.addEventListener("hashchange", handleHashCheck);
+    return () => window.removeEventListener("hashchange", handleHashCheck);
+  }, [topics]);
+
+  const handleOpenTopic = (topic: TopicItem) => {
+    setReadingTopic(topic);
+    try {
+      window.history.pushState(null, "", `#${topic.seo?.slug || topic.id}`);
+    } catch {
+      // ignore
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCloseTopic = () => {
+    setReadingTopic(null);
+    try {
+      if (window.location.hash) {
+        window.history.pushState(null, "", window.location.pathname + window.location.search);
+      }
+    } catch {
+      // ignore
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Check if current user is the manager (kolchitv@gmail.com)
   const isManager = adminSession.isAdmin && canUserDeleteArticles(adminSession);
@@ -382,9 +425,32 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* IF IN ADMIN DASHBOARD VIEW MODE */}
+      {/* 1. DEDICATED FULL-PAGE ARTICLE READER (NOT A POPUP) */}
       {/* ========================================================================= */}
-      {viewMode === "admin_dashboard" && adminSession.isAdmin ? (
+      {readingTopic ? (
+        <TopicArticlePageView
+          topic={readingTopic}
+          allTopics={topics}
+          onBack={handleCloseTopic}
+          onSelectTopic={handleOpenTopic}
+          onEdit={(t) => {
+            setReadingTopic(null);
+            setEditingTopic(t);
+            setIsEditorOpen(true);
+          }}
+          onDelete={(id) => {
+            if (!adminSession.isAdmin) {
+              setIsLoginModalOpen(true);
+              return;
+            }
+            handleDeleteTopic(id);
+            handleCloseTopic();
+          }}
+          isAdmin={adminSession.isAdmin}
+          isManager={isManager}
+          onNavigateToTab={onNavigateToTab}
+        />
+      ) : viewMode === "admin_dashboard" && adminSession.isAdmin ? (
         <AdminControlPanel
           topics={topics}
           adminSession={adminSession}
@@ -592,7 +658,7 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
                 return (
                   <div
                     key={topic.id}
-                    onClick={() => setReadingTopic(topic)}
+                    onClick={() => handleOpenTopic(topic)}
                     className={`bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 relative overflow-hidden ${theme.topBorder}`}
                   >
                     {/* Right Area (RTL): Nature Icon + Category Badge + Date + Title */}
@@ -623,6 +689,18 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
                               عاجل
                             </span>
                           )}
+                          <span className="text-xs text-slate-500 flex items-center gap-1.5">
+                            {topic.authorImage ? (
+                              <img
+                                src={topic.authorImage}
+                                alt={topic.author}
+                                className="w-4 h-4 rounded-full object-cover object-top ring-1 ring-blue-300"
+                              />
+                            ) : (
+                              <User className="w-3 h-3 text-slate-400" />
+                            )}
+                            <span className="truncate max-w-[130px] font-medium">{topic.author}</span>
+                          </span>
                         </div>
 
                         {/* Bold Title */}
@@ -746,28 +824,6 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({
           }}
           onSave={handleSaveTopic}
           initialTopic={editingTopic}
-        />
-      )}
-
-      {readingTopic && (
-        <TopicReaderModal
-          topic={readingTopic}
-          isOpen={Boolean(readingTopic)}
-          onClose={() => setReadingTopic(null)}
-          isAdmin={adminSession.isAdmin}
-          isManager={isManager}
-          onEdit={(topic) => {
-            setReadingTopic(null);
-            setEditingTopic(topic);
-            setIsEditorOpen(true);
-          }}
-          onDelete={(id) => {
-            if (!adminSession.isAdmin) {
-              setIsLoginModalOpen(true);
-              return;
-            }
-            handleDeleteTopic(id);
-          }}
         />
       )}
     </div>

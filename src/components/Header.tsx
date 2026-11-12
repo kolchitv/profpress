@@ -79,6 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
   // Pedagogical documents list consolidated under "وثائق تربوية"
   const pedagogicalDocs = [
     { key: "intensive_support" as TabKey, label: "حصص الدعم المكثف (جميع المستويات)", icon: Layers, badge: "جديد 1-6" },
+    { key: "attendance_register" as TabKey, label: "سجل الحضور والغياب (4 أيام)", icon: UserCheck, badge: "تفاعلي" },
     { key: "mindmaps" as TabKey, label: "خطاطات ذهنية وعروض الدعم (جميع المواد 1-6)", icon: Sparkles, badge: "جديد 432 حصة" },
     { key: "number_line" as TabKey, label: "خط الأعداد والكسور", icon: Ruler, badge: "أداة تفاعلية" },
     { key: "daily_log" as TabKey, label: "المذكرة اليومية (الدعم المكثف)", icon: BookOpen, badge: "10 صفحات" },
@@ -309,7 +310,7 @@ export const Header: React.FC<HeaderProps> = ({
                       isPedagogicalDocActive ? "bg-amber-400 text-slate-950" : "bg-emerald-100 text-emerald-800"
                     }`}
                   >
-                    16 وثيقة
+                    17 وثيقة
                   </span>
                 )}
               </button>

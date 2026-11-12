@@ -84,6 +84,21 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
       ],
     },
     {
+      key: "attendance_register" as TabKey,
+      title: "سجل حضور وغياب التلاميذ (نظام 4 أيام/الأسبوع)",
+      badge: "تطبيق تفاعلي وإحصائي • حصري",
+      badgeColor: "bg-emerald-100 text-emerald-950 border-emerald-300 font-black",
+      icon: UserCheck,
+      iconBg: "bg-emerald-700 text-white",
+      description:
+        "السجل الرقمي التفاعلي المعتمد لتتبع حضور وغياب المتعلمين وفق نظام 4 أيام/الأسبوع: رصد الحضور (P، |، -، +)، حساب إجمالي الغيابات شهرياً، مبيان إحصائي لتوزيع التلاميذ (ذكور وإناث)، وحفظ محلي وطباعة مباشرة A4.",
+      features: [
+        "رصد الحضور بنظام 4 أيام في الأسبوع (مؤسسات الريادة والمجموعات المدرسية)",
+        "حساب آلي للغيابات والنسب المئوية ومبيان توزيع الذكور والإناث",
+        "حفظ تلقائي محلي، إضافة وتعديل التلاميذ، وتصدير/طباعة مباشرة A4",
+      ],
+    },
+    {
       key: "mindmaps" as TabKey,
       title: "بنك الخطاطات الذهنية لحصص التهيئة والدعم (المستوى الأول + TaRL)",
       badge: "حصري • 72 حصة تفاعلية",
@@ -423,6 +438,8 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
                   <span>
                     {doc.key === "intensive_support"
                       ? "فتح وتصفح حقيبة الدعم المكثف (1 إلى 6)"
+                      : doc.key === "attendance_register"
+                      ? "فتح سجل الحضور التفاعلي (4 أيام)"
                       : "تجهيز الوثيقة"}
                   </span>
                   <ChevronLeft className="w-3.5 h-3.5" />

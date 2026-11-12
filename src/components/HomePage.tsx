@@ -465,6 +465,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-emerald-50",
     },
     {
+      id: "attendance_register_doc",
+      tab: "attendance_register" as TabKey,
+      title: "سجل حضور وغياب التلاميذ (نظام 4 أيام/الأسبوع)",
+      category: "التدبير الإداري والتربوي",
+      cycle: ["primary", "middle"],
+      badge: "تطبيق تفاعلي وإحصائي",
+      badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300 font-bold",
+      description:
+        "أداة رقمية وتطبيق تفاعلي لحفظ وتتبع حضور وغياب المتعلمين أسبوعياً وشهرياً وفق نظام 4 أيام/الأسبوع، مع مبيان إحصائي لتوزيع التلاميذ (ذكور وإناث)، وحفظ محلي وطباعة مباشرة A4.",
+      icon: UserCheck,
+      iconColor: "text-emerald-700",
+      iconBg: "bg-emerald-50",
+    },
+    {
       id: "explicit_teaching_doc",
       tab: "explicit_teaching" as TabKey,
       title: "الحقيبة البيداغوجية لدروس التعليم الصريح (PPT)",
@@ -650,6 +664,17 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Smart Tools (Matching Screenshot 2 + Profpress.net)
   const smartTools: SmartToolItem[] = [
+    {
+      id: "attendance_register",
+      title: "سجل الحضور (4 أيام)",
+      icon: UserCheck,
+      iconColor: "text-emerald-600",
+      iconBg: "bg-emerald-50",
+      shortDesc: "سجل حضور وغياب تفاعلي بنظام 4 أيام في الأسبوع مع مبيان النسب والطباعة",
+      actionType: "modal",
+      targetTab: "attendance_register",
+      externalUrl: "/registreile.html",
+    },
     {
       id: "number_line",
       title: "خط الأعداد والكسور",

@@ -24,6 +24,7 @@ export type TabKey =
   | "mindmaps" // قسم الخطاطات الذهنية الشامل (Schémas & Cartes Mentales)
   | "tarl_french_mindmap" // خطاطة ذهنية طارل الفرنسية (Carte Mentale TaRL Français)
   | "number_line" // وسيلة تعليمية: تمثيل الأعداد على خط الأعداد (Droite graduée et fractions)
+  | "attendance_register" // سجل حضور وغياب التلاميذ (نظام 4 أيام/الأسبوع)
   | "intensive_support" // حقيبة وملف حصص الدعم المكثف لجميع المستويات (Soutien Intensif TaRL)
   | "print_preview"
   | "contact"
@@ -179,6 +180,8 @@ export interface TopicItem {
   date: string;
   gregorianDate?: string;
   author: string;
+  authorImage?: string;
+  authorBio?: string;
   urgent?: boolean;
   summary: string;
   content: string;
