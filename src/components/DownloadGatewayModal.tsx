@@ -65,15 +65,17 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
     };
   }, []);
 
-  // Reset countdown whenever modal opens
+  // Reset countdown and refresh settings whenever modal opens
   useEffect(() => {
     if (isOpen) {
-      const initialSeconds = settings.countdownSeconds > 0 ? settings.countdownSeconds : 0;
+      const latest = getDownloadGatewaySettings();
+      setSettings(latest);
+      const initialSeconds = latest.countdownSeconds > 0 ? latest.countdownSeconds : 0;
       setSecondsLeft(initialSeconds);
       setIsReady(initialSeconds === 0);
       setCopied(false);
     }
-  }, [isOpen, settings.countdownSeconds]);
+  }, [isOpen]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -397,18 +399,23 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
             )}
           </div>
 
-          {/* Middle Google AdSense Area */}
+          {/* Middle Google AdSense Area (Multiplex / Autorelaxed Gateway Ad) */}
           <AdSenseZone
             zone="middle"
             adSettings={settings.adSettings}
-            title="إعلان وسط الشاشة (In-Content 300x250)"
+            slot="8337494679"
+            adFormat="autorelaxed"
+            fullWidthResponsive={false}
+            title="إعلانات مقترحة - بوابة التحميل"
           />
 
           {/* Bottom Google AdSense Area */}
           <AdSenseZone
             zone="bottom"
             adSettings={settings.adSettings}
-            title="إعلان بانر سفلي (Bottom Banner)"
+            slot="2562689217"
+            adFormat="auto"
+            title="إعلان متجاوب أسفل البوابة"
           />
         </div>
 

@@ -390,6 +390,75 @@ export function savePdfSafely(pdf: jsPDF, filename: string): void {
 }
 
 /**
+ * High-resolution PNG exporter for printable sheets (e.g., Cover Generator).
+ */
+export async function generatePngFromElement(
+  element: HTMLElement,
+  options: {
+    filename?: string;
+    quality?: "standard" | "high" | "ultra";
+    onProgress?: (status: string) => void;
+  } = {}
+): Promise<void> {
+  const {
+    filename = "واجهة_الملف_التربوي.png",
+    quality = "ultra",
+    onProgress,
+  } = options;
+
+  const origScrollX = window.scrollX;
+  const origScrollY = window.scrollY;
+
+  try {
+    onProgress?.("جاري تجهيز الصورة بدقة عالية...");
+    if (document.fonts) {
+      await document.fonts.ready;
+    }
+
+    window.scrollTo(0, 0);
+    await new Promise((resolve) => setTimeout(resolve, 60));
+
+    const scale = quality === "ultra" ? 2.4 : quality === "standard" ? 1.5 : 2;
+    const canvas = await html2canvas(element, {
+      scale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#ffffff",
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc) => {
+        const allCloned = clonedDoc.querySelectorAll<HTMLElement>("*");
+        allCloned.forEach((node) => {
+          if (node.style && node.style.transform && node.style.transform.includes("scale")) {
+            node.style.transform = "none";
+          }
+        });
+        sanitizeClonedDocumentForHtml2Canvas(clonedDoc);
+      },
+      ignoreElements: shouldIgnoreElement,
+    });
+
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      throw new Error("تعذر تصدير الصورة بنجاح.");
+    }
+
+    const cleanFilename = filename.endsWith(".png") ? filename : `${filename}.png`;
+    const dataUrl = canvas.toDataURL("image/png", 1.0);
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = cleanFilename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      if (document.body.contains(a)) document.body.removeChild(a);
+    }, 1000);
+  } finally {
+    window.scrollTo(origScrollX, origScrollY);
+  }
+}
+
+/**
  * Multi-page A4 PDF generator for documents spanning multiple consecutive pages (e.g., Workshop Report).
  * Ensures all typography and images are completely decoded and loaded before capturing,
  * and fixes canvas coordinate offsets to guarantee zero blank/white pages.

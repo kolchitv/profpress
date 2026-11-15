@@ -9,6 +9,8 @@ interface AdSenseZoneProps {
   title?: string;
   slot?: string;
   client?: string;
+  adFormat?: "auto" | "autorelaxed" | string;
+  fullWidthResponsive?: boolean;
 }
 
 declare global {
@@ -25,12 +27,15 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
   title,
   slot = "4039422419",
   client = "ca-pub-2606934361036411",
+  adFormat = "auto",
+  fullWidthResponsive,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isPushedRef = useRef(false);
+  const pushedKeyRef = useRef<string | null>(null);
 
-  // Determine publisher ID and ad slot
-  const publisherId = adSettings?.publisherId?.trim() || client || "ca-pub-2606934361036411";
+  // Determine publisher ID and ad enablement
+  const fallbackPublisherId =
+    adSettings?.publisherId?.trim() || client || "ca-pub-2606934361036411";
   const isEnabled = adSettings ? adSettings.isEnabled : true;
 
   // Check if there is specific custom HTML code provided
@@ -42,18 +47,43 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
     else code = "";
   }
 
-  // Extract ad slot from custom code if available, otherwise fallback to user requested 4039422419
+  // Extract ad attributes from custom code if available, otherwise fallback to props
+  let publisherId = fallbackPublisherId;
   let adSlot = slot;
+  let resolvedFormat = adFormat || "auto";
+  let resolvedFullWidthResponsive =
+    fullWidthResponsive !== undefined ? fullWidthResponsive : resolvedFormat === "auto";
+
   if (code) {
-    const slotMatch = code.match(/data-ad-slot=["'](\d+)["']/);
+    const clientMatch = code.match(/data-ad-client=["']([^"']+)["']/i);
+    if (clientMatch && clientMatch[1]) {
+      publisherId = clientMatch[1];
+    }
+
+    const slotMatch = code.match(/data-ad-slot=["'](\d+)["']/i);
     if (slotMatch && slotMatch[1]) {
       adSlot = slotMatch[1];
     }
+
+    const formatMatch = code.match(/data-ad-format=["']([^"']+)["']/i);
+    if (formatMatch && formatMatch[1]) {
+      resolvedFormat = formatMatch[1];
+      if (fullWidthResponsive === undefined) {
+        resolvedFullWidthResponsive = resolvedFormat === "auto";
+      }
+    }
+
+    const responsiveMatch = code.match(/data-full-width-responsive=["'](true|false)["']/i);
+    if (responsiveMatch && responsiveMatch[1]) {
+      resolvedFullWidthResponsive = responsiveMatch[1].toLowerCase() === "true";
+    }
   }
+
+  const unitKey = `${publisherId}:${adSlot}:${resolvedFormat}:${resolvedFullWidthResponsive}`;
 
   useEffect(() => {
     if (!isEnabled) return;
-    if (isPushedRef.current) return;
+    if (pushedKeyRef.current === unitKey) return;
 
     try {
       if (typeof window !== "undefined") {
@@ -71,9 +101,14 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
         // Trigger adsbygoogle push after slight delay for DOM readiness
         const timer = setTimeout(() => {
           try {
-            if (window.adsbygoogle && containerRef.current?.querySelector(".adsbygoogle")) {
+            const insEl = containerRef.current?.querySelector(".adsbygoogle");
+            if (
+              insEl &&
+              !insEl.getAttribute("data-adsbygoogle-status") &&
+              pushedKeyRef.current !== unitKey
+            ) {
               (window.adsbygoogle = window.adsbygoogle || []).push({});
-              isPushedRef.current = true;
+              pushedKeyRef.current = unitKey;
             }
           } catch (err) {
             // May occur if blocked by browser extension
@@ -85,7 +120,7 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
     } catch (e) {
       // Ignore
     }
-  }, [isEnabled, publisherId, adSlot]);
+  }, [isEnabled, publisherId, unitKey]);
 
   if (!isEnabled) {
     return null;
@@ -99,6 +134,12 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
           <span>إعلان</span>
           <span className="opacity-60">•</span>
           <span>Google AdSense</span>
+          {title && (
+            <>
+              <span className="opacity-60 hidden sm:inline">•</span>
+              <span className="hidden sm:inline opacity-80">{title}</span>
+            </>
+          )}
         </span>
         <span className="text-[9px] opacity-70 font-mono">{publisherId}</span>
       </div>
@@ -109,12 +150,13 @@ export const AdSenseZone: React.FC<AdSenseZoneProps> = ({
         className="flex justify-center items-center w-full min-h-[90px] bg-white rounded-2xl overflow-hidden border border-slate-200/80 p-2 shadow-2xs"
       >
         <ins
+          key={unitKey}
           className="adsbygoogle"
           style={{ display: "block", minWidth: "250px", width: "100%", textAlign: "center" }}
           data-ad-client={publisherId}
           data-ad-slot={adSlot}
-          data-ad-format="auto"
-          data-full-width-responsive="true"
+          data-ad-format={resolvedFormat}
+          {...(resolvedFullWidthResponsive ? { "data-full-width-responsive": "true" } : {})}
         />
       </div>
     </div>

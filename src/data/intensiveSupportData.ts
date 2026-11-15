@@ -8,9 +8,6 @@ import {
 export const ESCUILA_SOURCE_URL =
   "https://www.escuila.info/p/soutien-intensif.html#google_vignette";
 
-export const ESCUILA_MINDMAPS_URL =
-  "https://www.escuila.info/p/cartes-mentales-rem.html";
-
 export interface EscuilaLevelCard {
   levelNumber: number;
   levelNameAr: string;
@@ -33,9 +30,7 @@ export const ESCUILA_SUPPORT_PAGE_CONTENT = {
   pageFullTitle: "جميع حصص الدعم المكثف - دعم التعلمات الأساس 2026/2027",
   introText:
     "نقدم لكم في هذه الصفحة روابط تحميل جميع ملفات حصص الدعم المكثف في مواد اللغة العربية واللغة الفرنسية والرياضيات، من المستوى الأول إلى المستوى السادس ابتدائي. اختر المادة ثم المستوى المطلوب للوصول إلى الملفات مباشرة.",
-  mindmapsNotice: "لتحميل الخطاطات الذهنية من هنا 👈 خطاطات الدعم المكثف",
   sourceUrl: ESCUILA_SOURCE_URL,
-  mindmapsUrl: ESCUILA_MINDMAPS_URL,
   subjects: [
     {
       id: "arabic",

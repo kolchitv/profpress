@@ -69,6 +69,59 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
 }) => {
   const levelData = EDUCATIONAL_LEVELS_DATA[levelId] || EDUCATIONAL_LEVELS_DATA["primary_1"];
 
+  const mergeResourcesWithDefaults = (
+    savedList: EducationalResourceItem[],
+    defaultsList: EducationalResourceItem[]
+  ): EducationalResourceItem[] => {
+    const defaultMap = new Map(defaultsList.map((r) => [r.id, r]));
+    const hydrated = savedList.map((savedItem) => {
+      const def = defaultMap.get(savedItem.id);
+      if (!def) return savedItem;
+      const hasPlaceholderLink = !savedItem.downloadUrl || savedItem.downloadUrl === "#";
+      const missingDownloads = !savedItem.downloads || savedItem.downloads.length === 0;
+      const missingContent = !savedItem.content || savedItem.content.trim().length < 20;
+
+      const defaultDownloads = def.downloads || [];
+      const savedDownloads = savedItem.downloads || [];
+      const defaultUrls = new Set(defaultDownloads.map((d) => d.url));
+      const defaultIds = new Set(defaultDownloads.map((d) => d.id));
+      const extraUserDownloads = savedDownloads.filter(
+        (d) => !defaultIds.has(d.id) && !defaultUrls.has(d.url)
+      );
+      const mergedDownloads =
+        defaultDownloads.length > 0
+          ? [...defaultDownloads, ...extraUserDownloads]
+          : savedDownloads;
+
+      const isDefaultNewer =
+        def.updatedDate !== savedItem.updatedDate ||
+        defaultDownloads.length > savedDownloads.length;
+
+      return {
+        ...def,
+        ...savedItem,
+        title: isDefaultNewer ? def.title : savedItem.title,
+        description: isDefaultNewer ? def.description : savedItem.description,
+        downloadLabel: isDefaultNewer
+          ? def.downloadLabel
+          : savedItem.downloadLabel || def.downloadLabel,
+        updatedDate: isDefaultNewer ? def.updatedDate : savedItem.updatedDate,
+        tags: isDefaultNewer ? def.tags : savedItem.tags,
+        downloadUrl:
+          hasPlaceholderLink || isDefaultNewer ? def.downloadUrl : savedItem.downloadUrl,
+        downloads: missingDownloads
+          ? def.downloads
+          : isDefaultNewer
+          ? mergedDownloads
+          : savedItem.downloads,
+        content: missingContent || isDefaultNewer ? def.content : savedItem.content,
+      };
+    });
+    const existingIds = new Set(hydrated.map((r) => r.id));
+    const newFromInitial = defaultsList.filter((r) => !existingIds.has(r.id));
+    return [...hydrated, ...newFromInitial];
+  };
+
   // Local state for dynamic resources to allow editing and saving
   const [resourcesList, setResourcesList] = useState<EducationalResourceItem[]>(() => {
     try {
@@ -77,10 +130,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge with initial data
-          const existingIds = new Set(parsed.map((r: EducationalResourceItem) => r.id));
-          const newFromInitial = levelData.resources.filter((r) => !existingIds.has(r.id));
-          return [...parsed, ...newFromInitial];
+          return mergeResourcesWithDefaults(parsed, levelData.resources);
         }
       }
     } catch (e) {
@@ -97,9 +147,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const existingIds = new Set(parsed.map((r: EducationalResourceItem) => r.id));
-          const newFromInitial = levelData.resources.filter((r) => !existingIds.has(r.id));
-          setResourcesList([...parsed, ...newFromInitial]);
+          setResourcesList(mergeResourcesWithDefaults(parsed, levelData.resources));
           return;
         }
       }
@@ -229,23 +277,31 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
   };
 
   const handleCardDownloadClick = (item: EducationalResourceItem) => {
+    const rawUrl = item.downloadUrl || "";
+    if (rawUrl.startsWith("?tab=")) {
+      const targetTab = rawUrl.replace("?tab=", "").trim() as TabKey;
+      if (targetTab) {
+        onNavigateToTab(targetTab);
+        return;
+      }
+    }
     const gwSettings = getDownloadGatewaySettings();
     if (gwSettings.isEnabled) {
       setGatewayDownload({
         isOpen: true,
         title: item.downloadLabel || item.title,
-        url: item.downloadUrl || "#",
+        url: rawUrl || "#",
         format: item.format.toLowerCase().includes("doc") ? "word" : "pdf",
       });
     } else {
-      if (!item.downloadUrl || item.downloadUrl === "#") {
+      if (!rawUrl || rawUrl === "#") {
         if (onOpenPrintPreview) {
           onOpenPrintPreview();
         } else {
           window.print();
         }
       } else {
-        window.open(item.downloadUrl, "_blank", "noopener,noreferrer");
+        window.open(rawUrl, "_blank", "noopener,noreferrer");
       }
     }
   };
@@ -319,7 +375,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
 
       {/* 2. Profpress Official Direct Blog Banner */}
       {levelData.blogSourceUrl && (
-        <div className={`bg-gradient-to-r ${levelId === "primary_1" ? "from-rose-700 via-pink-800 to-rose-800 border-rose-400/30" : levelId === "primary_2" ? "from-amber-700 via-orange-800 to-amber-800 border-amber-400/30" : levelId === "primary_3" ? "from-emerald-700 via-teal-800 to-emerald-800 border-emerald-400/30" : levelId === "primary_4" ? "from-blue-700 via-indigo-800 to-blue-800 border-blue-400/30" : levelId === "primary_5" ? "from-teal-700 via-cyan-800 to-teal-800 border-teal-400/30" : "from-purple-700 via-indigo-700 to-purple-800 border-purple-400/30"} text-white rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border`}>
+        <div className={`bg-gradient-to-r ${levelId === "primary_1" ? "from-rose-700 via-pink-800 to-rose-800 border-rose-400/30" : levelId === "primary_2" ? "from-amber-700 via-orange-800 to-amber-800 border-amber-400/30" : levelId === "primary_3" || levelData.cycle === "middle" ? "from-emerald-700 via-teal-800 to-emerald-800 border-emerald-400/30" : levelId === "primary_4" ? "from-blue-700 via-indigo-800 to-blue-800 border-blue-400/30" : levelId === "primary_5" ? "from-teal-700 via-cyan-800 to-teal-800 border-teal-400/30" : "from-purple-700 via-indigo-700 to-purple-800 border-purple-400/30"} text-white rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border`}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-xs">
               <Globe className="w-5 h-5 text-amber-300" />
@@ -329,8 +385,8 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
                 <span className="text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md">
                   الصفحة الرسمية
                 </span>
-                <span className="text-xs text-white/90 font-mono font-bold">
-                  {levelData.blogSourceUrl.replace("https://", "")}
+                <span className="text-xs text-white/90 font-mono font-bold truncate max-w-md" dir="ltr">
+                  {decodeURIComponent(levelData.blogSourceUrl.replace("https://", ""))}
                 </span>
               </div>
               <h3 className="text-sm md:text-base font-black text-white mt-0.5">
@@ -344,7 +400,7 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               href={levelData.blogSourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`bg-white hover:bg-slate-50 ${levelId === "primary_1" ? "text-rose-900" : levelId === "primary_2" ? "text-amber-900" : levelId === "primary_3" ? "text-emerald-900" : levelId === "primary_4" ? "text-blue-900" : levelId === "primary_5" ? "text-teal-900" : "text-purple-900"} font-black px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs flex items-center gap-1.5`}
+              className={`bg-white hover:bg-slate-50 ${levelId === "primary_1" ? "text-rose-900" : levelId === "primary_2" ? "text-amber-900" : levelId === "primary_3" || levelData.cycle === "middle" ? "text-emerald-900" : levelId === "primary_4" ? "text-blue-900" : levelId === "primary_5" ? "text-teal-900" : "text-purple-900"} font-black px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs flex items-center gap-1.5 whitespace-nowrap shrink-0`}
             >
               <span>فتح الصفحة الأصلية</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -870,9 +926,16 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
               </div>
 
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-                <span className="text-[10px] text-slate-400">
-                  تحديث: {item.updatedDate}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-slate-400 tabular-nums">
+                    تحديث: {item.updatedDate}
+                  </span>
+                  {item.downloads && item.downloads.length > 0 && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 tabular-nums">
+                      {item.downloads.length} روابط مرفقة
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex items-center gap-1.5">
                   <button
@@ -922,6 +985,50 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
           </div>
         )}
       </div>
+
+      {/* 10. Semantic Curriculum Index & FAQ Section for Search Engines (SEO) */}
+      {levelData.seoFaqs && levelData.seoFaqs.length > 0 && (
+        <section
+          aria-labelledby="seo-faq-heading"
+          className="bg-white border border-slate-200/90 rounded-2xl p-5 md:p-6 shadow-2xs space-y-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center shrink-0">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 id="seo-faq-heading" className="text-base md:text-lg font-black text-slate-900">
+                  الدليل المرجعي والأسئلة الشائعة حول {levelData.title} ({levelData.academicYear})
+                </h2>
+                <p className="text-xs text-slate-500">
+                  معلومات مفصلة للأساتذة وأولياء الأمور حول المواد المقررة، الحروف، الفرنسية، الرياضيات وفروض المراقبة المستمرة
+                </p>
+              </div>
+            </div>
+            <span className="text-[11px] font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-lg">
+              {levelData.subjects.length} مواد دراسية
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {levelData.seoFaqs.map((faq, fIdx) => (
+              <article
+                key={fIdx}
+                className="bg-slate-50/80 border border-slate-200/80 rounded-xl p-4 space-y-1.5"
+              >
+                <h3 className="text-xs md:text-sm font-black text-slate-900 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>{faq.question}</span>
+                </h3>
+                <p className="text-xs text-slate-700 leading-relaxed pr-6">
+                  {faq.answer}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Reader Modal (Opens topic in a dedicated clean window/modal) */}
       {activeReaderResource && (

@@ -16,6 +16,30 @@ export const OFFICIAL_ADSENSE_CODE = `<script async src="https://pagead2.googles
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>`;
 
+export const GATEWAY_MULTIPLEX_ADSENSE_CODE = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2606934361036411"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-format="autorelaxed"
+     data-ad-client="ca-pub-2606934361036411"
+     data-ad-slot="8337494679"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`;
+
+export const BOTTOM_EDUCATION_ADSENSE_CODE = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2606934361036411"
+     crossorigin="anonymous"></script>
+<!-- respon bottom education -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-2606934361036411"
+     data-ad-slot="2562689217"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>`;
+
 export const DEFAULT_DOWNLOAD_GATEWAY_SETTINGS: DownloadGatewaySettings = {
   isEnabled: true,
   countdownSeconds: 10,
@@ -28,14 +52,25 @@ export const DEFAULT_DOWNLOAD_GATEWAY_SETTINGS: DownloadGatewaySettings = {
     publisherId: "ca-pub-2606934361036411",
     autoAdsEnabled: true,
     topBannerAdCode: OFFICIAL_ADSENSE_CODE,
-    middleBannerAdCode: OFFICIAL_ADSENSE_CODE,
-    bottomBannerAdCode: OFFICIAL_ADSENSE_CODE,
+    middleBannerAdCode: GATEWAY_MULTIPLEX_ADSENSE_CODE,
+    bottomBannerAdCode: BOTTOM_EDUCATION_ADSENSE_CODE,
     topAdCode: OFFICIAL_ADSENSE_CODE,
-    middleAdCode: OFFICIAL_ADSENSE_CODE,
-    bottomAdCode: OFFICIAL_ADSENSE_CODE,
+    middleAdCode: GATEWAY_MULTIPLEX_ADSENSE_CODE,
+    bottomAdCode: BOTTOM_EDUCATION_ADSENSE_CODE,
     showDemoAdsIfEmpty: false,
   },
 };
+
+function resolveMigratedAdCode(savedCode: unknown, fallbackCode: string): string {
+  if (typeof savedCode !== "string" || !savedCode.trim()) {
+    return fallbackCode;
+  }
+  // Migrate unmodified legacy default snippets to the new dedicated slot snippets
+  if (savedCode.trim() === OFFICIAL_ADSENSE_CODE.trim()) {
+    return fallbackCode;
+  }
+  return savedCode;
+}
 
 /**
  * Load Download Gateway and AdSense settings from localStorage
@@ -74,26 +109,26 @@ export function getDownloadGatewaySettings(): DownloadGatewaySettings {
           typeof parsed.adSettings?.topBannerAdCode === "string" && parsed.adSettings.topBannerAdCode
             ? parsed.adSettings.topBannerAdCode
             : OFFICIAL_ADSENSE_CODE,
-        middleBannerAdCode:
-          typeof parsed.adSettings?.middleBannerAdCode === "string" && parsed.adSettings.middleBannerAdCode
-            ? parsed.adSettings.middleBannerAdCode
-            : OFFICIAL_ADSENSE_CODE,
-        bottomBannerAdCode:
-          typeof parsed.adSettings?.bottomBannerAdCode === "string" && parsed.adSettings.bottomBannerAdCode
-            ? parsed.adSettings.bottomBannerAdCode
-            : OFFICIAL_ADSENSE_CODE,
+        middleBannerAdCode: resolveMigratedAdCode(
+          parsed.adSettings?.middleBannerAdCode,
+          GATEWAY_MULTIPLEX_ADSENSE_CODE
+        ),
+        bottomBannerAdCode: resolveMigratedAdCode(
+          parsed.adSettings?.bottomBannerAdCode,
+          BOTTOM_EDUCATION_ADSENSE_CODE
+        ),
         topAdCode:
           typeof parsed.adSettings?.topAdCode === "string" && parsed.adSettings.topAdCode
             ? parsed.adSettings.topAdCode
             : OFFICIAL_ADSENSE_CODE,
-        middleAdCode:
-          typeof parsed.adSettings?.middleAdCode === "string" && parsed.adSettings.middleAdCode
-            ? parsed.adSettings.middleAdCode
-            : OFFICIAL_ADSENSE_CODE,
-        bottomAdCode:
-          typeof parsed.adSettings?.bottomAdCode === "string" && parsed.adSettings.bottomAdCode
-            ? parsed.adSettings.bottomAdCode
-            : OFFICIAL_ADSENSE_CODE,
+        middleAdCode: resolveMigratedAdCode(
+          parsed.adSettings?.middleAdCode,
+          GATEWAY_MULTIPLEX_ADSENSE_CODE
+        ),
+        bottomAdCode: resolveMigratedAdCode(
+          parsed.adSettings?.bottomAdCode,
+          BOTTOM_EDUCATION_ADSENSE_CODE
+        ),
         showDemoAdsIfEmpty: false,
       },
     };

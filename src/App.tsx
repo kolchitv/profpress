@@ -20,6 +20,7 @@ import { TeachingCompetitionPage } from "./components/TeachingCompetitionPage";
 import { InspectionCompetitionPage } from "./components/InspectionCompetitionPage";
 import { OrientationPlanningPage } from "./components/OrientationPlanningPage";
 import { ExplicitTeachingPage } from "./components/ExplicitTeachingPage";
+import { MovementsSchoolsPage } from "./components/MovementsSchoolsPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { MindMapsHub } from "./components/MindMapsHub";
@@ -39,6 +40,7 @@ import {
   SubmitTopicModal,
 } from "./components/FooterModals";
 import { Footer } from "./components/Footer";
+import { AdSenseZone } from "./components/AdSenseZone";
 import { AdminLoginModal } from "./components/AdminLoginModal";
 import { AdminControlPanel } from "./components/AdminControlPanel";
 import {
@@ -47,9 +49,14 @@ import {
   ADMIN_SESSION_EVENT,
 } from "./utils/adminAuth";
 import { INITIAL_TOPICS } from "./data/announcementsData";
-import { TabKey, TeacherProfile, GradeLevelId, AdminSession, TopicItem } from "./types";
+import { TabKey, TeacherProfile, GradeLevelId, AdminSession, TopicItem, AdSenseSettings } from "./types";
 import { DEFAULT_TEACHER_PROFILE } from "./data/defaultTemplates";
 import { applyCustomScripts, getCustomCodeSettings, CUSTOM_CODE_EVENT } from "./utils/customScripts";
+import {
+  getDownloadGatewaySettings,
+  DOWNLOAD_GATEWAY_EVENT,
+} from "./utils/downloadGatewaySettings";
+import { updateSeoForTab } from "./utils/seoManager";
 import {
   Sparkles,
   School,
@@ -83,6 +90,7 @@ export default function App() {
           "inspection_competition",
           "orientation_planning",
           "explicit_teaching",
+          "movements_schools",
           "pedagogical_docs",
           "intensive_support",
           "daily_log",
@@ -160,6 +168,9 @@ export default function App() {
   const [adminSession, setAdminSession] = useState<AdminSession | null>(getStoredAdminSession);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdminControlPanelOpen, setIsAdminControlPanelOpen] = useState(false);
+  const [gatewayAdSettings, setGatewayAdSettings] = useState<AdSenseSettings>(
+    () => getDownloadGatewaySettings().adSettings
+  );
 
   // Synchronize topics for AdminControlPanel with auto-merge for official circulars
   const [topics, setTopics] = useState<TopicItem[]>(() => {
@@ -216,7 +227,7 @@ export default function App() {
     setIsProfileModalOpen(false);
   };
 
-  // Sync activeTab with URL query parameter (?tab=...)
+  // Sync activeTab with URL query parameter (?tab=...) and dynamic SEO metadata
   useEffect(() => {
     try {
       if (typeof window !== "undefined") {
@@ -227,6 +238,7 @@ export default function App() {
           url.searchParams.set("tab", activeTab);
         }
         window.history.replaceState({}, "", url.toString());
+        updateSeoForTab(activeTab);
       }
     } catch (e) {
       console.error(e);
@@ -254,6 +266,14 @@ export default function App() {
     };
     window.addEventListener(ADMIN_SESSION_EVENT, handleSessionChange);
     return () => window.removeEventListener(ADMIN_SESSION_EVENT, handleSessionChange);
+  }, []);
+
+  useEffect(() => {
+    const handleGatewayUpdate = () => {
+      setGatewayAdSettings(getDownloadGatewaySettings().adSettings);
+    };
+    window.addEventListener(DOWNLOAD_GATEWAY_EVENT, handleGatewayUpdate);
+    return () => window.removeEventListener(DOWNLOAD_GATEWAY_EVENT, handleGatewayUpdate);
   }, []);
 
   // Initialize and listen to custom script injections (Header, Body, Footer)
@@ -371,6 +391,13 @@ export default function App() {
 
           {activeTab === "explicit_teaching" && (
             <ExplicitTeachingPage onNavigateToTab={setActiveTab} />
+          )}
+
+          {activeTab === "movements_schools" && (
+            <MovementsSchoolsPage
+              teacherProfile={profile}
+              onNavigateToTab={setActiveTab}
+            />
           )}
 
           {activeTab === "pedagogical_docs" && (
@@ -768,6 +795,17 @@ export default function App() {
             <span className="text-[10px] text-emerald-100 font-medium block">ملاحظات وأسئلة</span>
           </div>
         </button>
+      </div>
+
+      {/* Global Bottom Google AdSense Unit (respon bottom education - Hidden in Print) */}
+      <div className="no-print max-w-7xl w-full mx-auto px-3 md:px-6 pb-4">
+        <AdSenseZone
+          zone="bottom"
+          adSettings={gatewayAdSettings}
+          slot="2562689217"
+          adFormat="auto"
+          client="ca-pub-2606934361036411"
+        />
       </div>
 
       {/* Footer (Hidden in Print) */}

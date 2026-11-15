@@ -6,6 +6,7 @@ export type TabKey =
   | "inspection_competition"
   | "orientation_planning"
   | "explicit_teaching"
+  | "movements_schools" // قسم الحركات الانتقالية ودليل المؤسسات التعليمية بالمغرب
   | "pedagogical_docs"
   | "daily_log"
   | "workshop_report"
@@ -110,6 +111,11 @@ export interface EducationalLevelInfo {
   };
   blogSourceUrl?: string;
   pioneerFeatures?: string[];
+  seoKeywords?: string[];
+  seoFaqs?: {
+    question: string;
+    answer: string;
+  }[];
   resources: EducationalResourceItem[];
 }
 
@@ -366,14 +372,21 @@ export interface ClassRuleItem {
 export interface FileCoverConfig {
   title: string;
   subTitle: string;
-  theme: "royal" | "modern" | "islamic" | "pioneer";
-  colorScheme: "emerald" | "amber" | "blue" | "burgundy";
+  theme: "royal" | "modern" | "islamic" | "pioneer" | "academic";
+  colorScheme: "emerald" | "amber" | "blue" | "burgundy" | "teal" | "slate";
   dossierType: string;
   authorName: string;
   schoolName: string;
   academicYear: string;
   level: string;
   quote: string;
+  language?: "ar" | "fr" | "bilingual";
+  academy?: string;
+  directorate?: string;
+  subject?: string;
+  somNumber?: string;
+  fontStyle?: "cairo" | "amiri" | "classic";
+  showEmblem?: boolean;
 }
 
 export interface StudentGrade {

@@ -7,6 +7,7 @@ import {
   QuickResourceCard,
   CompetitionDownloadFile,
   getDefaultDownloadFiles,
+  mergeCompetitionData,
 } from "../data/teachingCompetitionData";
 import { TabKey, AdminSession } from "../types";
 import { canUserDeleteArticles, getStoredAdminSession, ADMIN_SESSION_EVENT } from "../utils/adminAuth";
@@ -59,18 +60,348 @@ import {
   Lock,
   ShieldCheck,
   LayoutDashboard,
+  Printer,
+  FileType,
 } from "lucide-react";
+
+interface ExportLinkItem {
+  title: string;
+  url: string;
+  size?: string;
+  year?: string;
+  fileType?: string;
+}
+
+function escapeHtmlText(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function inferFileFormatBadge(file: {
+  fileType?: string;
+  url?: string;
+  size?: string;
+  year?: string;
+  title?: string;
+}): { label: string; className: string } {
+  const hint = `${file.fileType || ""} ${file.url || ""} ${file.size || ""} ${file.year || ""} ${file.title || ""}`.toLowerCase();
+  if (
+    file.fileType === "Word" ||
+    hint.includes(".doc") ||
+    hint.includes("word") ||
+    hint.includes("وورد")
+  ) {
+    return {
+      label: "Word (.doc)",
+      className: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+    };
+  }
+  if (file.fileType === "Drive" || hint.includes("drive.google.com") || hint.includes("drive")) {
+    return {
+      label: "Google Drive",
+      className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    };
+  }
+  if (file.fileType === "Web" || (!hint.includes("pdf") && !hint.includes("mediafire") && hint.includes("wolouj.men.gov.ma"))) {
+    return {
+      label: "بوابة رسمية",
+      className: "bg-amber-50 text-amber-800 border border-amber-200",
+    };
+  }
+  return {
+    label: "PDF",
+    className: "bg-rose-50 text-rose-700 border border-rose-200",
+  };
+}
+
+function formatBodyForExportHtml(rawBody?: string): string {
+  if (!rawBody || !rawBody.trim()) return "";
+  const trimmed = rawBody.trim();
+  if (/<(p|h1|h2|h3|h4|ul|ol|li|div|blockquote|table)\b/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  const lines = trimmed.split(/\r?\n/);
+  const parts: string[] = [];
+  let inList = false;
+
+  const formatInline = (txt: string) =>
+    escapeHtmlText(txt).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      if (inList) {
+        parts.push("</ul>");
+        inList = false;
+      }
+      continue;
+    }
+    if (line.startsWith("### ")) {
+      if (inList) {
+        parts.push("</ul>");
+        inList = false;
+      }
+      parts.push(`<h3>${formatInline(line.slice(4))}</h3>`);
+    } else if (line.startsWith("## ")) {
+      if (inList) {
+        parts.push("</ul>");
+        inList = false;
+      }
+      parts.push(`<h2>${formatInline(line.slice(3))}</h2>`);
+    } else if (line.startsWith("- ") || line.startsWith("* ")) {
+      if (!inList) {
+        parts.push("<ul>");
+        inList = true;
+      }
+      parts.push(`<li>${formatInline(line.slice(2))}</li>`);
+    } else if (/^\d+\.\s+/.test(line)) {
+      if (!inList) {
+        parts.push("<ul>");
+        inList = true;
+      }
+      parts.push(`<li>${formatInline(line.replace(/^\d+\.\s+/, ""))}</li>`);
+    } else if (line.startsWith("> ")) {
+      if (inList) {
+        parts.push("</ul>");
+        inList = false;
+      }
+      parts.push(`<blockquote>${formatInline(line.slice(2))}</blockquote>`);
+    } else {
+      if (inList) {
+        parts.push("</ul>");
+        inList = false;
+      }
+      parts.push(`<p>${formatInline(line)}</p>`);
+    }
+  }
+  if (inList) parts.push("</ul>");
+  return parts.join("\n");
+}
+
+function buildExportHtmlDocument(options: {
+  title: string;
+  subtitle?: string;
+  author?: string;
+  lastUpdated?: string;
+  summary?: string;
+  bodyContent?: string;
+  links?: ExportLinkItem[];
+  isWord?: boolean;
+}): string {
+  const safeTitle = escapeHtmlText(options.title);
+  const safeSubtitle = options.subtitle ? escapeHtmlText(options.subtitle) : "";
+  const safeAuthor = escapeHtmlText(options.author || "فريق التحرير البيداغوجي - بروف بريس");
+  const safeUpdated = escapeHtmlText(options.lastUpdated || "موسم 2026 / 2027");
+  const bodyHtml = formatBodyForExportHtml(options.bodyContent);
+
+  const linksRows = (options.links || [])
+    .map(
+      (lnk, i) => `
+      <tr>
+        <td style="padding:8px;border:1px solid #cbd5e1;text-align:center;">${i + 1}</td>
+        <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;">${escapeHtmlText(lnk.title)}</td>
+        <td style="padding:8px;border:1px solid #cbd5e1;text-align:center;">${escapeHtmlText(lnk.fileType || lnk.size || "PDF")}</td>
+        <td style="padding:8px;border:1px solid #cbd5e1;direction:ltr;text-align:left;font-size:11px;word-break:break-all;">
+          <a href="${escapeHtmlText(lnk.url)}">${escapeHtmlText(lnk.url)}</a>
+        </td>
+      </tr>`
+    )
+    .join("");
+
+  const wordNamespaces = options.isWord
+    ? 'xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"'
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl" ${wordNamespaces}>
+<head>
+  <meta charset="utf-8" />
+  <title>${safeTitle}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body {
+      font-family: "Cairo", "Tajawal", "Tahoma", "Arial", sans-serif;
+      direction: rtl;
+      text-align: right;
+      color: #0f172a;
+      line-height: 1.8;
+      font-size: 13pt;
+      margin: 0;
+      padding: 20px;
+    }
+    .doc-header {
+      border-bottom: 3px solid #1d4ed8;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+    .brand {
+      font-size: 11pt;
+      color: #1d4ed8;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    h1 {
+      font-size: 18pt;
+      color: #0f172a;
+      margin: 4px 0;
+    }
+    .meta {
+      font-size: 10.5pt;
+      color: #475569;
+    }
+    .summary-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-right: 4px solid #1d4ed8;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+    }
+    h2 { font-size: 14.5pt; color: #1e3a8a; margin-top: 18px; margin-bottom: 8px; }
+    h3 { font-size: 13pt; color: #0f172a; margin-top: 14px; margin-bottom: 6px; }
+    p { margin: 8px 0; }
+    ul { margin: 8px 0 12px 0; padding-right: 22px; }
+    li { margin-bottom: 5px; }
+    blockquote {
+      background: #eff6ff;
+      border-right: 4px solid #2563eb;
+      padding: 10px 14px;
+      margin: 12px 0;
+      color: #1e3a8a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 10.5pt;
+    }
+    th {
+      background: #eff6ff;
+      color: #1e3a8a;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-header">
+    <div class="brand">بروف بريس التربوية — الدليل الشامل لمباراة التعليم (CRMEF 2026)</div>
+    <h1>${safeTitle}</h1>
+    <div class="meta">
+      ${safeSubtitle ? `<span>${safeSubtitle}</span> · ` : ""}
+      <span>الإعداد: ${safeAuthor}</span> · <span>التحديث: ${safeUpdated}</span>
+    </div>
+  </div>
+  ${
+    options.summary
+      ? `<div class="summary-box"><strong>الملخص التوجيهي:</strong><br/>${escapeHtmlText(options.summary)}</div>`
+      : ""
+  }
+  <div class="article-body">
+    ${bodyHtml || `<p>${escapeHtmlText(options.summary || options.title)}</p>`}
+  </div>
+  ${
+    linksRows
+      ? `<h2>المراجع وروابط التحميل المرفقة</h2>
+         <table>
+           <thead>
+             <tr>
+               <th style="width:40px;text-align:center;">#</th>
+               <th>عنوان الملف / المرجع</th>
+               <th style="width:95px;text-align:center;">الصيغة</th>
+               <th>الرابط المباشر</th>
+             </tr>
+           </thead>
+           <tbody>${linksRows}</tbody>
+         </table>`
+      : ""
+  }
+</body>
+</html>`;
+}
+
+function exportTopicAsWordDoc(options: {
+  title: string;
+  subtitle?: string;
+  author?: string;
+  lastUpdated?: string;
+  summary?: string;
+  bodyContent?: string;
+  links?: ExportLinkItem[];
+}) {
+  const html = buildExportHtmlDocument({ ...options, isWord: true });
+  const blob = new Blob(["\ufeff", html], { type: "application/msword;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const safeName = options.title.replace(/[\\/:*?"<>|]/g, "-").slice(0, 70) || "profpress-topic";
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${safeName}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function exportTopicAsPrintablePdf(options: {
+  title: string;
+  subtitle?: string;
+  author?: string;
+  lastUpdated?: string;
+  summary?: string;
+  bodyContent?: string;
+  links?: ExportLinkItem[];
+}) {
+  const html = buildExportHtmlDocument({ ...options, isWord: false });
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  iframe.style.opacity = "0";
+  iframe.setAttribute("aria-hidden", "true");
+  document.body.appendChild(iframe);
+
+  const cleanup = () => {
+    setTimeout(() => {
+      if (iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+    }, 1200);
+  };
+
+  iframe.onload = () => {
+    try {
+      const win = iframe.contentWindow;
+      if (win) {
+        win.addEventListener("afterprint", cleanup, { once: true });
+        win.focus();
+        win.print();
+      }
+    } finally {
+      setTimeout(cleanup, 15000);
+    }
+  };
+  iframe.srcdoc = html;
+}
 
 interface Props {
   onNavigateToTab?: (tab: TabKey) => void;
 }
 
 export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) => {
-  // 1. Data state with LocalStorage persistence
+  // 1. Data state with LocalStorage persistence + automatic 2026 content hydration
   const [data, setData] = useState<TeachingCompetitionPageData>(() => {
     try {
       const saved = localStorage.getItem("profpress_teaching_competition_data");
-      if (saved) return JSON.parse(saved);
+      if (saved) return mergeCompetitionData(JSON.parse(saved));
     } catch {
       // Fallback
     }
@@ -111,8 +442,8 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
   const [editingQuickDownloadId, setEditingQuickDownloadId] = useState<string | null>(null);
   const [quickDownloadTitle, setQuickDownloadTitle] = useState("");
   const [quickDownloadUrl, setQuickDownloadUrl] = useState("");
-  const [quickDownloadSize, setQuickDownloadSize] = useState("1.2 MB");
-  const [quickDownloadYear, setQuickDownloadYear] = useState("2024");
+  const [quickDownloadSize, setQuickDownloadSize] = useState("1.5 MB");
+  const [quickDownloadYear, setQuickDownloadYear] = useState("2026");
 
   // QCM Interactive State
   const [currentQcmIndex, setCurrentQcmIndex] = useState(0);
@@ -341,6 +672,24 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
           iconBox: "bg-purple-100 text-purple-700",
           title: "text-purple-950",
         };
+      case "emerald":
+        return {
+          container: "border-emerald-300/80 bg-emerald-50/20 hover:bg-emerald-50/50 hover:border-emerald-400",
+          iconBox: "bg-emerald-100 text-emerald-700",
+          title: "text-emerald-950",
+        };
+      case "indigo":
+        return {
+          container: "border-indigo-300/80 bg-indigo-50/20 hover:bg-indigo-50/50 hover:border-indigo-400",
+          iconBox: "bg-indigo-100 text-indigo-700",
+          title: "text-indigo-950",
+        };
+      case "rose":
+        return {
+          container: "border-rose-300/80 bg-rose-50/20 hover:bg-rose-50/50 hover:border-rose-400",
+          iconBox: "bg-rose-100 text-rose-700",
+          title: "text-rose-950",
+        };
       default:
         return {
           container: "border-slate-300 bg-slate-50",
@@ -428,8 +777,8 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
     setIsAddingQuickDownload(true);
     setQuickDownloadTitle(file.title);
     setQuickDownloadUrl(file.url);
-    setQuickDownloadSize(file.size || "1.2 MB");
-    setQuickDownloadYear(file.year || "2024");
+    setQuickDownloadSize(file.size || "1.5 MB");
+    setQuickDownloadYear(file.year || "2026");
   };
 
   const handleCancelQuickDownload = () => {
@@ -437,8 +786,8 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
     setEditingQuickDownloadId(null);
     setQuickDownloadTitle("");
     setQuickDownloadUrl("");
-    setQuickDownloadSize("1.2 MB");
-    setQuickDownloadYear("2024");
+    setQuickDownloadSize("1.5 MB");
+    setQuickDownloadYear("2026");
   };
 
   const handleSaveQuickDownload = (e: React.FormEvent) => {
@@ -563,7 +912,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
   // Handler for deleting a subject (strictly restricted to manager)
   const handleDeleteSubject = (id: string) => {
     if (!isManager) {
-      alert("عذراً، صلاحية حذف المواد والتخصصات مقتصرة حصرياً على مدير المنصة الرئيسي.");
+      showToast("عذراً، صلاحية حذف المواد والتخصصات مقتصرة على مدير المنصة الرئيسي.");
       return;
     }
     if (window.confirm("هل أنت متأكد من حذف هذه المادة من الصفحة؟")) {
@@ -637,7 +986,6 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
           {isAdmin && (
             <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
               <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-black shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
                 <span>المدير: {adminSession?.adminName || adminSession?.adminEmail}</span>
               </div>
@@ -645,7 +993,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
               <button
                 id="competition-toggle-edit-mode-btn"
                 onClick={() => setEditMode(!editMode)}
-                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-xs cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-xs cursor-pointer whitespace-nowrap shrink-0 ${
                   editMode
                     ? "bg-amber-500 hover:bg-amber-600 text-white ring-2 ring-amber-300"
                     : "bg-slate-900 hover:bg-slate-800 text-white"
@@ -659,7 +1007,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
               {editMode && (
                 <button
                   onClick={handleResetDefaults}
-                  className="bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                  className="bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer whitespace-nowrap shrink-0"
                   title="استعادة التقسيم والمحتوى الافتراضي"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -670,8 +1018,8 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
           )}
         </div>
 
-        {/* Top 4 Dashed Resource Cards (النموذج الموضح بالصورة) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Top Quick Resource Cards (6 balanced cards: Specs, News, Wolouj/Registration, Oral, Edu Sciences Pack, Exams Bank) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {data.quickResources.map((card) => {
             const style = getQuickResourceStyle(card.color);
             return (
@@ -875,9 +1223,13 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                     )}
                   </div>
 
-                  {/* 5 Action Blocks Grid */}
+                  {/* Action Blocks Grid */}
                   <div className="p-4 md:p-5">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    <div
+                      className={`grid grid-cols-2 sm:grid-cols-3 ${
+                        sub.actions.length >= 6 ? "md:grid-cols-6" : "md:grid-cols-5"
+                      } gap-3`}
+                    >
                       {sub.actions.map((act) => (
                         <div
                           key={act.id}
@@ -897,9 +1249,9 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       ))}
                     </div>
 
-                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        {sub.actions.length} محاور وموارد متوفرة
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                      <span className="text-[11px] text-slate-500 font-medium tabular-nums">
+                        {sub.actions.length} محاور وموارد متوفرة · مقالات وملفات PDF و Word و QCM
                       </span>
                       {isEditActive && (
                         <button
@@ -1016,7 +1368,11 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                   </div>
 
                   <div className="p-4 md:p-5">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    <div
+                      className={`grid grid-cols-2 sm:grid-cols-3 ${
+                        sub.actions.length >= 6 ? "md:grid-cols-6" : "md:grid-cols-5"
+                      } gap-3`}
+                    >
                       {sub.actions.map((act) => (
                         <div
                           key={act.id}
@@ -1036,9 +1392,9 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                       ))}
                     </div>
 
-                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        {sub.actions.length} محاور وموارد متوفرة
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                      <span className="text-[11px] text-slate-500 font-medium tabular-nums">
+                        {sub.actions.length} محاور وموارد متوفرة · مقالات وملفات PDF و Word و QCM
                       </span>
                       {isEditActive && (
                         <button
@@ -1343,36 +1699,81 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
 
               return (
                 <div className="space-y-4">
-                  {/* Tab Selector: Summary & Downloads vs Full Article */}
-                  <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                    <button
-                      type="button"
-                      onClick={() => setActionModalTab("summary")}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
-                        actionModalTab === "summary"
-                          ? "bg-blue-800 text-white shadow-2xs"
-                          : "text-slate-600 hover:text-slate-900 bg-slate-100"
-                      }`}
-                    >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>الملخص التوجيهي وروابط التحميل ({activeFiles.length})</span>
-                    </button>
+                  {/* Tab Selector & Direct Word / PDF Export Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setActionModalTab("summary")}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                          actionModalTab === "summary"
+                            ? "bg-blue-800 text-white shadow-2xs"
+                            : "text-slate-600 hover:text-slate-900 bg-slate-100"
+                        }`}
+                      >
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span className="tabular-nums">الملخص والملفات ({activeFiles.length})</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setActionModalTab("article")}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
-                        actionModalTab === "article"
-                          ? "bg-blue-800 text-white shadow-2xs"
-                          : "text-slate-600 hover:text-slate-900 bg-slate-100"
-                      }`}
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>قراءة الموضوع كاملاً (المحتوى التحريري)</span>
-                      {activeActionModal.action.articleContent && (
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      )}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setActionModalTab("article")}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                          actionModalTab === "article"
+                            ? "bg-blue-800 text-white shadow-2xs"
+                            : "text-slate-600 hover:text-slate-900 bg-slate-100"
+                        }`}
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>قراءة المقالة كاملة</span>
+                        {activeActionModal.action.articleContent && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          exportTopicAsWordDoc({
+                            title: `${activeActionModal.action.title} — ${activeActionModal.subject.title}`,
+                            subtitle: activeActionModal.action.subtitle,
+                            author: activeActionModal.action.author,
+                            lastUpdated: activeActionModal.action.lastUpdated,
+                            summary: activeActionModal.action.contentSummary,
+                            bodyContent: activeActionModal.action.articleContent,
+                            links: activeFiles,
+                          });
+                          showToast("تم تحميل الموضوع بصيغة Word (.doc)");
+                        }}
+                        className="bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-[11px] font-black px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition cursor-pointer whitespace-nowrap shrink-0"
+                        title="تحميل هذا الموضوع كاملاً في ملف Word قابل للتعديل"
+                      >
+                        <FileType className="w-3.5 h-3.5" />
+                        <span>تصدير Word (.doc)</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          exportTopicAsPrintablePdf({
+                            title: `${activeActionModal.action.title} — ${activeActionModal.subject.title}`,
+                            subtitle: activeActionModal.action.subtitle,
+                            author: activeActionModal.action.author,
+                            lastUpdated: activeActionModal.action.lastUpdated,
+                            summary: activeActionModal.action.contentSummary,
+                            bodyContent: activeActionModal.action.articleContent,
+                            links: activeFiles,
+                          })
+                        }
+                        className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-[11px] font-black px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition cursor-pointer whitespace-nowrap shrink-0"
+                        title="حفظ أو طباعة الموضوع بصيغة PDF جاهزة"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>حفظ / طباعة PDF</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* TAB A: SUMMARY & DOWNLOADS */}
@@ -1380,7 +1781,7 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                     <div className="space-y-4">
                       {/* Summary Box */}
                       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <div className="flex items-center gap-2 text-slate-800 font-bold text-xs sm:text-sm">
                             <BookOpen className="w-4 h-4 text-blue-700" />
                             <span>الملخص التوجيهي والمحاور الأساسية:</span>
@@ -1399,10 +1800,10 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
 
                       {/* Download Files Section with Edit / Add controls */}
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <h4 className="font-black text-xs sm:text-sm text-slate-800 flex items-center gap-1.5">
                             <Download className="w-4 h-4 text-blue-700" />
-                            <span>الملفات ونماذج الامتحانات المتاحة للتحميل ({activeFiles.length}):</span>
+                            <span className="tabular-nums">الملفات ونماذج الامتحانات المتاحة للتحميل ({activeFiles.length}):</span>
                           </h4>
                           {isAdmin && (
                             <button
@@ -1413,9 +1814,9 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                                 setQuickDownloadTitle("");
                                 setQuickDownloadUrl("");
                                 setQuickDownloadSize("1.5 MB");
-                                setQuickDownloadYear("2024");
+                                setQuickDownloadYear("2026");
                               }}
-                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
                               title="إضافة رابط تحميل جديد (خاص بالمدير)"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -1516,67 +1917,73 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                           </div>
                         ) : (
                           <div className="space-y-2">
-                            {activeFiles.map((file, idx) => (
-                              <div
-                                key={file.id || idx}
-                                className={`bg-white border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-blue-300 transition ${
-                                  editingQuickDownloadId === file.id
-                                    ? "border-blue-500 bg-blue-50/40 ring-1 ring-blue-300"
-                                    : "border-slate-200"
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-                                    <FileDown className="w-4 h-4" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="font-bold text-slate-800 block truncate">{file.title}</span>
-                                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
-                                      {file.year && (
-                                        <span className="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded-md font-bold">
-                                          {file.year}
+                            {activeFiles.map((file, idx) => {
+                              const badge = inferFileFormatBadge(file);
+                              return (
+                                <div
+                                  key={file.id || idx}
+                                  className={`bg-white border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-blue-300 transition ${
+                                    editingQuickDownloadId === file.id
+                                      ? "border-blue-500 bg-blue-50/40 ring-1 ring-blue-300"
+                                      : "border-slate-200"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                                      <FileDown className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <span className="font-bold text-slate-800 block truncate">{file.title}</span>
+                                      <div className="flex items-center flex-wrap gap-2 text-[11px] text-slate-500 mt-0.5">
+                                        <span className={`px-1.5 py-0.5 rounded-md font-black text-[10px] ${badge.className}`}>
+                                          {badge.label}
                                         </span>
-                                      )}
-                                      <span>الحجم: {file.size || "PDF"}</span>
+                                        {file.year && (
+                                          <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-bold tabular-nums">
+                                            {file.year}
+                                          </span>
+                                        )}
+                                        <span className="tabular-nums">الحجم: {file.size || badge.label}</span>
+                                      </div>
                                     </div>
                                   </div>
+
+                                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                                    <a
+                                      href={file.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition whitespace-nowrap shrink-0"
+                                    >
+                                      <Download className="w-3.5 h-3.5" />
+                                      <span>فتح / تحميل</span>
+                                    </a>
+
+                                    {isAdmin && (
+                                      <>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleStartEditQuickDownload(file)}
+                                          className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                                          title="تعديل هذا الرابط (خاص بالمدير)"
+                                        >
+                                          <Edit3 className="w-3.5 h-3.5" />
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteQuickDownload(file.id)}
+                                          className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                                          title="حذف هذا الرابط (خاص بالمدير)"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
-
-                                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                                  <a
-                                    href={file.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition"
-                                  >
-                                    <Download className="w-3.5 h-3.5" />
-                                    <span>تحميل ({file.size || "PDF"})</span>
-                                  </a>
-
-                                  {isAdmin && (
-                                    <>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleStartEditQuickDownload(file)}
-                                        className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition cursor-pointer"
-                                        title="تعديل هذا الرابط (خاص بالمدير)"
-                                      >
-                                        <Edit3 className="w-3.5 h-3.5" />
-                                      </button>
-
-                                      <button
-                                        type="button"
-                                        onClick={() => handleDeleteQuickDownload(file.id)}
-                                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                                        title="حذف هذا الرابط (خاص بالمدير)"
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>
@@ -1911,53 +2318,58 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
 
               {activeQuickResourceModal.downloadLinks && activeQuickResourceModal.downloadLinks.length > 0 ? (
                 <div className="grid grid-cols-1 gap-2">
-                  {activeQuickResourceModal.downloadLinks.map((link) => (
-                    <div
-                      key={link.id}
-                      className="bg-white border border-slate-200 hover:border-blue-400 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs hover:shadow-xs transition"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-                          <FileText className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="font-black text-xs sm:text-sm text-slate-900 truncate">
-                            {link.title}
-                          </h4>
-                          <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
-                            {link.size && <span>الحجم: {link.size}</span>}
-                            {link.year && <span>• السنة: {link.year}</span>}
-                            {link.note && <span className="text-slate-400">• {link.note}</span>}
+                  {activeQuickResourceModal.downloadLinks.map((link) => {
+                    const badge = inferFileFormatBadge(link);
+                    return (
+                      <div
+                        key={link.id}
+                        className="bg-white border border-slate-200 hover:border-blue-400 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs hover:shadow-xs transition"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="font-black text-xs sm:text-sm text-slate-900 truncate">
+                              {link.title}
+                            </h4>
+                            <div className="flex items-center flex-wrap gap-2 text-[11px] text-slate-500 mt-0.5">
+                              <span className={`px-1.5 py-0.5 rounded-md font-black text-[10px] ${badge.className}`}>
+                                {badge.label}
+                              </span>
+                              {link.size && <span className="tabular-nums">الحجم: {link.size}</span>}
+                              {link.year && <span className="tabular-nums">• {link.year}</span>}
+                              {link.note && <span className="text-slate-400">• {link.note}</span>}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const cardToEdit = activeQuickResourceModal;
-                            setActiveQuickResourceModal(null);
-                            setEditingQuickResource(cardToEdit);
-                          }}
-                          className="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 p-1.5 rounded-lg text-xs transition cursor-pointer border border-slate-200"
-                          title="تعديل هذا الرابط"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 shadow-2xs"
-                          download
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>تحميل</span>
-                        </a>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const cardToEdit = activeQuickResourceModal;
+                              setActiveQuickResourceModal(null);
+                              setEditingQuickResource(cardToEdit);
+                            }}
+                            className="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 p-1.5 rounded-lg text-xs transition cursor-pointer border border-slate-200"
+                            title="تعديل هذا الرابط"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 shadow-2xs whitespace-nowrap"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>فتح / تحميل</span>
+                          </a>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-500">
@@ -1967,15 +2379,55 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-              <a
-                href={activeQuickResourceModal.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow-xs"
-              >
-                <span>الانتقال للمصدر الرسمي ↗</span>
-              </a>
+            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+              <div className="flex items-center flex-wrap gap-2">
+                <a
+                  href={activeQuickResourceModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition shadow-xs whitespace-nowrap shrink-0"
+                >
+                  <span>الانتقال للمصدر الرسمي</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportTopicAsWordDoc({
+                      title: activeQuickResourceModal.title,
+                      subtitle: activeQuickResourceModal.subtitle,
+                      author: activeQuickResourceModal.author,
+                      lastUpdated: activeQuickResourceModal.lastUpdated,
+                      bodyContent: activeQuickResourceModal.writtenContent,
+                      links: activeQuickResourceModal.downloadLinks,
+                    });
+                    showToast("تم تحميل الدليل بصيغة Word (.doc)");
+                  }}
+                  className="bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <FileType className="w-3.5 h-3.5" />
+                  <span>تحميل Word (.doc)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    exportTopicAsPrintablePdf({
+                      title: activeQuickResourceModal.title,
+                      subtitle: activeQuickResourceModal.subtitle,
+                      author: activeQuickResourceModal.author,
+                      lastUpdated: activeQuickResourceModal.lastUpdated,
+                      bodyContent: activeQuickResourceModal.writtenContent,
+                      links: activeQuickResourceModal.downloadLinks,
+                    })
+                  }
+                  className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>حفظ / طباعة PDF</span>
+                </button>
+              </div>
 
               <div className="flex items-center gap-2">
                 <button
@@ -1985,14 +2437,14 @@ export const TeachingCompetitionPage: React.FC<Props> = ({ onNavigateToTab }) =>
                     setActiveQuickResourceModal(null);
                     setEditingQuickResource(cardToEdit);
                   }}
-                  className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                  className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Edit3 className="w-3.5 h-3.5 text-amber-600" />
-                  <span>تعديل المقال والمرفقات والروابط</span>
+                  <span>تعديل المقال والمرفقات</span>
                 </button>
                 <button
                   onClick={() => setActiveQuickResourceModal(null)}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap shrink-0"
                 >
                   إغلاق
                 </button>

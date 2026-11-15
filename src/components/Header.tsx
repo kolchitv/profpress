@@ -33,6 +33,7 @@ import {
   School,
   Ruler,
   Layers,
+  MapPin,
 } from "lucide-react";
 import { TabKey, AdminSession } from "../types";
 
@@ -470,7 +471,28 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </button>
 
-          {/* 7. مباراة التعليم */}
+          {/* 7. الحركات الانتقالية ودليل المؤسسات */}
+          <button
+            key="movements_schools"
+            id="nav-tab-movements-schools"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("movements_schools");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "movements_schools"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <MapPin className={`w-4 h-4 ${activeTab === "movements_schools" ? "text-amber-300" : "text-teal-600"}`} />
+            <span>الحركات ودليل المؤسسات</span>
+            <span className="text-[10px] bg-teal-100 text-teal-900 px-1.5 py-0.2 rounded-md font-bold">
+              دليل + نقط
+            </span>
+          </button>
+
+          {/* 8. مباراة التعليم */}
           <button
             key="competitions"
             id="nav-tab-competitions"

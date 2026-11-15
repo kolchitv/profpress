@@ -50,6 +50,7 @@ import {
   MessageCircle,
   Files,
   Ruler,
+  MapPin,
 } from "lucide-react";
 import { TabKey, TeacherProfile } from "../types";
 import { SmartToolsModal } from "./SmartToolsModal";
@@ -283,19 +284,42 @@ export const HomePage: React.FC<HomePageProps> = ({
       iconBg: "bg-amber-50",
       borderHover: "hover:border-amber-400",
       borderBottomColor: "border-b-amber-500",
-      description: "عروض PPT للمسلاط، كراسات التلميذ، والسيناريوهات البيداغوجية لمؤسسات الريادة",
-      badge: "الريادة",
+      description: "عروض PPTX/PPSX للمسلاط (عربية، فرنسية، رياضيات، نشاط علمي) 1AEP إلى 6AEP + الأقسام المشتركة 2026/2027",
+      badge: "2026/2027",
       externalUrl: PROFPRESS_LINKS.explicitTeaching,
       content: {
-        subtitle: "الحقيبة البيداغوجية الشاملة لدروس التعليم الصريح (Enseignement Explicite)",
+        subtitle: "الحقيبة البيداغوجية المحينة لدروس التعليم الصريح 2026 / 2027",
         highlights: [
-          "عروض تفاعلية بصيغة PPTX جاهزة للمسلاط الضوئي تغطي مستويات 1AEP إلى 6AEP.",
-          "تطبيق المراحل الخمس: التهيئة، النمذجة (أنا أعمل)، الممارسة الموجهة (نحن نعمل)، الممارسة المستقلة، والتقويم الفوري.",
-          "كراسات التلميذ المحينة ودلائل الأستاذ لجميع الوحدات الدراسية المعتمدة بمدارس الريادة.",
+          "عروض تفاعلية محينة (PPTX / PPSX) تغطي مستويات 1AEP إلى 6AEP والأقسام المشتركة في المواد الأربع (العربية، الفرنسية، الرياضيات، النشاط العلمي).",
+          "معاينة وتحميل مباشر لمجلدات Google Drive لكل مادة ومستوى، بالإضافة إلى رابط تطبيق TelmidTice الرسمي (v1.0.9).",
+          "مصفوفة المراحل الخمس (I Do · We Do · You Do) والمرتكزات الديداكتيكية وبنك جذاذات وسيناريوهات الدروس.",
         ],
-        tips: "استخدم عروض PPT التفاعلية لترسيخ الوعي الصوتي والطلاقة والحساب الذهني اليومي.",
+        tips: "يمكنك معاينة مجلدات الدروس مباشرة داخل المنصة أو دمجها مع قسم الخرائط الذهنية والدعم المكثف.",
         actionLabel: "فتح فضاء التعليم الصريح",
         targetTab: "explicit_teaching",
+      },
+    },
+    {
+      id: "movements_schools",
+      title: "الحركات ودليل المؤسسات",
+      targetTab: "movements_schools",
+      icon: MapPin,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-50",
+      borderHover: "hover:border-teal-400",
+      borderBottomColor: "border-b-teal-600",
+      description: "تصفح وإضافة معطيات المؤسسات التعليمية بـ 12 أكاديمية و 82 مديرية، مع حاسبة نقط الحركة الانتقالية وبطاقة الرغبات",
+      badge: "دليل + نقط",
+      content: {
+        subtitle: "دليل المؤسسات التعليمية المغربية وحاسبة نقط الحركة الانتقالية",
+        highlights: [
+          "بحث متدرج حسب الأكاديميات الجهوية (12) والمديريات الإقليمية (82) مع استيراد اللوائح الرسمية للمؤسسات.",
+          "نموذج إضافة معلومات ميدانية شاملة عن أي مؤسسة (الكراء، المواصلات، الأمان، السكن، رمز GRESA، المرافق والإنترنت).",
+          "حاسبة نقط الحركة الانتقالية وبناء لائحة الرغبات المرتبة (10 اختيارات) القابلة للطباعة.",
+        ],
+        tips: "ساهم في إثراء الدليل بمعلومات مؤسستك لمساعدة الأساتذة المقبلين على الحركة الانتقالية أو التعيين الأول.",
+        actionLabel: "فتح دليل المؤسسات والحركات",
+        targetTab: "movements_schools",
       },
     },
     {
@@ -491,6 +515,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       icon: Presentation,
       iconColor: "text-amber-700",
       iconBg: "bg-amber-50",
+    },
+    {
+      id: "movements_schools_doc",
+      tab: "movements_schools" as TabKey,
+      title: "دليل المؤسسات والحركات الانتقالية (82 مديرية)",
+      category: "التدبير الإداري والحركة",
+      cycle: ["primary", "middle", "high"],
+      badge: "دليل ميداني + حاسبة نقط",
+      badgeColor: "bg-teal-100 text-teal-900 border-teal-300 font-bold",
+      description:
+        "تصفح المعطيات الميدانية للمؤسسات التعليمية (الكراء، المواصلات، الخدمات، GRESA)، إضافة مؤسسة عبر نموذج من 6 خطوات، وحساب نقط الحركة الانتقالية مع ترتيب بطاقة الرغبات.",
+      icon: MapPin,
+      iconColor: "text-teal-700",
+      iconBg: "bg-teal-50",
     },
     {
       id: "daily_log",
@@ -889,13 +927,22 @@ export const HomePage: React.FC<HomePageProps> = ({
     },
     {
       id: "explicit_teaching",
-      title: "دروس التعليم الصريح",
+      title: "دروس التعليم الصريح 2026/2027",
       icon: GraduationCap,
       iconColor: "text-rose-600",
       iconBg: "bg-rose-50",
-      subtext: "النمذجة، الممارسة الموجهة والمستقلة",
+      subtext: "العربية · الفرنسية · الرياضيات · النشاط العلمي",
       externalUrl: PROFPRESS_LINKS.explicitTeaching,
-      action: () => onNavigateToTab("articles"),
+      action: () => onNavigateToTab("explicit_teaching"),
+    },
+    {
+      id: "movements_schools_trending",
+      title: "دليل المؤسسات والحركات الانتقالية",
+      icon: MapPin,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-50",
+      subtext: "82 مديرية · الكراء والنقل · حاسبة النقط",
+      action: () => onNavigateToTab("movements_schools"),
     },
     {
       id: "gpa_calc",
@@ -1049,8 +1096,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، الوثائق التربوية، التعليم الصريح...) */}
       {/* ========================================================================= */}
       <section className="no-print">
-        {/* 8 Responsive Rounded Cards Bar with solid colored bottom borders */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        {/* 10 Responsive Rounded Cards Bar (5x2 on desktop) with solid colored bottom borders */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {portalCategories.map((item) => {
             const Icon = item.icon;
             const handleClick = () => {

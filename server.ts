@@ -50,6 +50,42 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Cached Morocco schools by provincial directorate ID
+  const directorateSchoolsCache = new Map<string, { data: any[]; cachedAt: number }>();
+  app.get("/api/morocco-schools", async (req, res) => {
+    const dirId = String(req.query.directorate_id || "").trim();
+    if (!/^\d+$/.test(dirId)) {
+      return res.status(400).json({ error: "Invalid directorate_id", schools: [] });
+    }
+
+    const cached = directorateSchoolsCache.get(dirId);
+    if (cached && Date.now() - cached.cachedAt < 24 * 60 * 60 * 1000) {
+      return res.json({ schools: cached.data, cached: true });
+    }
+
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 7000);
+      const upstream = await fetch(
+        `https://taalimtools.com/tools/school-info/ajax.php?action=get_schools&directorate_id=${encodeURIComponent(dirId)}`,
+        {
+          headers: { "User-Agent": "Mozilla/5.0 Profpress-Directory/1.0" },
+          signal: controller.signal,
+        }
+      );
+      clearTimeout(timer);
+      if (!upstream.ok) {
+        return res.json({ schools: [], fallback: true });
+      }
+      const data = await upstream.json();
+      const schools = Array.isArray(data) ? data : [];
+      directorateSchoolsCache.set(dirId, { data: schools, cachedAt: Date.now() });
+      return res.json({ schools, cached: false });
+    } catch {
+      return res.json({ schools: [], fallback: true });
+    }
+  });
+
   // AI-powered Massar & Pedagogical Remark Generator
   app.post("/api/generate-remarks", async (req, res) => {
     try {

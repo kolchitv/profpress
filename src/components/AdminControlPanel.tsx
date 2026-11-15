@@ -2337,13 +2337,11 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                       setGatewaySettings((prev) => {
                         const snippet = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
      crossorigin="anonymous"></script>
-<!-- respon inside education -->
 <ins class="adsbygoogle"
      style="display:block"
+     data-ad-format="autorelaxed"
      data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
-     data-ad-slot="4039422419"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
+     data-ad-slot="8337494679"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>`;
@@ -2359,7 +2357,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                     }
                     className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-200 cursor-pointer self-start sm:self-auto transition"
                   >
-                    + شفرة إعلان 4039422419
+                    + شفرة إعلان 8337494679
                   </button>
                 </div>
 
@@ -2406,11 +2404,11 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                       setGatewaySettings((prev) => {
                         const snippet = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
      crossorigin="anonymous"></script>
-<!-- respon inside education -->
+<!-- respon bottom education -->
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="${prev.adSettings.publisherId || "ca-pub-2606934361036411"}"
-     data-ad-slot="4039422419"
+     data-ad-slot="2562689217"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
 <script>
@@ -2428,7 +2426,7 @@ export const AdminControlPanel: React.FC<AdminControlPanelProps> = ({
                     }
                     className="text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg border border-blue-200 cursor-pointer self-start sm:self-auto transition"
                   >
-                    + شفرة إعلان 4039422419
+                    + شفرة إعلان 2562689217
                   </button>
                 </div>
 

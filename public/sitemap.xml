@@ -187,9 +187,9 @@
   <!-- 24. المستوى الأول ابتدائي -->
   <url>
     <loc>https://www.profpress.net/?tab=primary_1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
   </url>
 
   <!-- 25. المستوى الثاني ابتدائي -->
@@ -275,8 +275,60 @@
   <!-- 35. الثانية باكالوريا -->
   <url>
     <loc>https://www.profpress.net/?tab=high_2bac</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-11-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- 36. فضاء التعليم الابتدائي الشامل -->
+  <url>
+    <loc>https://www.profpress.net/?tab=primaire</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 37. الحركات الانتقالية ودليل المؤسسات التعليمية -->
+  <url>
+    <loc>https://www.profpress.net/?tab=movements_schools</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 38. الخطاطات الذهنية التربوية -->
+  <url>
+    <loc>https://www.profpress.net/?tab=mindmaps</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 39. شبكة تتبع تحكم المستوى الأول -->
+  <url>
+    <loc>https://www.profpress.net/?tab=level1_tracking_grid</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 40. شبكات التتبع لمادة الرياضيات والمستقيم العددي والدعم المكثف -->
+  <url>
+    <loc>https://www.profpress.net/?tab=math_tracking_grids</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.profpress.net/?tab=number_line</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.profpress.net/?tab=intensive_support</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
 </urlset>

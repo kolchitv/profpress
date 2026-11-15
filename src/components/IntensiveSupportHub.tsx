@@ -37,7 +37,6 @@ import {
 import {
   INTENSIVE_SUPPORT_LEVELS,
   ESCUILA_SOURCE_URL,
-  ESCUILA_MINDMAPS_URL,
   ESCUILA_SUPPORT_PAGE_CONTENT,
 } from "../data/intensiveSupportData";
 
@@ -107,10 +106,6 @@ export const IntensiveSupportHub: React.FC<IntensiveSupportHubProps> = ({
 
   const handleOpenSourceUrl = () => {
     window.open(ESCUILA_SOURCE_URL, "_blank");
-  };
-
-  const handleOpenMindmapsSource = () => {
-    window.open(ESCUILA_MINDMAPS_URL, "_blank");
   };
 
   const handleSwitchToDetailedSessions = (lvl: number, subId?: "arabic" | "french" | "math") => {
@@ -191,45 +186,34 @@ export const IntensiveSupportHub: React.FC<IntensiveSupportHubProps> = ({
           </div>
         </div>
 
-        {/* Mind Maps Special Callout */}
+        {/* Mind Maps Special Callout (Internal Profpress Hub Only) */}
         <div className="bg-white border border-amber-300/80 rounded-xl p-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 font-black text-lg">
-              👈
+              <Compass className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-black text-slate-900 flex items-center gap-2">
-                <span>لتحميل الخطاطات الذهنية للدعم المكثف:</span>
-                <span className="text-[11px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-bold">
-                  Word & تفاعلية
-                </span>
+              <div className="text-sm font-black text-slate-900">
+                الخطاطات الذهنية للدعم المكثف (جميع المواد والمستويات)
               </div>
               <p className="text-xs text-slate-600 mt-0.5">
-                تتوفر خطاطات ذهنية متخصصة لجميع المواد والمستويات لتسهيل التخطيط وإعداد الحصص.
+                تتوفر خطاطات ذهنية متخصصة وتفاعلية لجميع المواد والمستويات لتسهيل التخطيط وإعداد الحصص داخل المنصة.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {onNavigateToTab && (
+          {onNavigateToTab && (
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => onNavigateToTab("mindmaps")}
-                className="bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                className="bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
               >
                 <Compass className="w-4 h-4 text-amber-300" />
                 <span>الخطاطات الذهنية التفاعلية ببروف بريس</span>
               </button>
-            )}
-            <button
-              type="button"
-              onClick={handleOpenMindmapsSource}
-              className="bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5"
-            >
-              <span>خطاطات سكويلة (Word)</span>
-              <ExternalLink className="w-3.5 h-3.5 text-amber-800" />
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
