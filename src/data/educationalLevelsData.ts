@@ -663,6 +663,26 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         featured: true,
         tags: ["كراسة الطلاقة", "خط ونقل", "إملاء", "2AEP"],
       },
+      {
+        id: "p2-explicit-tarl-bundle",
+        title: "حقيبة دروس التعليم الصريح ودعم طارل (TaRL) - المستوى الثاني ابتدائي 2AEP (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "عام",
+        semester: "annual",
+        format: "PDF / DOCX",
+        description: "دروس المدرسة الرائدة للمستوى الثاني: تصفية الصعوبات القرائية، المقاطع المركبة [ou,on,oi]، الأعداد إلى 999 والاحتفاظ، حالات المادة، وأنشطة طارل المباشرة داخل الموقع.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 6510,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل TaRL", "المدرسة الرائدة", "2AEP", "تحميل داخلي"],
+        content: `▪ حقيبة المدرسة الرائدة 2AEP (التعليم الصريح + دعم طارل)
+• العربية: تصفية الصعوبات القرائية (الشدة والتنوين واللام الشمسية والقمرية).
+• الفرنسية: Sons complexes [ou, on, oi] + Remédiation TaRL Roue des syllabes.
+• الرياضيات: الأعداد إلى 999 والجمع بالاحتفاظ + طارل جدول العد والنقود.
+• النشاط العلمي: حالات المادة الصلبة والسائلة والغازية.`,
+      },
     ],
   },
 
@@ -1261,6 +1281,26 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         featured: true,
         tags: ["كراسة الخط", "تمارين كتابية", "إملاء", "3AEP"],
       },
+      {
+        id: "p3-explicit-tarl-bundle",
+        title: "حقيبة دروس التعليم الصريح ودعم طارل (TaRL) - المستوى الثالث ابتدائي 3AEP (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "عام",
+        semester: "annual",
+        format: "PDF / DOCX",
+        description: "دروس المدرسة الرائدة للمستوى الثالث: أقسام الكلمة والجملة الفعلية والاسمية، الفرنسية (Nom/Déterminant & Être/Avoir)، الضرب في رقم ورقمين، الخلائط والمغناطيس، وورشات طارل داخل الموقع.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 6280,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل TaRL", "المدرسة الرائدة", "3AEP", "تحميل داخلي"],
+        content: `▪ حقيبة المدرسة الرائدة 3AEP (التعليم الصريح + دعم طارل)
+• العربية: أقسام الكلمة والجملة الفعلية/الاسمية + طارل قراءة الفقرات والطلاقة.
+• الفرنسية: Grammaire (Nom/Déterminant) وConjugaison (Être/Avoir au présent).
+• الرياضيات: الضرب في رقم ورقمين بالاحتفاظ + طارل الطرح بالاستلاف وجداول 2 إلى 5.
+• النشاط العلمي: الخلائط وطرق الفصل والمغناطيس.`,
+      },
     ],
   },
 
@@ -1769,6 +1809,26 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         downloadsCount: 5670,
         featured: true,
         tags: ["ملخصات", "خرائط ذهنية", "مراجعة", "دروس مركزة", "4AEP"],
+      },
+      {
+        id: "p4-explicit-tarl-bundle",
+        title: "حقيبة دروس التعليم الصريح ودعم طارل (TaRL) - المستوى الرابع ابتدائي 4AEP (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "عام",
+        semester: "annual",
+        format: "PDF / DOCX",
+        description: "دروس المدرسة الرائدة للمستوى الرابع: استراتيجيات المفردات، الفاعل والمفعول به والهمزة المتوسطة، Phrase verbale/nominale، القسمة الإقليدية، وتغيرات المادة مع التحميل الداخلي Word وPDF.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 6940,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل TaRL", "المدرسة الرائدة", "4AEP", "تحميل داخلي"],
+        content: `▪ حقيبة المدرسة الرائدة 4AEP (التعليم الصريح + دعم طارل)
+• العربية: خريطة الكلمة وشبكة المفردات + التراكيب والإملاء (الفاعل، المفعول به، الهمزة المتوسطة).
+• الفرنسية: Grammaire explicite (Phrase verbale vs nominale et accord S-V).
+• الرياضيات: الأعداد الكبيرة والقسمة الإقليدية + طارل المسائل ذات الخطوتين.
+• النشاط العلمي: تغيرات المادة الفيزيائية والكيميائية (NE_ES_N4).`,
       },
     ],
   },
@@ -2485,6 +2545,26 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         downloadsCount: 2980,
         tags: ["دليل الأستاذ", "الجديد", "اجتماعيات"],
       },
+      {
+        id: "p5-explicit-tarl-bundle",
+        title: "حقيبة دروس التعليم الصريح ودعم طارل (TaRL) - المستوى الخامس ابتدائي 5AEP (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "عام",
+        semester: "annual",
+        format: "PDF / DOCX",
+        description: "دروس المدرسة الرائدة للمستوى الخامس: المجرد والمزيد والنواسخ، الفرنسية COD/COI وPassé composé، توحيد مقامات الكسور والعشرية، والهضم والتنفس والتربة، متاحة للتحميل المباشر داخل الموقع.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 7180,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل TaRL", "المدرسة الرائدة", "5AEP", "تحميل داخلي"],
+        content: `▪ حقيبة المدرسة الرائدة 5AEP (التعليم الصريح + دعم طارل)
+• العربية: الفعل المجرد والمزيد، النواسخ الفعلية والحرفية.
+• الفرنسية: COD/COI وPassé composé + طارل الإنتاج الكتابي الموجه.
+• الرياضيات: توحيد المقامات والعمليات على الكسور + طارل العمليات الأربع والأعداد العشرية.
+• النشاط العلمي: الهضم والتنفس والدوران الدموي والتربة.`,
+      },
     ],
   },
 
@@ -2507,7 +2587,7 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
       accent: "purple",
     },
     subjects: ["اللغة العربية", "اللغة الفرنسية", "الرياضيات", "النشاط العلمي", "التربية الإسلامية", "الاجتماعيات"],
-    totalResources: 76,
+    totalResources: 80,
     featuredExam: {
       name: "الامتحان الإقليمي الموحد لنيل شهادة الدروس الابتدائية",
       type: "امتحان إشهادي رسمي",
@@ -2950,6 +3030,101 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         updatedDate: "2026",
         downloadsCount: 2450,
         tags: ["دليل الأستاذ", "المنير", "نشاط علمي"],
+      },
+
+      // 8. دروس التعليم الصريح ودعم طارل TaRL - المدرسة الرائدة (تحميل داخلي مباشر)
+      {
+        id: "p6-explicit-tarl-arabic",
+        title: "دروس التعليم الصريح ودعم طارل TaRL في اللغة العربية - المستوى السادس (ملفات داخلية PDF / Word)",
+        category: "lessons",
+        subject: "اللغة العربية",
+        semester: "annual",
+        format: "PDF",
+        description: "سلسلة دروس التعليم الصريح المعتمدة بالمدرسة الرائدة + أنشطة دعم طارل (القراءة الصريحة، الصرف والتحويل الصحيح والمعتل، التراكيب والإملاء، والطلاقة والإنتاج الكتابي) قابلة للعرض والتحميل مباشرة داخل الموقع.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 6840,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل TaRL", "المدرسة الرائدة", "المستوى السادس", "تحميل داخلي"],
+        content: `▪ حزمة دروس اللغة العربية (التعليم الصريح + دعم طارل TaRL) - المستوى السادس 6AEP
+
+1. المحاور والدروس المحينة (4 وحدات متكاملة):
+- القراءة الصريحة وفهم المقروء: استراتيجيات الفهم، التوقع، التلخيص، وتحديد الأفكار الأساسية.
+- الصرف والتحويل الصريح: تصريف الفعل الصحيح والمعتل، والميزان الصرفي وإسناد الأفعال للضمائر.
+- التراكيب والإملاء: نصب وجزم الفعل المضارع، الأفعال الخمسة، وهمزتا الوصل والقطع وهمزة ابن.
+- دعم طارل (TaRL العربية): ورشات القراءة بالطلاقة والكتابة الموجهة من الفقرة إلى النص المنسجم.
+
+2. مميزات المعاينة والتحميل الداخلي:
+- معاينة مباشرة لبطاقة الدرس كاملة بمراحله الخمس وعناوين شرائح العرض والتمارين مع التصحيح.
+- تحميل مباشر بصيغة Word (.doc) وPDF (A4) وطباعة فورية من داخل الموقع دون أي روابط خارجية.`,
+      },
+      {
+        id: "p6-explicit-tarl-french",
+        title: "دروس التعليم الصريح ودعم طارل TaRL بالفرنسية - المستوى السادس 6AEP (تحميل داخلي)",
+        category: "lessons",
+        subject: "اللغة الفرنسية",
+        semester: "annual",
+        format: "DOCX",
+        description: "Leçons explicites actualisées (Lecture explicite, Conjugaison présent/imparfait/futur, Grammaire & Orthographe GN/homophones) et remédiation TaRL avec export Word et PDF interne.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 6120,
+        featured: true,
+        tags: ["Enseignement Explicite", "TaRL Français", "6AEP", "École Pionnière"],
+        content: `▪ Enseignement Explicite & Remédiation TaRL — Français 6ème AEP
+
+Contenu actualisé (4 leçons complètes avec corrigés) :
+- Lecture explicite & Compréhension : repérage des idées essentielles, inférences et résumé.
+- Conjugaison explicite : Présent, Imparfait et Futur simple des verbes usuels (1er, 2e et 3e groupe).
+- Grammaire & Orthographe : Constituants du GN (GNS/GV) et homophones grammaticaux.
+- Remédiation TaRL Français : Fluidité de lecture, fluence syllabique et production d'écrit guidée.
+
+Téléchargement interne direct en Word (.doc) et PDF (A4) sans aucun lien externe.`,
+      },
+      {
+        id: "p6-explicit-tarl-math",
+        title: "دروس التعليم الصريح ودعم طارل TaRL في الرياضيات - المستوى السادس (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "الرياضيات",
+        semester: "annual",
+        format: "PDF",
+        description: "الملايين والملايير، العمليات على الكسور، التناسبية (النسبة المئوية والسلم والسرعة)، الهندسة والحجوم، ودعم طارل للقسمة وحل المسائل مع التمارين المصححة داخل الموقع.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 7430,
+        featured: true,
+        tags: ["التعليم الصريح", "طارل الرياضيات", "6AEP", "تمارين مصححة"],
+        content: `▪ دروس الرياضيات الصريحة ودعم طارل (TaRL) - المستوى السادس 6AEP
+
+الموضوعات المغطاة (5 وحدات رئيسية مع النمذجة والتمارين المصححة):
+- الملايين والملايير والأعداد العشرية: القراءة والكتابة والتفكيك والمقارنة والترتيب.
+- الأعداد الكسرية: توحيد المقامات، العمليات الأربع، والاختزال إلى أقصى حد.
+- التناسبية وتطبيقاتها: النسبة المئوية، سلم التصاميم والخرائط، السرعة المتوسطة، والفائدة السنوية.
+- الهندسة والقياس: المساحات الجانبية والكلية وحجم الموشور والأسطوانة والمكعب.
+- دعم طارل TaRL الرياضيات: ترسيخ القسمة الإقليدية، الضرب، وتفكيك المسائل الحسابية.`,
+      },
+      {
+        id: "p6-explicit-tarl-science",
+        title: "دروس التعليم الصريح في النشاط العلمي (نهج التقصي) - المستوى السادس (Word / PDF داخلي)",
+        category: "lessons",
+        subject: "النشاط العلمي",
+        semester: "annual",
+        format: "PDF",
+        description: "الجهاز العصبي والحساسية، التوازن البيئي والتحولات الفيزيائية والكيميائية، والطاقة الكهربائية والفلك وفق بيداغوجيا التعليم الصريح ونهج التقصي.",
+        downloadUrl: "?tab=explicit_teaching",
+        downloadLabel: "فتح وتحميل داخل قسم التعليم الصريح",
+        updatedDate: "2026/2027",
+        downloadsCount: 5190,
+        tags: ["التعليم الصريح", "النشاط العلمي", "نهج التقصي", "المستوى السادس"],
+        content: `▪ دروس النشاط العلمي الصريحة (نهج التقصي) - المستوى السادس 6AEP
+
+الدروس الثلاثة المحينة (متاحة للتحميل الداخلي Word وPDF داخل الموقع):
+- الجهاز العصبي والحساسية الشعورية والتحركية الإرادية واللاإرادية.
+- التوازن البيئي، السلاسل الغذائية، والتمييز بين التحولات الفيزيائية والكيميائية.
+- مصادر الطاقة الكهربائية، الترشيد الطاقي، وحركة الأرض والقمر والفصول.`,
       },
     ],
   },

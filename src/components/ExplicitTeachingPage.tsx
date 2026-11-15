@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Sparkles,
   BookOpen,
   Download,
-  ExternalLink,
   FileText,
   CheckCircle2,
-  User,
-  Users,
   Award,
   Presentation,
   Search,
@@ -17,17 +14,16 @@ import {
   RotateCcw,
   X,
   ChevronRight,
-  FolderDown,
   Layers,
   ShieldCheck,
   Eye,
   FlaskConical,
-  Laptop,
   Lightbulb,
   Network,
   ClipboardList,
   BookMarked,
   Compass,
+  Printer,
 } from "lucide-react";
 import { TabKey, AdminSession } from "../types";
 import {
@@ -37,11 +33,14 @@ import {
   ExplicitLevelKey,
   ExplicitSubjectKey,
   DEFAULT_EXPLICIT_TEACHING_DATA,
-  MAIN_EXPLICIT_DRIVE_FOLDER_ID,
-  MAIN_EXPLICIT_DRIVE_URL,
-  TELMIDTICE_PIONEER_EXE_URL,
-  extractDriveFolderId,
 } from "../data/explicitTeachingData";
+import { GRADE6_EXPLICIT_TARL_LESSONS } from "../data/grade6ExplicitTarlData";
+import { ALL_REMAINING_LEVELS_EXPLICIT_TARL_LESSONS } from "../data/allLevelsExplicitTarlData";
+import {
+  downloadExplicitLessonAsWord,
+  downloadExplicitLessonAsPdf,
+  downloadLessonsBundleAsWord,
+} from "../utils/explicitLessonExporter";
 import {
   getStoredAdminSession,
   canUserDeleteArticles,
@@ -52,12 +51,6 @@ const STORAGE_KEY = "profpress_explicit_teaching_data_v2";
 
 interface ExplicitTeachingPageProps {
   onNavigateToTab?: (tab: TabKey) => void;
-}
-
-interface DrivePreviewState {
-  title: string;
-  folderId: string;
-  driveUrl: string;
 }
 
 export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
@@ -81,16 +74,49 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
     };
   }, []);
 
-  // Load state from localStorage (v2) or default 2026/2027 dataset
+  // Load state from localStorage and auto-upgrade older versions (v2/v3) to v4 (all levels internal-only)
   const [pageData, setPageData] = useState<ExplicitTeachingPageData>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.dataVersion === 2) {
+        if (parsed && parsed.dataVersion === 4) {
           return {
             ...DEFAULT_EXPLICIT_TEACHING_DATA,
             ...parsed,
+          };
+        }
+        if (parsed && (parsed.dataVersion === 2 || parsed.dataVersion === 3)) {
+          const allDefaultIds = new Set(
+            DEFAULT_EXPLICIT_TEACHING_DATA.lessons.map((l) => l.id)
+          );
+          const legacyReplacedIds = new Set([
+            "les_fr_6_1",
+            "les_ar_4_1",
+            "les_sci_4_1",
+            "les_fr_4_1",
+            "les_math_3_1",
+            "les_ar_1_1",
+            "les_ar_2_1",
+            "les_sci_1_1",
+            "les_math_5_1",
+          ]);
+          const preservedCustomLessons = Array.isArray(parsed.lessons)
+            ? parsed.lessons.filter(
+                (l: ExplicitLessonItem) =>
+                  !allDefaultIds.has(l.id) && !legacyReplacedIds.has(l.id)
+              )
+            : [];
+
+          return {
+            ...DEFAULT_EXPLICIT_TEACHING_DATA,
+            dataVersion: 4,
+            packages: DEFAULT_EXPLICIT_TEACHING_DATA.packages,
+            lessons: [
+              ...GRADE6_EXPLICIT_TARL_LESSONS,
+              ...ALL_REMAINING_LEVELS_EXPLICIT_TARL_LESSONS,
+              ...preservedCustomLessons,
+            ],
           };
         }
       }
@@ -111,16 +137,60 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
   // Filters
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
+  const [selectedApproach, setSelectedApproach] = useState<"all" | "explicit" | "tarl">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Modal states
+  // Modal & Export states
   const [viewingLesson, setViewingLesson] = useState<ExplicitLessonItem | null>(null);
   const [editingLesson, setEditingLesson] = useState<ExplicitLessonItem | null>(null);
   const [isAddingNewLesson, setIsAddingNewLesson] = useState(false);
   const [editingPackage, setEditingPackage] =
     useState<ExplicitTeachingResourcePackage | null>(null);
   const [isEditingHeader, setIsEditingHeader] = useState(false);
-  const [drivePreview, setDrivePreview] = useState<DrivePreviewState | null>(null);
+  const [pendingAutoPdf, setPendingAutoPdf] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [pdfExportStatus, setPdfExportStatus] = useState("");
+  const lessonSheetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!pendingAutoPdf || !viewingLesson || !lessonSheetRef.current) return;
+    setPendingAutoPdf(false);
+    const runExport = async () => {
+      if (!lessonSheetRef.current || !viewingLesson) return;
+      setIsExportingPdf(true);
+      setPdfExportStatus("جاري تجهيز ملف PDF...");
+      try {
+        await downloadExplicitLessonAsPdf(
+          lessonSheetRef.current,
+          viewingLesson,
+          (msg) => setPdfExportStatus(msg)
+        );
+        setPdfExportStatus("تم تحميل ملف PDF بنجاح");
+        setTimeout(() => setPdfExportStatus(""), 3000);
+      } catch {
+        setPdfExportStatus("تعذر التوليد التلقائي، يمكنك استخدام زر الطباعة A4.");
+      } finally {
+        setIsExportingPdf(false);
+      }
+    };
+    const timer = setTimeout(runExport, 180);
+    return () => clearTimeout(timer);
+  }, [pendingAutoPdf, viewingLesson]);
+
+  const handleOpenInternalLessons = (
+    level: string = "all",
+    subject: string = "all",
+    approach: "all" | "explicit" | "tarl" = "all"
+  ) => {
+    setSelectedLevel(level);
+    setSelectedSubject(subject);
+    setSelectedApproach(approach);
+    setSearchQuery("");
+    setTimeout(() => {
+      const target = document.getElementById("explicit-lessons-explorer");
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
 
   // Temporary form state for editing / adding lessons
   const [lessonForm, setLessonForm] = useState<Partial<ExplicitLessonItem>>({});
@@ -135,6 +205,8 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
   const filteredLessons = pageData.lessons.filter((item) => {
     if (selectedLevel !== "all" && item.level !== selectedLevel) return false;
     if (selectedSubject !== "all" && item.subject !== selectedSubject) return false;
+    if (selectedApproach === "tarl" && !item.isTarl) return false;
+    if (selectedApproach === "explicit" && item.isTarl) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchTitle = item.title.toLowerCase().includes(q);
@@ -144,17 +216,6 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
     }
     return true;
   });
-
-  // Open inline Google Drive folder preview
-  const handleOpenDrivePreview = (title: string, url?: string, fallbackId?: string) => {
-    const folderId =
-      extractDriveFolderId(url) || fallbackId || MAIN_EXPLICIT_DRIVE_FOLDER_ID;
-    setDrivePreview({
-      title,
-      folderId,
-      driveUrl: url || `https://drive.google.com/drive/folders/${folderId}`,
-    });
-  };
 
   // Reset to default data
   const handleResetToDefault = () => {
@@ -174,7 +235,7 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
     setEditingLesson(lesson);
   };
 
-  // Open add new lesson
+  // Open add new lesson (Internal only)
   const handleOpenAddLesson = () => {
     const levelVal: ExplicitLevelKey =
       selectedLevel !== "all" ? (selectedLevel as ExplicitLevelKey) : "4aep";
@@ -190,10 +251,11 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
       title: "",
       titleFr: "",
       objective: "",
-      pptUrl: pageData.officialUrl || MAIN_EXPLICIT_DRIVE_URL,
-      pdfUrl: pageData.officialUrl || MAIN_EXPLICIT_DRIVE_URL,
-      driveUrl: pageData.officialUrl || MAIN_EXPLICIT_DRIVE_URL,
-      fileSize: "4.5 MB (PPTX)",
+      internalOnly: true,
+      pptUrl: "",
+      pdfUrl: "",
+      driveUrl: "",
+      fileSize: "تحميل داخلي (PDF / Word)",
       durationMinutes: 45,
       keyConcepts: [],
       steps: {
@@ -221,10 +283,11 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
       title: lessonForm.title || "",
       titleFr: lessonForm.titleFr,
       objective: lessonForm.objective || "",
-      pptUrl: lessonForm.pptUrl,
-      pdfUrl: lessonForm.pdfUrl,
-      driveUrl: lessonForm.driveUrl,
-      fileSize: lessonForm.fileSize || "4.5 MB",
+      internalOnly: true,
+      pptUrl: "",
+      pdfUrl: "",
+      driveUrl: "",
+      fileSize: lessonForm.fileSize || "تحميل داخلي (PDF / Word)",
       durationMinutes: Number(lessonForm.durationMinutes) || 45,
       keyConcepts: Array.isArray(lessonForm.keyConcepts)
         ? lessonForm.keyConcepts
@@ -439,40 +502,36 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mt-6">
-                <a
-                  href={pageData.officialUrl || MAIN_EXPLICIT_DRIVE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap shrink-0"
+                <button
+                  type="button"
+                  onClick={() => handleOpenInternalLessons("all", "all", "all")}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                  <FolderDown className="w-4 h-4" />
-                  <span>تحميل مباشر من Google Drive (2026/2027)</span>
-                </a>
+                  <Download className="w-4 h-4" />
+                  <span>تصفح وتحميل جميع الدروس داخلياً (Word / PDF)</span>
+                </button>
 
                 <button
                   type="button"
                   onClick={() =>
-                    handleOpenDrivePreview(
-                      "مجلد دروس التعليم الصريح للمدارس الرائدة 2026 / 2027",
-                      pageData.officialUrl,
-                      pageData.officialFolderId
-                    )
+                    document
+                      .getElementById("explicit-packages-section")
+                      ?.scrollIntoView({ behavior: "smooth", block: "start" })
                   }
                   className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                  <Eye className="w-4 h-4 text-sky-300" />
-                  <span>معاينة المجلد مباشرة</span>
+                  <Layers className="w-4 h-4 text-sky-300" />
+                  <span>حقائب المستويات (1AEP إلى 6AEP + مشترك)</span>
                 </button>
 
-                <a
-                  href={pageData.telmidticeAppUrl || TELMIDTICE_PIONEER_EXE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-indigo-600/80 hover:bg-indigo-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap shrink-0"
+                <button
+                  type="button"
+                  onClick={() => handleOpenInternalLessons("all", "all", "tarl")}
+                  className="bg-indigo-600/80 hover:bg-indigo-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                  <Laptop className="w-4 h-4" />
-                  <span>برنامج TelmidTice ({pageData.telmidticeVersion || "v1.0.9"})</span>
-                </a>
+                  <Compass className="w-4 h-4 text-amber-300" />
+                  <span>حزم الدعم المكثف طارل (TaRL)</span>
+                </button>
               </div>
             </div>
 
@@ -485,7 +544,7 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                 <div>
                   <div className="text-xs text-slate-300">العدة البيداغوجية الشاملة</div>
                   <div className="text-lg font-black text-white tabular-nums">
-                    7 مسارات · 4 مواد أساسية
+                    {pageData.lessons.length} درس · 7 مسارات
                   </div>
                 </div>
               </div>
@@ -499,14 +558,12 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                   <span className="font-bold text-amber-300">عربية · فرنسية · رياضيات · علمي</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-slate-300">صيغة الشرائح:</span>
-                  <span className="font-bold text-sky-300">PPTX / PPSX (للمسلاط)</span>
+                  <span className="text-slate-300">صيغ التحميل الداخلي:</span>
+                  <span className="font-bold text-sky-300">Word (.doc) · PDF · طباعة A4</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-slate-300">تطبيق الحاسوب الرسمي:</span>
-                  <span className="font-bold text-indigo-200">
-                    TelmidTice {pageData.telmidticeVersion || "v1.0.9"}
-                  </span>
+                  <span className="text-slate-300">روابط التحميل:</span>
+                  <span className="font-bold text-emerald-300">داخل الموقع 100% (آمن)</span>
                 </div>
               </div>
             </div>
@@ -516,25 +573,26 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 mt-8 space-y-10">
         {/* ========================================================= */}
-        {/* 1. SUBJECT REPOSITORIES (4 CORE SUBJECTS) & TELMIDTICE    */}
+        {/* 1. SUBJECT REPOSITORIES (4 CORE SUBJECTS - INTERNAL ONLY) */}
         {/* ========================================================= */}
         <section className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900">
-                تحميل دروس التعليم الصريح مباشرة حسب المادة (Google Drive 2026 / 2027)
+                تصفح وتحميل دروس التعليم الصريح وطارل حسب المادة (داخل الموقع 2026 / 2027)
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-                اختر المادة للوصول الفوري إلى مجلدات المستويات الستة والأقسام المشتركة بصيغتي PPTX و PPSX
+                اختر المادة لعرض دروسها المصنفة لجميع المستويات وتحميل الحقيبة كاملة بصيغة Word أو PDF دون أي روابط خارجية
               </p>
             </div>
             <span className="text-xs text-slate-500 whitespace-nowrap">
-              {pageData.lastUpdatedText || "موسم 2026 / 2027"} · تحديث مستمر
+              {pageData.lastUpdatedText || "موسم 2026 / 2027"} · تحميل داخلي مباشر
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {pageData.subjectFolders.map((sub) => {
+              const subjectLessons = pageData.lessons.filter((l) => l.subject === sub.id);
               const colorMap: Record<
                 string,
                 { iconWrap: string; btn: string; borderHover: string }
@@ -576,8 +634,8 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                           <BookOpen className="w-5 h-5" />
                         )}
                       </div>
-                      <span className="text-xs text-slate-500 font-medium">
-                        {sub.levelsCovered}
+                      <span className="text-xs text-slate-500 font-bold tabular-nums">
+                        {subjectLessons.length} دروس
                       </span>
                     </div>
 
@@ -591,29 +649,27 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-                    <a
-                      href={sub.driveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 whitespace-nowrap ${theme.btn}`}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenInternalLessons("all", sub.id, "all")}
+                      className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${theme.btn}`}
                     >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>فتح المجلد</span>
-                    </a>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>عرض الدروس</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() =>
-                        handleOpenDrivePreview(
-                          `مجلد دروس ${sub.nameAr} (${sub.levelsCovered})`,
-                          sub.driveUrl,
-                          sub.folderId
+                        downloadLessonsBundleAsWord(
+                          subjectLessons,
+                          `حقيبة التعليم الصريح وطارل - ${sub.nameAr} (جميع المستويات)`
                         )
                       }
                       className="py-2 px-3 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0"
-                      title="معاينة الملفات داخل الصفحة"
+                      title={`تحميل حقيبة ${sub.nameAr} كاملة بصيغة Word`}
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>معاينة</span>
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Word</span>
                     </button>
                   </div>
                 </div>
@@ -621,29 +677,33 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
             })}
           </div>
 
-          {/* TelmidTice Official App + Quick Integrated Tools Strip */}
+          {/* Internal TaRL + Companion Tools Strip */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-2">
             <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <div className="text-xs font-semibold text-indigo-700">
-                  برنامج وزارة التربية الوطنية الرسمي · {pageData.telmidticeVersion || "v1.0.9"}
+                  التحميل الداخلي المباشر · 1AEP إلى 6AEP + الأقسام المشتركة
                 </div>
                 <h3 className="text-base font-black text-slate-900">
-                  تحميل دروس التعليم الصريح بواسطة برنامج TelmidTice لمؤسسات الريادة
+                  تحميل الحقيبة الكاملة لدروس التعليم الصريح ودعم طارل (TaRL) بصيغة Word و PDF
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
-                  يتيح تطبيق سطح المكتب الرسمي TelmidTice Écoles Pionnières تحميل وتصفح الحوامل الديداكتيكية الرسمية لجميع المستويات والأسلاك مع إمكانية الاشتغال بدون إنترنت داخل القسم.
+                  جميع بطاقات الدروس وسيناريوهات المراحل الخمس وملخصات القواعد والتمارين المصححة متاحة للمعاينة والطباعة A4 والتنزيل الفوري من داخل الموقع بدون أي تحويل لمواقع خارجية.
                 </p>
               </div>
-              <a
-                href={pageData.telmidticeAppUrl || TELMIDTICE_PIONEER_EXE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
+              <button
+                type="button"
+                onClick={() =>
+                  downloadLessonsBundleAsWord(
+                    pageData.lessons,
+                    "الحقيبة الشاملة لدروس التعليم الصريح ودعم طارل TaRL - جميع المستويات"
+                  )
+                }
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
               >
-                <Laptop className="w-4 h-4 text-emerald-400" />
-                <span>تحميل تطبيق TelmidTice (.exe)</span>
-              </a>
+                <Download className="w-4 h-4 text-emerald-400" />
+                <span>تحميل الكل (Word)</span>
+              </button>
             </div>
 
             {/* Companion Platform Tools Card */}
@@ -683,11 +743,11 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onNavigateToTab?.("positioning_grids")}
+                  onClick={() => onNavigateToTab?.("covers")}
                   className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                 >
                   <FileText className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">شبكات التتبع</span>
+                  <span className="truncate">أغلفة الملفات</span>
                 </button>
               </div>
             </div>
@@ -697,44 +757,41 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
         {/* ========================================================= */}
         {/* 2. LEVEL RESOURCE PACKAGES (1AEP -> 6AEP + SHARED)        */}
         {/* ========================================================= */}
-        <section className="space-y-4">
+        <section id="explicit-packages-section" className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
-                <FolderDown className="w-5 h-5 text-indigo-600 shrink-0" />
-                <span>حقائب دروس التعليم الصريح حسب المستويات والأقسام المشتركة</span>
+                <Layers className="w-5 h-5 text-indigo-600 shrink-0" />
+                <span>حقائب دروس التعليم الصريح وطارل حسب المستويات والأقسام المشتركة</span>
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-                روابط مباشرة ومعاينة فورية لمجلدات كل مستوى دراسي في المواد الأربع المعتمدة
+                وصول داخلي فوري لجميع المستويات (من الأول إلى السادس + المشترك) مع تحميل مباشر بصيغتي Word و PDF
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pageData.packages.map((pkg) => {
+              const levelLessons = pageData.lessons.filter((l) => l.level === pkg.level);
               const subjectRows = [
                 {
                   key: "arabic",
-                  label: "اللغة العربية (PPTX)",
-                  url: pkg.arabicDriveUrl,
+                  label: "اللغة العربية (صريح & TaRL)",
                   rowClass: "bg-emerald-50/70 hover:bg-emerald-100/80 text-emerald-900 border-emerald-200",
                 },
                 {
                   key: "french",
                   label: "اللغة الفرنسية · Français",
-                  url: pkg.frenchDriveUrl,
                   rowClass: "bg-blue-50/70 hover:bg-blue-100/80 text-blue-900 border-blue-200",
                 },
                 {
                   key: "math",
-                  label: "الرياضيات (PPTX)",
-                  url: pkg.mathDriveUrl,
+                  label: "الرياضيات (صريح & TaRL)",
                   rowClass: "bg-amber-50/70 hover:bg-amber-100/80 text-amber-900 border-amber-200",
                 },
                 {
                   key: "science",
-                  label: "النشاط العلمي (NE_ES)",
-                  url: pkg.scienceDriveUrl,
+                  label: "النشاط العلمي (نهج التقصي)",
                   rowClass: "bg-teal-50/70 hover:bg-teal-100/80 text-teal-900 border-teal-200",
                 },
               ];
@@ -752,7 +809,9 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                         <div className="text-xs text-slate-500 mb-0.5">
                           <span>{pkg.levelNameFr}</span>
                           <span aria-hidden="true"> · </span>
-                          <span className="tabular-nums">{pkg.totalPptCount} عرض تفاعلي</span>
+                          <span className="tabular-nums font-bold text-indigo-700">
+                            {levelLessons.length} دروس متكاملة
+                          </span>
                         </div>
                         <h3 className="text-base font-black text-slate-900">
                           {pkg.levelNameAr}
@@ -766,7 +825,7 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                           className="text-indigo-600 hover:text-indigo-800 font-bold text-xs flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
-                          <span>تعديل الروابط</span>
+                          <span>تعديل الحقيبة</span>
                         </button>
                       )}
                     </div>
@@ -783,45 +842,49 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                           key={row.key}
                           className={`flex items-center justify-between gap-2 p-2 rounded-xl border transition ${row.rowClass}`}
                         >
-                          <a
-                            href={row.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 font-bold flex-1 min-w-0"
-                          >
-                            <Download className="w-3.5 h-3.5 shrink-0" />
-                            <span className="truncate">{row.label}</span>
-                          </a>
                           <button
                             type="button"
-                            onClick={() =>
-                              handleOpenDrivePreview(
-                                `${pkg.levelNameAr} · ${row.label}`,
-                                row.url
-                              )
-                            }
-                            className="p-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-700 transition cursor-pointer shrink-0"
-                            title="معاينة المجلد"
-                            aria-label={`معاينة ${row.label}`}
+                            onClick={() => handleOpenInternalLessons(pkg.level, row.key, "all")}
+                            className="flex items-center gap-2 font-bold flex-1 min-w-0 text-right cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">{row.label}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenInternalLessons(pkg.level, row.key, "all")}
+                            className="px-2 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-800 text-[11px] font-bold transition cursor-pointer shrink-0"
+                          >
+                            فتح داخلي
                           </button>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <a
-                      href={pkg.studentBookletUrl || MAIN_EXPLICIT_DRIVE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-indigo-700 font-medium flex items-center gap-1.5"
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs text-slate-500">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenInternalLessons(pkg.level, "all", "all")}
+                      className="text-indigo-700 hover:text-indigo-900 font-bold flex items-center gap-1.5 cursor-pointer"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                      <span>المجلد العام للكراسات والدلائل</span>
-                    </a>
-                    <span>PPTX · PPSX</span>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>عرض الكل (PDF / Word)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        downloadLessonsBundleAsWord(
+                          levelLessons,
+                          `حقيبة ${pkg.levelNameAr} - التعليم الصريح وطارل`
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold flex items-center gap-1 cursor-pointer transition"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>تحميل الحقيبة Word</span>
+                    </button>
                   </div>
                 </div>
               );
@@ -953,28 +1016,69 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
         {/* ========================================================= */}
         {/* 4. INTERACTIVE LESSONS EXPLORER                           */}
         {/* ========================================================= */}
-        <section className="space-y-4">
+        <section id="explicit-lessons-explorer" className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
                 <Presentation className="w-5 h-5 text-indigo-600 shrink-0" />
-                <span>بنك جذاذات وسيناريوهات دروس التعليم الصريح</span>
+                <span>بنك جذاذات وسيناريوهات دروس التعليم الصريح ودعم طارل (TaRL)</span>
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-                نماذج عملية مفصلة للخطوات الخمس في المواد الأربع والمستويات الستة والأقسام المشتركة
+                نماذج عملية مفصلة للخطوات الخمس والملخصات والتمارين المصححة لجميع المستويات (1AEP إلى 6AEP + المشتركة) بتحميل داخلي Word و PDF
               </p>
             </div>
 
-            {isAdminEditMode && (
-              <button
-                type="button"
-                onClick={handleOpenAddLesson}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer self-start whitespace-nowrap shrink-0"
-              >
-                <Plus className="w-4 h-4" />
-                <span>إضافة درس صريح جديد</span>
-              </button>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl text-xs">
+                {[
+                  { id: "all" as const, label: "الكل" },
+                  { id: "explicit" as const, label: "التعليم الصريح" },
+                  { id: "tarl" as const, label: "دعم طارل TaRL" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setSelectedApproach(opt.id)}
+                    className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer whitespace-nowrap ${
+                      selectedApproach === opt.id
+                        ? "bg-white text-indigo-800 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {filteredLessons.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    downloadLessonsBundleAsWord(
+                      filteredLessons,
+                      selectedLevel === "all"
+                        ? "دروس التعليم الصريح وطارل - القائمة المختارة"
+                        : `دروس ${levelLabels[selectedLevel as ExplicitLevelKey] || selectedLevel}`
+                    )
+                  }
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>تحميل القائمة Word ({filteredLessons.length})</span>
+                </button>
+              )}
+
+              {isAdminEditMode && (
+                <button
+                  type="button"
+                  onClick={handleOpenAddLesson}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer self-start whitespace-nowrap shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>إضافة درس صريح جديد</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Filters Bar */}
@@ -1116,6 +1220,9 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                       <div className="flex items-center justify-between gap-2 text-xs mb-2.5">
                         <span className={`font-black ${subMeta.textColor}`}>
                           {subMeta.ar}
+                          {lesson.isTarl && (
+                            <span className="text-amber-700 font-bold mr-1">· دعم طارل</span>
+                          )}
                         </span>
                         <div className="flex items-center gap-1.5 text-slate-500 font-medium tabular-nums">
                           <span>
@@ -1154,33 +1261,31 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                         className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>سيناريو الدرس</span>
+                        <span>{lesson.internalOnly ? "الدرس والملخص" : "سيناريو الدرس"}</span>
                       </button>
 
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {lesson.pptUrl && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleOpenDrivePreview(lesson.title, lesson.pptUrl)
-                            }
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 text-slate-600 transition cursor-pointer"
-                            title="معاينة مجلد العروض التقديمية"
-                          >
-                            <Presentation className="w-4 h-4" />
-                          </button>
-                        )}
-                        {lesson.pptUrl && (
-                          <a
-                            href={lesson.pptUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-100 hover:text-emerald-700 text-slate-600 transition"
-                            title="فتح رابط التحميل على Google Drive"
-                          >
-                            <Download className="w-4 h-4" />
-                          </a>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => downloadExplicitLessonAsWord(lesson)}
+                          className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold transition cursor-pointer flex items-center gap-1"
+                          title="تحميل الدرس بصيغة Word داخل الموقع"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Word</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setViewingLesson(lesson);
+                            setPendingAutoPdf(true);
+                          }}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition cursor-pointer flex items-center gap-1"
+                          title="تحميل الدرس بصيغة PDF داخل الموقع"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>PDF</span>
+                        </button>
 
                         {isAdminEditMode && (
                           <>
@@ -1280,92 +1385,44 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
 
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2.5">
               <div className="text-xs font-black text-slate-900">
-                روابط الوصول السريع للموسم الدراسي
+                تحميل وأدوات داخلية للموسم الدراسي
               </div>
-              <a
-                href={pageData.officialUrl || MAIN_EXPLICIT_DRIVE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+              <button
+                type="button"
+                onClick={() =>
+                  downloadLessonsBundleAsWord(
+                    pageData.lessons,
+                    "الحقيبة الشاملة لدروس التعليم الصريح ودعم طارل - جميع المستويات"
+                  )
+                }
+                className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <FolderDown className="w-4 h-4" />
-                <span>المجلد الرئيسي للدروس الجديدة</span>
-              </a>
-              <a
-                href={pageData.telmidticeAppUrl || TELMIDTICE_PIONEER_EXE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2 px-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+                <Download className="w-4 h-4" />
+                <span>تحميل الحقيبة الشاملة Word (جميع المستويات)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigateToTab?.("intensive_support")}
+                className="w-full py-2 px-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Laptop className="w-4 h-4 text-indigo-600" />
-                <span>تنزيل تطبيق TelmidTice v1.0.9</span>
-              </a>
+                <Compass className="w-4 h-4 text-indigo-600" />
+                <span>فتح فضاء الدعم المكثف طارل (TaRL)</span>
+              </button>
             </div>
           </div>
         </section>
       </div>
 
       {/* ========================================================= */}
-      {/* MODAL 0: INTERACTIVE GOOGLE DRIVE FOLDER PREVIEW          */}
-      {/* ========================================================= */}
-      {drivePreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div
-            className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
-            dir="rtl"
-          >
-            <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-[11px] text-sky-300 font-semibold">
-                  معاينة مباشرة لمحتويات Google Drive
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white truncate">
-                  {drivePreview.title}
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={drivePreview.driveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>فتح في Google Drive</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setDrivePreview(null)}
-                  className="text-white/70 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition cursor-pointer"
-                  aria-label="إغلاق المعاينة"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-1 bg-slate-100 relative">
-              <iframe
-                title={drivePreview.title}
-                src={`https://drive.google.com/embeddedfolderview?id=${drivePreview.folderId}#grid`}
-                className="w-full h-full border-0"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* MODAL 1: VIEW LESSON SCRIPT (5 EXPLICIT STEPS)             */}
+      {/* MODAL 1: VIEW LESSON SCRIPT + SUMMARY + INTERNAL EXPORT   */}
       {/* ========================================================= */}
       {viewingLesson && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
           <div
-            className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
+            className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
             dir="rtl"
           >
-            <div className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-5 flex items-start justify-between gap-4">
+            <div className="no-print bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-5 flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 text-xs text-indigo-200 mb-1.5">
                   <span>{levelLabels[viewingLesson.level] || viewingLesson.level}</span>
@@ -1377,6 +1434,12 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
                   <span className="text-amber-300 font-bold">
                     {viewingLesson.durationMinutes || 45} دقيقة
                   </span>
+                  {viewingLesson.isTarl && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span className="text-emerald-300 font-bold">دعم مكثف TaRL</span>
+                    </>
+                  )}
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-white leading-snug">
                   {viewingLesson.title}
@@ -1397,129 +1460,243 @@ export const ExplicitTeachingPage: React.FC<ExplicitTeachingPageProps> = ({
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-5 text-slate-800">
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-                <div className="text-xs font-black text-blue-950 mb-1 flex items-center gap-1.5">
-                  <Award className="w-4 h-4 text-blue-600" />
-                  <span>الهدف التعلمي المصرح به (Objectif d'apprentissage)</span>
+            <div className="overflow-y-auto flex-1 bg-slate-100/70 p-4 sm:p-6">
+              {/* Printable & PDF Exportable Sheet */}
+              <div
+                ref={lessonSheetRef}
+                dir={viewingLesson.subject === "french" ? "ltr" : "rtl"}
+                className="print-sheet bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-5 text-slate-800 shadow-xs"
+              >
+                <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-slate-200 pb-3 font-bold">
+                  <span>المملكة المغربية · وزارة التربية الوطنية والتعليم الأولي والرياضة</span>
+                  <span>
+                    {levelLabels[viewingLesson.level] || viewingLesson.level} · الوحدة {viewingLesson.unit}
+                  </span>
                 </div>
-                <p className="text-xs sm:text-sm text-blue-900 leading-relaxed font-medium">
-                  {viewingLesson.objective}
-                </p>
+
+                <div className="space-y-1">
+                  <h4 className="text-lg sm:text-xl font-black text-slate-900">
+                    {viewingLesson.title}
+                  </h4>
+                  {viewingLesson.titleFr && viewingLesson.subject !== "french" && (
+                    <p className="text-xs text-slate-500" dir="ltr">
+                      {viewingLesson.titleFr}
+                    </p>
+                  )}
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                  <div className="text-xs font-black text-blue-950 mb-1 flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-blue-600" />
+                    <span>
+                      {viewingLesson.subject === "french"
+                        ? "Objectif d'apprentissage :"
+                        : "الهدف التعلمي المصرح به (Objectif d'apprentissage)"}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-blue-900 leading-relaxed font-medium">
+                    {viewingLesson.objective}
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black text-slate-900">
+                    {viewingLesson.subject === "french"
+                      ? "Déroulement explicite de la séance (5 étapes)"
+                      : "مراحل وسيناريو التدريس الصريح للحصة (5 مراحل)"}
+                  </h4>
+
+                  <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-1 text-xs font-black text-amber-900">
+                      <span className="w-5 h-5 rounded-md bg-amber-600 text-white flex items-center justify-center text-[10px]">
+                        1
+                      </span>
+                      <span>التهيئة والربط (Ouverture / Rappel)</span>
+                    </div>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      {viewingLesson.steps.preparation ||
+                        "تنشيط المكتسبات السابقة والتصريح بالهدف التعلمي."}
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50/60 border border-blue-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-1 text-xs font-black text-blue-900">
+                      <span className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[10px]">
+                        2
+                      </span>
+                      <span>النمذجة (Modelage: «أنا أعمل / I Do»)</span>
+                    </div>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      {viewingLesson.steps.modeling ||
+                        "الأستاذ ينفذ المهمة بصوت مسموع مع توضيح خطوات التفكير وتفادي الأخطاء."}
+                    </p>
+                  </div>
+
+                  <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-1 text-xs font-black text-emerald-900">
+                      <span className="w-5 h-5 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                        3
+                      </span>
+                      <span>الممارسة الموجهة (Pratique guidée: «نحن نعمل معاً / We Do»)</span>
+                    </div>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      {viewingLesson.steps.guided ||
+                        "مشاركة المتعلمين على الألواح وتصحيح فوري جماعي وثنائي."}
+                    </p>
+                  </div>
+
+                  <div className="bg-indigo-50/60 border border-indigo-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-1 text-xs font-black text-indigo-900">
+                      <span className="w-5 h-5 rounded-md bg-indigo-600 text-white flex items-center justify-center text-[10px]">
+                        4
+                      </span>
+                      <span>الممارسة المستقلة (Pratique autonome: «أنت تعمل بمفردك / You Do»)</span>
+                    </div>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      {viewingLesson.steps.autonomous ||
+                        "إنجاز فردي لتمارين كراسة التلميذ مع متابعة المتعثرين."}
+                    </p>
+                  </div>
+
+                  <div className="bg-rose-50/60 border border-rose-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-1 text-xs font-black text-rose-900">
+                      <span className="w-5 h-5 rounded-md bg-rose-600 text-white flex items-center justify-center text-[10px]">
+                        5
+                      </span>
+                      <span>التقويم والتغذية الراجعة (Objectivation & Bilan)</span>
+                    </div>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      {viewingLesson.steps.evaluation ||
+                        "سؤال تحقق نهائي ومراجعة ما تم تعلمه قبل الانتقال للمهمة الموالية."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Rules & Summary Points */}
+                {viewingLesson.summaryPoints && viewingLesson.summaryPoints.length > 0 && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
+                    <h4 className="text-xs font-black text-slate-900">
+                      {viewingLesson.subject === "french"
+                        ? "Synthèse et Règles Clés"
+                        : "ملخص الدرس والقواعد الأساسية"}
+                    </h4>
+                    <ul className="space-y-1.5 text-xs text-slate-700 list-disc list-inside leading-relaxed">
+                      {viewingLesson.summaryPoints.map((point, pIdx) => (
+                        <li key={pIdx}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Slides Outline */}
+                {viewingLesson.slidesOutline && viewingLesson.slidesOutline.length > 0 && (
+                  <div className="bg-indigo-50/40 border border-indigo-200 rounded-2xl p-4 space-y-2">
+                    <h4 className="text-xs font-black text-indigo-950">
+                      {viewingLesson.subject === "french"
+                        ? "Contenu des Diapositives (Présentation)"
+                        : "محتوى ومحاور الشرائح التفاعلية للعرض الصفي"}
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {viewingLesson.slidesOutline.map((sl, sIdx) => (
+                        <div
+                          key={sIdx}
+                          className="bg-white border border-indigo-100 rounded-xl p-3 text-xs space-y-1"
+                        >
+                          <div className="font-black text-indigo-800">{sl.slideTitle}</div>
+                          <p className="text-slate-600 leading-relaxed">{sl.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Exercises with Answers */}
+                {viewingLesson.exercisesWithCorrection &&
+                  viewingLesson.exercisesWithCorrection.length > 0 && (
+                    <div className="bg-emerald-50/40 border border-emerald-200 rounded-2xl p-4 space-y-2.5">
+                      <h4 className="text-xs font-black text-emerald-950">
+                        {viewingLesson.subject === "french"
+                          ? "Exercices d'application & Corrigé"
+                          : "تمارين تطبيقية مرفقة بعناصر الإجابة"}
+                      </h4>
+                      {viewingLesson.exercisesWithCorrection.map((ex, eIdx) => (
+                        <div key={eIdx} className="bg-white border border-emerald-100 rounded-xl p-3 text-xs space-y-1.5">
+                          <p className="font-bold text-slate-900">{ex.question}</p>
+                          <p className="text-emerald-800 bg-emerald-50 rounded-lg p-2 font-medium">
+                            {ex.answer}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                {viewingLesson.keyConcepts && viewingLesson.keyConcepts.length > 0 && (
+                  <div className="pt-2 border-t border-slate-100 text-xs text-slate-600">
+                    <span className="font-bold text-slate-800 ml-2">المفاهيم المفتاحية:</span>
+                    <span>{viewingLesson.keyConcepts.join(" · ")}</span>
+                  </div>
+                )}
               </div>
-
-              <div className="space-y-3">
-                <h4 className="text-xs font-black text-slate-900">
-                  مراحل وسيناريو التدريس الصريح للحصة
-                </h4>
-
-                <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-1 text-xs font-black text-amber-900">
-                    <span className="w-5 h-5 rounded-md bg-amber-600 text-white flex items-center justify-center text-[10px]">
-                      1
-                    </span>
-                    <span>التهيئة والربط (Ouverture / Rappel)</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed pr-7">
-                    {viewingLesson.steps.preparation ||
-                      "تنشيط المكتسبات السابقة والتصريح بالهدف التعلمي."}
-                  </p>
-                </div>
-
-                <div className="bg-blue-50/60 border border-blue-200 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-1 text-xs font-black text-blue-900">
-                    <span className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[10px]">
-                      2
-                    </span>
-                    <span>النمذجة (Modelage: «أنا أعمل / I Do»)</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed pr-7">
-                    {viewingLesson.steps.modeling ||
-                      "الأستاذ ينفذ المهمة بصوت مسموع مع توضيح خطوات التفكير وتفادي الأخطاء."}
-                  </p>
-                </div>
-
-                <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-1 text-xs font-black text-emerald-900">
-                    <span className="w-5 h-5 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px]">
-                      3
-                    </span>
-                    <span>الممارسة الموجهة (Pratique guidée: «نحن نعمل معاً / We Do»)</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed pr-7">
-                    {viewingLesson.steps.guided ||
-                      "مشاركة المتعلمين على الألواح وتصحيح فوري جماعي وثنائي."}
-                  </p>
-                </div>
-
-                <div className="bg-indigo-50/60 border border-indigo-200 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-1 text-xs font-black text-indigo-900">
-                    <span className="w-5 h-5 rounded-md bg-indigo-600 text-white flex items-center justify-center text-[10px]">
-                      4
-                    </span>
-                    <span>الممارسة المستقلة (Pratique autonome: «أنت تعمل بمفردك / You Do»)</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed pr-7">
-                    {viewingLesson.steps.autonomous ||
-                      "إنجاز فردي لتمارين كراسة التلميذ مع متابعة المتعثرين."}
-                  </p>
-                </div>
-
-                <div className="bg-rose-50/60 border border-rose-200 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-1 text-xs font-black text-rose-900">
-                    <span className="w-5 h-5 rounded-md bg-rose-600 text-white flex items-center justify-center text-[10px]">
-                      5
-                    </span>
-                    <span>التقويم والتغذية الراجعة (Objectivation & Bilan)</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed pr-7">
-                    {viewingLesson.steps.evaluation ||
-                      "سؤال تحقق نهائي ومراجعة ما تم تعلمه قبل الانتقال للمهمة الموالية."}
-                  </p>
-                </div>
-              </div>
-
-              {viewingLesson.keyConcepts && viewingLesson.keyConcepts.length > 0 && (
-                <div className="pt-2 border-t border-slate-100 text-xs text-slate-600">
-                  <span className="font-bold text-slate-800 ml-2">المفاهيم المفتاحية:</span>
-                  <span>{viewingLesson.keyConcepts.join(" · ")}</span>
-                </div>
-              )}
             </div>
 
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-              <div className="text-xs text-slate-500 font-medium">
-                حجم الملف التقديمي: {viewingLesson.fileSize || "4.5 MB"}
+            <div className="no-print p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <div className="text-xs text-slate-600 font-medium">
+                {pdfExportStatus ? (
+                  <span className="text-emerald-700 font-bold">{pdfExportStatus}</span>
+                ) : (
+                  <span>
+                    {viewingLesson.internalOnly
+                      ? "تحميل مباشر وآمن داخل الموقع (PDF / Word)"
+                      : `حجم الملف: ${viewingLesson.fileSize || "4.5 MB"}`}
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
-                {viewingLesson.pptUrl && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const url = viewingLesson.pptUrl;
-                      const title = viewingLesson.title;
-                      setViewingLesson(null);
-                      handleOpenDrivePreview(title, url);
-                    }}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Eye className="w-4 h-4" />
-                    <span>معاينة المجلد</span>
-                  </button>
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => downloadExplicitLessonAsWord(viewingLesson)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>تحميل Word (.doc)</span>
+                </button>
 
-                {viewingLesson.pptUrl && (
-                  <a
-                    href={viewingLesson.pptUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>فتح مجلد التحميل (PPTX)</span>
-                  </a>
-                )}
+                <button
+                  type="button"
+                  disabled={isExportingPdf}
+                  onClick={async () => {
+                    if (!lessonSheetRef.current || isExportingPdf) return;
+                    setIsExportingPdf(true);
+                    setPdfExportStatus("جاري تجهيز ملف PDF...");
+                    try {
+                      await downloadExplicitLessonAsPdf(
+                        lessonSheetRef.current,
+                        viewingLesson,
+                        (msg) => setPdfExportStatus(msg)
+                      );
+                      setPdfExportStatus("تم تحميل ملف PDF بنجاح");
+                      setTimeout(() => setPdfExportStatus(""), 3000);
+                    } catch {
+                      setPdfExportStatus("تعذر التوليد التلقائي، استخدم الطباعة A4.");
+                    } finally {
+                      setIsExportingPdf(false);
+                    }
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{isExportingPdf ? "جاري التوليد..." : "تحميل PDF (A4)"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>طباعة A4</span>
+                </button>
 
                 <button
                   type="button"
