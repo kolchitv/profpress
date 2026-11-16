@@ -121,6 +121,54 @@ export const EducationalResourceReaderModal: React.FC<
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handleExportContentWord = () => {
+    if (!resource) return;
+    const escapedTitle = (resource.title || "document")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const escapedDesc = (resource.description || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const escapedBody = (resource.content || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\n/g, "<br/>");
+
+    const docHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8" /><title>${escapedTitle}</title>
+<style>
+  body { font-family: 'Cairo', 'Arial', sans-serif; direction: rtl; text-align: right; line-height: 1.7; padding: 24px; color: #0f172a; }
+  h1 { color: #3b0764; font-size: 19px; border-bottom: 2px solid #6b21a8; padding-bottom: 8px; }
+  .meta { font-size: 12px; color: #475569; margin-bottom: 12px; }
+  .desc { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; }
+  .body { font-size: 13px; line-height: 1.8; }
+</style></head>
+<body>
+  <div class="meta">${levelInfo.title} · ${resource.subject} · ${resource.updatedDate}</div>
+  <h1>${escapedTitle}</h1>
+  <div class="desc">${escapedDesc}</div>
+  <div class="body">${escapedBody}</div>
+</body></html>`;
+
+    const blob = new Blob(["\ufeff", docHtml], { type: "application/msword;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const safeName = (resource.title || "summary")
+      .replace(/[^\u0600-\u06FFa-zA-Z0-9_-]+/g, "_")
+      .slice(0, 60);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${safeName}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      if (document.body.contains(a)) document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1500);
+  };
+
   // Resolve category label
   const getCategoryLabel = () => {
     switch (resource.category) {
@@ -392,6 +440,17 @@ export const EducationalResourceReaderModal: React.FC<
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? "تم النسخ!" : "نسخ الرابط"}</span>
               </button>
+
+              {resource.content && (
+                <button
+                  type="button"
+                  onClick={handleExportContentWord}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>تحميل الملخص Word</span>
+                </button>
+              )}
 
               {onOpenPrintPreview && (
                 <button

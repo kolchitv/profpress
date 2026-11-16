@@ -5,6 +5,10 @@ import {
   PRIMARY_1_SUBJECTS,
 } from "./primary1ResourcesData";
 import { MIDDLE_2_RESOURCES, PROFPRESS_2AC_BLOG_URL } from "./middle2ResourcesData";
+import {
+  PRIMARY_4_SOCIAL_STUDIES_RESOURCES,
+  GRADE4_SOCIAL_MAIN_DRIVE,
+} from "./primary4SocialStudiesData";
 
 export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo> = {
   primary_1: {
@@ -1331,7 +1335,7 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
       "التربية الإسلامية",
       "التربية الفنية",
     ],
-    totalResources: 58,
+    totalResources: 62,
     resources: [
       // 1. PLANNING & CURRICULUM (التخطيط والبرمجة)
       {
@@ -1510,17 +1514,19 @@ export const EDUCATIONAL_LEVELS_DATA: Record<GradeLevelId, EducationalLevelInfo>
         featured: true,
         tags: ["جذاذات", "الرياضيات", "الجيد في الرياضيات", "المفيد"],
       },
+      ...PRIMARY_4_SOCIAL_STUDIES_RESOURCES,
       {
         id: "p4-fiches-social-history-geography",
         title: "جذاذات مادة الاجتماعيات الشاملة (تاريخ، جغرافيا، تربية مدنية) 4AEP",
         category: "lessons",
         subject: "الاجتماعيات",
         semester: "annual",
-        format: "DOCX / PDF",
-        description: "جذاذات مفصلة بالدعامات الديداكتيكية (خطوط زمنية، خرائط طبوغرافية، وثائق تاريخية، جداول) لمرجعي الجديد وفي رحاب الاجتماعيات.",
-        downloadUrl: "#",
-        updatedDate: "نوفمبر 2026",
-        downloadsCount: 3890,
+        format: "DOCX / PPTX",
+        description: "جذاذات وعروض مفصلة بالدعامات الديداكتيكية (خطوط زمنية، خرائط طبوغرافية، وثائق تاريخية، جداول) لمرجعي الجديد وفي رحاب الاجتماعيات مع جميع دروس الوحدات الست.",
+        downloadUrl: GRADE4_SOCIAL_MAIN_DRIVE,
+        downloadLabel: "تحميل جذاذات وعروض الاجتماعيات 4AEP",
+        updatedDate: "نونبر 2026 — محين",
+        downloadsCount: 4120,
         featured: true,
         tags: ["جذاذات الاجتماعيات", "تاريخ", "جغرافيا", "تربية مدنية", "الجديد"],
       },
