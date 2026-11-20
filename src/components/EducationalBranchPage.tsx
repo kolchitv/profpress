@@ -277,31 +277,56 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
   };
 
   const handleCardDownloadClick = (item: EducationalResourceItem) => {
-    const rawUrl = item.downloadUrl || "";
-    if (rawUrl.startsWith("?tab=")) {
-      const targetTab = rawUrl.replace("?tab=", "").trim() as TabKey;
+    const rawUrl = (item.downloadUrl || "").trim();
+    const resolvedUrl =
+      rawUrl && rawUrl !== "#"
+        ? rawUrl
+        : item.downloads?.find((d) => d.url && d.url !== "#")?.url?.trim() || "#";
+
+    if (resolvedUrl.startsWith("?tab=")) {
+      const targetTab = resolvedUrl.replace("?tab=", "").trim() as TabKey;
       if (targetTab) {
         onNavigateToTab(targetTab);
         return;
       }
     }
+
+    const fmtLower = (item.format || "").toLowerCase();
+    const resolvedFormat = fmtLower.includes("doc")
+      ? "word"
+      : fmtLower.includes("ppt")
+      ? "pptx"
+      : resolvedUrl.includes("drive.google.com")
+      ? "drive"
+      : "pdf";
+
     const gwSettings = getDownloadGatewaySettings();
     if (gwSettings.isEnabled) {
       setGatewayDownload({
         isOpen: true,
         title: item.downloadLabel || item.title,
-        url: rawUrl || "#",
-        format: item.format.toLowerCase().includes("doc") ? "word" : "pdf",
+        url: resolvedUrl,
+        format: resolvedFormat,
       });
     } else {
-      if (!rawUrl || rawUrl === "#") {
+      if (!resolvedUrl || resolvedUrl === "#") {
         if (onOpenPrintPreview) {
           onOpenPrintPreview();
         } else {
           window.print();
         }
       } else {
-        window.open(rawUrl, "_blank", "noopener,noreferrer");
+        const a = document.createElement("a");
+        a.href = resolvedUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          if (document.body.contains(a)) {
+            document.body.removeChild(a);
+          }
+        }, 500);
       }
     }
   };
@@ -1078,8 +1103,9 @@ export const EducationalBranchPage: React.FC<EducationalBranchPageProps> = ({
             })
           }
           fileTitle={gatewayDownload.title}
-          targetDownloadUrl={gatewayDownload.url}
+          downloadUrl={gatewayDownload.url}
           fileType={gatewayDownload.format}
+          onDirectDownload={onOpenPrintPreview}
         />
       )}
     </div>

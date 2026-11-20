@@ -30,6 +30,8 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  FolderOpen,
+  HardDrive,
 } from "lucide-react";
 import { TeacherProfile } from "../types";
 import {
@@ -40,6 +42,7 @@ import {
   MathLevel1Session,
   ArabicLevel1Session,
   ARABIC_TARL_MINDMAPS,
+  EXPLICIT_WEEKS_1_3_MINDMAPS_PACK,
 } from "../data/mindMapsData";
 import {
   REMEDIATION_LEVELS,
@@ -50,10 +53,13 @@ import {
 import { TarlFrenchMindMap } from "./TarlFrenchMindMap";
 import { ArabicTarlMindMapView } from "./ArabicTarlMindMapView";
 import { RemediationMindMapsViewer } from "./RemediationMindMapsViewer";
+import { DownloadGatewayModal } from "./DownloadGatewayModal";
+import { getDownloadGatewaySettings } from "../utils/downloadGatewaySettings";
 
 export type MindMapCategory =
   | "all"
   | "remediation_intensive"
+  | "explicit_weeks_1_3"
   | "arabic_tarl"
   | "french_level1"
   | "math_level1"
@@ -68,7 +74,7 @@ export interface UnifiedMindMapSearchItem {
   levelLabelAr: string;
   levelLabelFr: string;
   levelBadgeColor: string;
-  subject: "MATH" | "AR" | "FR" | "OTHER";
+  subject: "MATH" | "AR" | "FR" | "SCI" | "OTHER";
   subjectLabelAr: string;
   sessionNumber?: number;
   title: string;
@@ -94,7 +100,7 @@ export const MindMapsHub: React.FC<MindMapsHubProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<MindMapCategory>(initialCategory);
   const [selectedWeekFilter, setSelectedWeekFilter] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<"all" | "MATH" | "AR" | "FR">("all");
+  const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<"all" | "MATH" | "AR" | "FR" | "SCI">("all");
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<number | "all">("all");
   const [selectedSourceFilter, setSelectedSourceFilter] = useState<"all" | "remediation" | "arabic_tarl" | "level1">("all");
   const [remediationLevel, setRemediationLevel] = useState<number>(() => {
@@ -113,6 +119,18 @@ export const MindMapsHub: React.FC<MindMapsHubProps> = ({
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
   const [copiedSuccess, setCopiedSuccess] = useState<boolean>(false);
+  const [copiedPackLink, setCopiedPackLink] = useState<boolean>(false);
+  const [gatewayFile, setGatewayFile] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    type: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+    type: "drive",
+  });
 
   // Selected session indices
   const [selectedFrenchIdx, setSelectedFrenchIdx] = useState<number>(0);
@@ -223,6 +241,36 @@ ${currentArabic.objectifs}
     setTimeout(() => setCopiedSuccess(false), 2500);
   };
 
+  const handleTriggerDriveDownload = (title: string, url: string) => {
+    const gwSettings = getDownloadGatewaySettings();
+    if (gwSettings.isEnabled) {
+      setGatewayFile({
+        isOpen: true,
+        title,
+        url,
+        type: "drive",
+      });
+    } else {
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        if (document.body.contains(a)) {
+          document.body.removeChild(a);
+        }
+      }, 500);
+    }
+  };
+
+  const handleCopyPackLink = () => {
+    navigator.clipboard?.writeText(EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.mainDriveUrl);
+    setCopiedPackLink(true);
+    setTimeout(() => setCopiedPackLink(false), 2500);
+  };
+
   const [visibleResultsCount, setVisibleResultsCount] = useState<number>(24);
 
   // Arabic and French search normalizer
@@ -268,6 +316,30 @@ ${currentArabic.objectifs}
           setRemediationSubject(s.subject);
           setRemediationSessionNumber(s.sessionNumber);
           setSelectedCategory("remediation_intensive");
+          const el = document.getElementById("mindmaps-viewer-zone");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        },
+      });
+    });
+
+    // 1.B Explicit Teaching Weeks 1, 2 & 3 Mind Maps Pack (4 Subjects)
+    EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.subjects.forEach((subj) => {
+      list.push({
+        id: subj.id,
+        sourceCategory: "explicit_weeks_1_3",
+        categoryLabel: "خطاطات التعليم الصريح (الأسابيع 1 و2 و3)",
+        level: 0,
+        levelLabelAr: "الأسابيع 1 و2 و3",
+        levelLabelFr: "S1-S3",
+        levelBadgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300",
+        subject: subj.subjectCode,
+        subjectLabelAr: subj.title,
+        title: `${subj.emoji} خطاطات الأسابيع 1 و2 و3 — ${subj.title}`,
+        topicAr: subj.subtitle,
+        objectivesAr: subj.description,
+        r2PptxUrl: subj.folderUrl,
+        openMindMap: () => {
+          setSelectedCategory("explicit_weeks_1_3");
           const el = document.getElementById("mindmaps-viewer-zone");
           if (el) el.scrollIntoView({ behavior: "smooth" });
         },
@@ -489,7 +561,7 @@ ${currentArabic.objectifs}
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2 justify-end">
-            {selectedCategory !== "tarl_french" && (
+            {selectedCategory !== "tarl_french" && selectedCategory !== "explicit_weeks_1_3" && (
               <button
                 type="button"
                 onClick={() => setIsEditMode(!isEditMode)}
@@ -504,7 +576,7 @@ ${currentArabic.objectifs}
               </button>
             )}
 
-            {selectedCategory !== "tarl_french" && (
+            {selectedCategory !== "tarl_french" && selectedCategory !== "explicit_weeks_1_3" && (
               <button
                 type="button"
                 onClick={handleSaveAll}
@@ -516,7 +588,7 @@ ${currentArabic.objectifs}
               </button>
             )}
 
-            {selectedCategory !== "tarl_french" && (
+            {selectedCategory !== "tarl_french" && selectedCategory !== "explicit_weeks_1_3" && (
               <button
                 type="button"
                 onClick={handleCopySummary}
@@ -554,6 +626,22 @@ ${currentArabic.objectifs}
             <span>خطاطات وعروض الدعم المكثف (جميع المواد والمستويات 1-6)</span>
             <span className="bg-blue-900 text-white text-[10px] font-black px-1.5 py-0.5 rounded">
               يلا تعليم + R2
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("explicit_weeks_1_3")}
+            className={`px-4 py-2 rounded-xl font-black flex items-center gap-2 transition cursor-pointer ${
+              selectedCategory === "explicit_weeks_1_3"
+                ? "bg-emerald-400 text-slate-950 shadow-md ring-2 ring-white/50"
+                : "bg-emerald-900/70 hover:bg-emerald-800 text-emerald-50 border border-emerald-500/40"
+            }`}
+          >
+            <FolderOpen className="w-4 h-4" />
+            <span>خطاطات التعليم الصريح: الأسابيع 1 و2 و3 (4 مواد)</span>
+            <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded">
+              جديد
             </span>
           </button>
 
@@ -621,8 +709,70 @@ ${currentArabic.objectifs}
             <Sparkles className="w-4 h-4 text-amber-300" />
             <span>خطاطة طارل السحابية (TaRL Français)</span>
           </button>
+
+          {onNavigateToTab && (
+            <button
+              type="button"
+              onClick={() => onNavigateToTab("eduraeda_generator")}
+              className="px-4 py-2 rounded-xl font-black flex items-center gap-2 transition cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400/50 shadow-sm"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>مولد الجذاذات والخطاطات (EduRaeda)</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Featured Banner: خطاطات الأسابيع 1 و2 و3 جاهزة للتحميل */}
+      {selectedCategory !== "explicit_weeks_1_3" && (
+        <div className="no-print bg-gradient-to-l from-emerald-50 via-white to-teal-50 border border-emerald-200 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="bg-emerald-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full">
+                جديد • جاهز للتحميل
+              </span>
+              <span className="text-xs font-bold text-emerald-800">
+                {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.updatedLabel}
+              </span>
+            </div>
+            <h2 className="text-base sm:text-lg font-black text-slate-900">
+              📚 {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.title}
+            </h2>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              📖 اللغة العربية &nbsp;•&nbsp; 🇫🇷 اللغة الفرنسية &nbsp;•&nbsp; 🔬 النشاط العلمي &nbsp;•&nbsp; ➗ الرياضيات
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategory("explicit_weeks_1_3");
+                const el = document.getElementById("mindmaps-viewer-zone");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="bg-white hover:bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            >
+              <FolderOpen className="w-4 h-4 text-emerald-600" />
+              <span>تصفح المواد الأربعة</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                handleTriggerDriveDownload(
+                  EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.title,
+                  EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.mainDriveUrl
+                )
+              }
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              <span>تحميل الحقيبة الشاملة (Drive)</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 2. Interactive Search & Filters Bar for All Mind Maps (حقل بحث وتصفية متقدم للخرائط الذهنية) */}
       <div className="no-print bg-white rounded-3xl border border-slate-200 p-5 md:p-6 shadow-sm space-y-4">
@@ -691,6 +841,7 @@ ${currentArabic.objectifs}
               <option value="MATH">🔢 مادة الرياضيات (Maths)</option>
               <option value="AR">📖 مادة اللغة العربية (Arabe)</option>
               <option value="FR">🗣️ مادة اللغة الفرنسية (Français)</option>
+              <option value="SCI">🔬 مادة النشاط العلمي (Éveil Scientifique)</option>
             </select>
           </div>
 
@@ -832,6 +983,8 @@ ${currentArabic.objectifs}
                                   ? "bg-blue-50 text-blue-700 border-blue-200"
                                   : item.subject === "AR"
                                   ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : item.subject === "SCI"
+                                  ? "bg-teal-50 text-teal-700 border-teal-200"
                                   : "bg-sky-50 text-sky-700 border-sky-200"
                               }`}
                             >
@@ -932,6 +1085,157 @@ ${currentArabic.objectifs}
             initialSubject={remediationSubject}
             initialSessionNumber={remediationSessionNumber}
           />
+        ) : selectedCategory === "explicit_weeks_1_3" ? (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Hero Card for Weeks 1, 2 & 3 Mind Maps Pack */}
+            <div className="bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-emerald-700/60 space-y-5">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                <div className="space-y-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full">
+                      📚 جاهز للتحميل • Google Drive
+                    </span>
+                    <span className="bg-white/15 text-emerald-100 text-xs font-bold px-3 py-1 rounded-full border border-white/20">
+                      {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.updatedLabel}
+                    </span>
+                  </div>
+
+                  <h2 className="text-xl sm:text-2xl font-black text-white leading-snug">
+                    {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.title}
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-emerald-50 leading-relaxed max-w-3xl">
+                    {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.announcement}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleTriggerDriveDownload(
+                        EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.title,
+                        EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.mainDriveUrl
+                      )
+                    }
+                    className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 transition cursor-pointer shadow-lg"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span>📥 تحميل جميع خطاطات الأسابيع 1 و2 و3</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyPackLink}
+                    className="bg-white/15 hover:bg-white/25 text-white border border-white/25 font-bold text-xs px-4 py-3.5 rounded-2xl flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    {copiedPackLink ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-300" />
+                        <span>تم نسخ رابط الحقيبة!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>نسخ الرابط</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-white/15 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-100">
+                <span>🌟 {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.closingNote}</span>
+                <span className="font-mono text-[11px] bg-black/25 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                  <HardDrive className="w-3.5 h-3.5 text-amber-300" />
+                  <span>4 مجلدات منظمة حسب المادة الدراسية</span>
+                </span>
+              </div>
+            </div>
+
+            {/* 4 Subject Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {EXPLICIT_WEEKS_1_3_MINDMAPS_PACK.subjects.map((subj) => (
+                <div
+                  key={subj.id}
+                  className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between gap-4"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-12 h-12 rounded-2xl ${subj.accentBg} border ${subj.accentBorder} flex items-center justify-center text-2xl shrink-0`}
+                        >
+                          {subj.emoji}
+                        </div>
+                        <div>
+                          <h3 className="text-base sm:text-lg font-black text-slate-900">
+                            {subj.title}
+                          </h3>
+                          <p className="text-xs text-slate-500 font-bold">
+                            {subj.subtitle}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`text-[11px] font-black px-2.5 py-1 rounded-lg ${subj.accentBg} ${subj.accentText} border ${subj.accentBorder} shrink-0`}
+                      >
+                        {subj.weeksLabel}
+                      </span>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {subj.description}
+                    </p>
+
+                    {subj.subfolders && subj.subfolders.length > 0 && (
+                      <div className="pt-2 space-y-1.5">
+                        <div className="text-[11px] font-bold text-slate-500">
+                          الروابط الفرعية المتوفرة داخل المجلد:
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {subj.subfolders.map((sub) => (
+                            <button
+                              key={sub.id}
+                              type="button"
+                              onClick={() =>
+                                handleTriggerDriveDownload(
+                                  `خطاطات ${subj.title} — ${sub.label}`,
+                                  sub.url
+                                )
+                              }
+                              className="text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                            >
+                              <FolderOpen className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>{sub.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleTriggerDriveDownload(
+                          `خطاطات الأسابيع 1 و2 و3 — ${subj.title}`,
+                          subj.folderUrl
+                        )
+                      }
+                      className={`w-full font-black text-xs px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer shadow-xs ${subj.buttonClass}`}
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>تحميل خطاطات {subj.title} (Google Drive)</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-85" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : selectedCategory === "arabic_tarl" ? (
           <ArabicTarlMindMapView
             teacherProfile={teacherProfile}
@@ -1716,6 +2020,25 @@ ${currentArabic.objectifs}
         </div>
       )}
       </div>
+
+      {/* Download Gateway Modal for Mind Maps Google Drive Packs */}
+      {gatewayFile.isOpen && (
+        <DownloadGatewayModal
+          isOpen={gatewayFile.isOpen}
+          onClose={() =>
+            setGatewayFile({
+              isOpen: false,
+              title: "",
+              url: "",
+              type: "drive",
+            })
+          }
+          fileTitle={gatewayFile.title}
+          downloadUrl={gatewayFile.url}
+          fileType={gatewayFile.type}
+          sourceTopicTitle="قسم الخطاطات الذهنية — خطاطات التعليم الصريح (الأسابيع 1 و2 و3)"
+        />
+      )}
     </div>
   );
 };

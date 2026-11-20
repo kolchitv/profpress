@@ -39,6 +39,21 @@ export const PedagogicalDocsHub: React.FC<PedagogicalDocsHubProps> = ({
 }) => {
   const pedagogicalDocuments = [
     {
+      key: "eduraeda_generator" as TabKey,
+      title: "مولد الجذاذات والخطاطات الذكي (EduRaeda — مدمج داخل بروف بريس)",
+      badge: "مولد تفاعلي مدمج • جديد",
+      badgeColor: "bg-indigo-100 text-indigo-950 border-indigo-300 font-black",
+      icon: Sparkles,
+      iconBg: "bg-indigo-600 text-white",
+      description:
+        "أداة تفاعلية مدمجة تفتح مباشرة داخل منصة بروف بريس لتحويل دروسك ووثائقك التعليمية إلى جذاذات تربوية منظمة وخطاطات ذهنية وبصرية احترافية جاهزة للتعديل والطباعة.",
+      features: [
+        "إعداد وتوليد جذاذات تربوية وخطاطات بصرية في دقائق دون مغادرة بروف بريس",
+        "وضع ملء الشاشة للعمل المريح على الحاسوب واللوحة الرقمية",
+        "إمكانية التعديل المباشر والطباعة والتصدير الجاهز للاستعمال الصفي",
+      ],
+    },
+    {
       key: "intensive_support" as TabKey,
       title: "ملف وحقيبة حصص الدعم المكثف لجميع المستويات (1 إلى 6)",
       badge: "جديد الريادة • 24 يوماً كاملة",

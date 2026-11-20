@@ -640,7 +640,7 @@ export const EducationalResourceEditorModal: React.FC<EducationalResourceEditorM
             })
           }
           fileTitle={previewGatewayFile.title}
-          targetDownloadUrl={previewGatewayFile.url}
+          downloadUrl={previewGatewayFile.url}
           fileType={previewGatewayFile.type}
           fileSize={previewGatewayFile.size}
         />

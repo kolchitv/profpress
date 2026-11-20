@@ -461,6 +461,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Documents & Generators List (Core platform offerings)
   const teacherDocuments = [
     {
+      id: "eduraeda_generator_doc",
+      tab: "eduraeda_generator" as TabKey,
+      title: "مولد الجذاذات والخطاطات الذكي (EduRaeda — يفتح داخل بروف بريس)",
+      category: "مولدات ذكية والخطاطات",
+      cycle: ["primary", "middle", "high"],
+      badge: "جديد • مدمج داخل الموقع",
+      badgeColor: "bg-indigo-100 text-indigo-950 border-indigo-300 font-bold",
+      description:
+        "من درسك إلى خطاطة وجذاذة احترافية في دقائق: مولد تفاعلي مدمج داخل بروف بريس لإعداد الجذاذات التربوية والخطاطات البصرية الجاهزة للتعديل والطباعة لجميع المستويات.",
+      icon: Sparkles,
+      iconColor: "text-indigo-700",
+      iconBg: "bg-indigo-50",
+    },
+    {
       id: "remediation_mindmaps_doc",
       tab: "mindmaps" as TabKey,
       title: "خطاطات الدعم المكثف لجميع المواد والمستويات (Cartes Mentales PPTX)",
@@ -1095,8 +1109,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ========================================================================= */}
       {/* 1. TOP PORTAL CATEGORIES (مستجدات، مقالات، الوثائق التربوية، التعليم الصريح...) */}
       {/* ========================================================================= */}
-      <section className="no-print">
-        {/* 10 Responsive Rounded Cards Bar (5x2 on desktop) with solid colored bottom borders */}
+      <section className="no-print space-y-3">
+        {/* 10 Responsive Rounded Cards Bar (5x2 on desktop) + Featured Generator Card */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {portalCategories.map((item) => {
             const Icon = item.icon;
@@ -1148,6 +1162,39 @@ export const HomePage: React.FC<HomePageProps> = ({
               </button>
             );
           })}
+
+          {/* Featured Prominent Card: مولد الجذاذات والخطاطات الذكي (EduRaeda) */}
+          <button
+            type="button"
+            id="home-featured-eduraeda-card"
+            onClick={() => onNavigateToTab("eduraeda_generator")}
+            className="col-span-2 sm:col-span-3 md:col-span-5 bg-gradient-to-l from-indigo-50 via-white to-violet-50 border border-indigo-200 hover:border-indigo-400 rounded-2xl p-4 sm:px-6 sm:py-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col sm:flex-row items-center justify-between gap-4 group cursor-pointer relative overflow-hidden border-b-4 border-b-indigo-600 text-right"
+            title="فتح مولد الجذاذات والخطاطات الذكي داخل بروف بريس"
+          >
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center transition-transform group-hover:scale-105 shadow-md shadow-indigo-600/20 shrink-0">
+                <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-amber-300" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm sm:text-base font-black text-slate-900 group-hover:text-indigo-900 font-cairo">
+                    مولد الجذاذات والخطاطات الذكي (EduRaeda)
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-600 text-white font-black">
+                    جديد • يفتح داخل بروف بريس
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  حوّل دروسك ووثائقك التعليمية إلى جذاذات تربوية وخطاطات ذهنية احترافية جاهزة للتعديل والطباعة في دقائق
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-indigo-600 group-hover:bg-indigo-700 text-white font-black text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0 transition">
+              <span>فتح المولد الآن</span>
+              <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            </div>
+          </button>
         </div>
       </section>
 

@@ -1164,11 +1164,16 @@ export const ProfessionalExamsPage: React.FC<ProfessionalExamsPageProps> = ({
       )}
 
       {/* Download Gateway Modal */}
-      <DownloadGatewayModal
-        isOpen={gatewayFile.isOpen}
-        file={gatewayFile.file}
-        onClose={() => setGatewayFile({ isOpen: false, file: null })}
-      />
+      {gatewayFile.isOpen && gatewayFile.file && (
+        <DownloadGatewayModal
+          isOpen={gatewayFile.isOpen}
+          fileTitle={gatewayFile.file.title}
+          downloadUrl={gatewayFile.file.url}
+          fileType={gatewayFile.file.fileType || "pdf"}
+          fileSize={gatewayFile.file.size}
+          onClose={() => setGatewayFile({ isOpen: false, file: null })}
+        />
+      )}
     </div>
   );
 };

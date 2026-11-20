@@ -89,23 +89,34 @@ export const EducationalResourceReaderModal: React.FC<
     type = "pdf",
     size?: string
   ) => {
+    const cleanUrl = (url || "").trim();
     if (gatewaySettings.isEnabled) {
       setGatewayFile({
         isOpen: true,
         title,
-        url: url || "#",
+        url: cleanUrl || "#",
         type,
         size,
       });
     } else {
-      if (!url || url === "#") {
+      if (!cleanUrl || cleanUrl === "#") {
         if (onOpenPrintPreview) {
           onOpenPrintPreview();
         } else {
           window.print();
         }
       } else {
-        window.open(url, "_blank", "noopener,noreferrer");
+        const a = document.createElement("a");
+        a.href = cleanUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          if (document.body.contains(a)) {
+            document.body.removeChild(a);
+          }
+        }, 500);
       }
     }
   };
@@ -504,9 +515,10 @@ export const EducationalResourceReaderModal: React.FC<
             })
           }
           fileTitle={gatewayFile.title}
-          targetDownloadUrl={gatewayFile.url}
+          downloadUrl={gatewayFile.url}
           fileType={gatewayFile.type}
           fileSize={gatewayFile.size}
+          onDirectDownload={onOpenPrintPreview}
         />
       )}
     </>

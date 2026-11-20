@@ -25,11 +25,23 @@ import {
 import { DownloadGatewaySettings, FileTypeOption } from "../types";
 import { AdSenseZone } from "./AdSenseZone";
 
+interface GatewayFileFallback {
+  id?: string;
+  title?: string;
+  url?: string;
+  size?: string;
+  year?: string;
+  fileType?: string;
+}
+
 interface DownloadGatewayModalProps {
   isOpen: boolean;
   onClose: () => void;
-  fileTitle: string;
-  downloadUrl: string;
+  fileTitle?: string;
+  downloadUrl?: string;
+  targetDownloadUrl?: string;
+  targetUrl?: string;
+  file?: GatewayFileFallback | null;
   fileType?: FileTypeOption | string;
   fileSize?: string;
   sourceTopicTitle?: string;
@@ -42,12 +54,25 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
   onClose,
   fileTitle,
   downloadUrl,
-  fileType = "pdf",
+  targetDownloadUrl,
+  targetUrl,
+  file,
+  fileType,
   fileSize,
   sourceTopicTitle,
   onDirectDownload,
   onOpenSettings,
 }) => {
+  const effectiveTitle = (fileTitle || file?.title || "ملف التحميل الرسمي").trim();
+  const effectiveUrl = (downloadUrl || targetDownloadUrl || targetUrl || file?.url || "").trim();
+  const effectiveType = fileType || file?.fileType || "pdf";
+  const effectiveSize = fileSize || file?.size;
+  const hasValidExternalUrl =
+    Boolean(effectiveUrl) &&
+    effectiveUrl !== "#" &&
+    !effectiveUrl.startsWith("javascript:");
+  const isGoogleDrive = /drive\.google\.com|docs\.google\.com/i.test(effectiveUrl);
+
   const [settings, setSettings] = useState<DownloadGatewaySettings>(getDownloadGatewaySettings);
   const [secondsLeft, setSecondsLeft] = useState(settings.countdownSeconds);
   const [isReady, setIsReady] = useState(false);
@@ -77,6 +102,20 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
     }
   }, [isOpen]);
 
+  const triggerExternalNavigation = (url: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      if (document.body.contains(a)) {
+        document.body.removeChild(a);
+      }
+    }, 500);
+  };
+
   // Countdown timer effect
   useEffect(() => {
     if (!isOpen || isReady || secondsLeft <= 0) return;
@@ -86,10 +125,9 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
         if (prev <= 1) {
           clearInterval(timer);
           setIsReady(true);
-          // If auto-redirect is enabled
-          if (settings.autoRedirect && downloadUrl && downloadUrl !== "#") {
+          if (settings.autoRedirect && hasValidExternalUrl) {
             setTimeout(() => {
-              window.open(downloadUrl, "_blank", "noopener,noreferrer");
+              triggerExternalNavigation(effectiveUrl);
             }, 600);
           }
           return 0;
@@ -99,7 +137,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isOpen, isReady, secondsLeft, settings.autoRedirect, downloadUrl]);
+  }, [isOpen, isReady, secondsLeft, settings.autoRedirect, hasValidExternalUrl, effectiveUrl]);
 
   if (!isOpen) return null;
 
@@ -110,7 +148,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
 
   // Icon based on file type
   const renderFileIcon = () => {
-    const type = (fileType || "pdf").toLowerCase();
+    const type = (effectiveType || (isGoogleDrive ? "drive" : "pdf")).toLowerCase();
     if (type.includes("pdf")) {
       return (
         <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center font-bold text-lg shadow-xs shrink-0">
@@ -139,7 +177,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
         </div>
       );
     }
-    if (type.includes("drive") || type.includes("cloud")) {
+    if (type.includes("drive") || type.includes("cloud") || isGoogleDrive) {
       return (
         <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-bold text-lg shadow-xs shrink-0">
           <HardDrive className="w-6 h-6" />
@@ -161,38 +199,17 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
   };
 
   const handleCopyLink = () => {
-    if (!downloadUrl || downloadUrl === "#") return;
-    navigator.clipboard?.writeText(downloadUrl);
+    if (!hasValidExternalUrl) return;
+    navigator.clipboard?.writeText(effectiveUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleStartDownload = () => {
-    if (!downloadUrl || downloadUrl === "#" || downloadUrl.startsWith("javascript:")) {
-      if (onDirectDownload) {
-        onDirectDownload();
-      } else {
-        window.print();
-      }
-      onClose();
-      return;
-    }
-
-    try {
-      const a = document.createElement("a");
-      a.href = downloadUrl;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.download = fileTitle ? `${fileTitle}.pdf` : "document.pdf";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        if (document.body.contains(a)) {
-          document.body.removeChild(a);
-        }
-      }, 1000);
-    } catch {
-      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+  const handleStartLocalAction = () => {
+    if (onDirectDownload) {
+      onDirectDownload();
+    } else {
+      window.print();
     }
     onClose();
   };
@@ -268,11 +285,17 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
               <div className="space-y-1 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-[11px] font-black uppercase tracking-wider bg-slate-200 text-slate-800 px-2.5 py-0.5 rounded-md font-mono">
-                    {fileType || "PDF"}
+                    {effectiveType || (isGoogleDrive ? "Drive" : "PDF")}
                   </span>
-                  {fileSize && (
+                  {effectiveSize && (
                     <span className="text-[11px] font-mono text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
-                      الحجم: {fileSize}
+                      الحجم: {effectiveSize}
+                    </span>
+                  )}
+                  {isGoogleDrive && (
+                    <span className="text-[10px] bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                      <HardDrive className="w-3 h-3 text-indigo-600" />
+                      <span>Google Drive</span>
                     </span>
                   )}
                   {settings.safeCheckBadge && (
@@ -284,7 +307,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
                 </div>
 
                 <h3 className="text-sm sm:text-base font-black text-slate-900 font-cairo leading-snug">
-                  {fileTitle || "ملف التحميل الرسمي"}
+                  {effectiveTitle}
                 </h3>
 
                 {sourceTopicTitle && (
@@ -365,17 +388,39 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
 
                 {/* Ready Big Button */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleStartDownload}
-                    className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm px-8 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-700/25 transition cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <Download className="w-5 h-5" />
-                    <span>تحميل الملف الآن (انقر هنا)</span>
-                    <ExternalLink className="w-4 h-4 opacity-80" />
-                  </button>
+                  {hasValidExternalUrl ? (
+                    <a
+                      href={effectiveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        if (onDirectDownload) {
+                          onDirectDownload();
+                        }
+                        setTimeout(onClose, 250);
+                      }}
+                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm px-8 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-700/25 transition cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 no-underline"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>
+                        {isGoogleDrive
+                          ? "الانتقال إلى رابط Google Drive الآن"
+                          : "تحميل الملف الآن (انقر هنا)"}
+                      </span>
+                      <ExternalLink className="w-4 h-4 opacity-80" />
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStartLocalAction}
+                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-sm px-8 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-700/25 transition cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>معاينة / طباعة الوثيقة الآن</span>
+                    </button>
+                  )}
 
-                  {downloadUrl && downloadUrl !== "#" && (
+                  {hasValidExternalUrl && (
                     <button
                       type="button"
                       onClick={handleCopyLink}
@@ -395,6 +440,12 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
                     </button>
                   )}
                 </div>
+
+                {hasValidExternalUrl && (
+                  <p className="text-[11px] text-slate-500 font-mono truncate max-w-md mx-auto pt-1" dir="ltr">
+                    {effectiveUrl}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -430,7 +481,7 @@ export const DownloadGatewayModal: React.FC<DownloadGatewayModalProps> = ({
             {!isReady && (
               <button
                 type="button"
-                onClick={() => setIsReady(true)}
+                onClick={handleSkipCountdown}
                 className="text-xs text-slate-500 hover:text-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition cursor-pointer font-bold"
               >
                 تخطي الانتظار

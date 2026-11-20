@@ -24,6 +24,7 @@ import { MovementsSchoolsPage } from "./components/MovementsSchoolsPage";
 import { PedagogicalDocsHub } from "./components/PedagogicalDocsHub";
 import { DailyDiaryLog } from "./components/DailyDiaryLog";
 import { MindMapsHub } from "./components/MindMapsHub";
+import { EduRaedaGeneratorPage } from "./components/EduRaedaGeneratorPage";
 import { TarlFrenchMindMap } from "./components/TarlFrenchMindMap";
 import { NumberLineTool } from "./components/NumberLineTool";
 import { AttendanceRegisterHub } from "./components/AttendanceRegisterHub";
@@ -110,6 +111,9 @@ export default function App() {
           "holidays",
           "certificates",
           "remarks",
+          "mindmaps",
+          "eduraeda_generator",
+          "tarl_french_mindmap",
           "print_preview",
           "contact",
           "primaire",
@@ -488,6 +492,10 @@ export default function App() {
               initialCategory="remediation_intensive"
               onNavigateToTab={setActiveTab}
             />
+          )}
+
+          {activeTab === "eduraeda_generator" && (
+            <EduRaedaGeneratorPage onNavigateToTab={setActiveTab} />
           )}
 
           {activeTab === "tarl_french_mindmap" && (

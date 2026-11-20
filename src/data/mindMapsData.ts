@@ -1280,3 +1280,140 @@ export const ARABIC_TARL_MINDMAPS: ArabicTarlMindMapSession[] = [
   },
 ];
 
+export interface ExplicitWeeksPackSubfolder {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface ExplicitWeeksPackSubject {
+  id: string;
+  subjectCode: "AR" | "FR" | "SCI" | "MATH";
+  title: string;
+  emoji: string;
+  subtitle: string;
+  weeksLabel: string;
+  description: string;
+  folderUrl: string;
+  subfolders?: ExplicitWeeksPackSubfolder[];
+  accentBg: string;
+  accentBorder: string;
+  accentText: string;
+  buttonClass: string;
+}
+
+export const EXPLICIT_WEEKS_1_3_MINDMAPS_PACK = {
+  title: "خطاطات الأسابيع 1 و2 و3 للتعليم الصريح جاهزة للتحميل!",
+  announcement:
+    "أتقاسم معكم خطاطات الأسابيع الثلاثة الخاصة بالمواد التالية: اللغة العربية، اللغة الفرنسية، النشاط العلمي، والرياضيات.",
+  closingNote: "بالتوفيق للجميع، ومرحبا بكل اقتراحاتكم وملاحظاتكم.",
+  mainDriveUrl:
+    "https://drive.google.com/drive/folders/1BG3Dd74d9JqtDx5shcpLuwj6LcIm-JY-?usp=sharing",
+  updatedLabel: "الأسابيع 1 • 2 • 3 — 2026/2027",
+  subjects: [
+    {
+      id: "explicit-w13-arabic",
+      subjectCode: "AR",
+      title: "اللغة العربية",
+      emoji: "📖",
+      subtitle: "خطاطات اللغة العربية — التعليم الصريح",
+      weeksLabel: "الأسابيع 1 و 2 و 3",
+      description:
+        "خطاطات بصرية جاهزة للتحميل تهم تدبير حصص القراءة، الاستماع والتحدث، الظواهر اللغوية، والكتابة وفق هيكلة التعليم الصريح للأسابيع الثلاثة الأولى.",
+      folderUrl:
+        "https://drive.google.com/drive/folders/1ium-3zKov17eedJLJgRVWuM5xnOgf0GH",
+      subfolders: [
+        {
+          id: "ar-main-2026",
+          label: "خطاطات اللغة العربية الصريح 2026-2027",
+          url: "https://drive.google.com/drive/folders/18TF2fY1a6WorhZK8Vjs7INhCW9Mm9UGS",
+        },
+      ],
+      accentBg: "bg-emerald-50",
+      accentBorder: "border-emerald-200",
+      accentText: "text-emerald-900",
+      buttonClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
+    },
+    {
+      id: "explicit-w13-french",
+      subjectCode: "FR",
+      title: "اللغة الفرنسية",
+      emoji: "🇫🇷",
+      subtitle: "Cartes mentales Français — Enseignement Explicite",
+      weeksLabel: "الأسابيع 1 و 2 و 3",
+      description:
+        "خطاطات ذهنية منظمة بالفرنسية لأنشطة التواصل الشفهي، القراءة المقطعية، المعجم، والأنشطة الاعتيادية للأسابيع 1 و2 و3.",
+      folderUrl:
+        "https://drive.google.com/drive/folders/1i56rJFbARAGADFprOJNghyx0IaCVX_Ou",
+      subfolders: [
+        {
+          id: "fr-main-2026",
+          label: "مجلد خطاطات فرنسية تعليم صريح",
+          url: "https://drive.google.com/drive/folders/1eTnfeqtLX73qGRLyQk6tNaVaTxihYCsR",
+        },
+      ],
+      accentBg: "bg-sky-50",
+      accentBorder: "border-sky-200",
+      accentText: "text-sky-900",
+      buttonClass: "bg-sky-600 hover:bg-sky-700 text-white",
+    },
+    {
+      id: "explicit-w13-science",
+      subjectCode: "SCI",
+      title: "النشاط العلمي",
+      emoji: "🔬",
+      subtitle: "خطاطات النشاط العلمي — نهج التقصي والتعليم الصريح",
+      weeksLabel: "الأسابيع 1 و 2 و 3",
+      description:
+        "خطاطات الأسابيع الثلاثة مرتبة أسبوعاً بأسبوع لدعم استيعاب المفاهيم العلمية وخطوات الملاحظة والفرضية والتجريب والاستنتاج.",
+      folderUrl:
+        "https://drive.google.com/drive/folders/16FEfjuqk6IMirY59daPNFu8j-UiG6iZI",
+      subfolders: [
+        {
+          id: "sci-w1",
+          label: "الأسبوع 1",
+          url: "https://drive.google.com/drive/folders/16qB5H4M5AKkA8CiqWvqDT29zwhnnNZ6v",
+        },
+        {
+          id: "sci-w2",
+          label: "الأسبوع 2",
+          url: "https://drive.google.com/drive/folders/19DSNDT2_FyTHRDdmz0dUn-1Q2cgDdZnb",
+        },
+        {
+          id: "sci-w3",
+          label: "أسبوع 3",
+          url: "https://drive.google.com/drive/folders/1OmLzbG10A21lRVgWmUUG-D7CZ98T5x7d",
+        },
+      ],
+      accentBg: "bg-teal-50",
+      accentBorder: "border-teal-200",
+      accentText: "text-teal-900",
+      buttonClass: "bg-teal-600 hover:bg-teal-700 text-white",
+    },
+    {
+      id: "explicit-w13-math",
+      subjectCode: "MATH",
+      title: "الرياضيات",
+      emoji: "➗",
+      subtitle: "خطاطات الرياضيات — التعليم الصريح",
+      weeksLabel: "الأسابيع 1 و 2 و 3",
+      description:
+        "خطاطات ذهنية ومفاهيمية شاملة للأسابيع الثلاثة في الرياضيات لتسهيل بناء المفاهيم، الحساب الذهني، الممارسة الموجهة والمستقلة.",
+      folderUrl:
+        "https://drive.google.com/drive/folders/17eLkGIAdDAy62i6g1r489Z6MJYZ7c8ll",
+      subfolders: [
+        {
+          id: "math-main-2026",
+          label: "خطاطات الرياضيات الصريح 2026-2027",
+          url: "https://drive.google.com/drive/folders/1cpu99dxgX6tna9-Dg7HtZp56WyO8dKMC",
+        },
+      ],
+      accentBg: "bg-indigo-50",
+      accentBorder: "border-indigo-200",
+      accentText: "text-indigo-900",
+      buttonClass: "bg-indigo-600 hover:bg-indigo-700 text-white",
+    },
+  ] as ExplicitWeeksPackSubject[],
+};
+
+

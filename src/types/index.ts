@@ -23,6 +23,7 @@ export type TabKey =
   | "certificates"
   | "remarks"
   | "mindmaps" // قسم الخطاطات الذهنية الشامل (Schémas & Cartes Mentales)
+  | "eduraeda_generator" // مولد الجذاذات والخطاطات المدمج (EduRaeda)
   | "tarl_french_mindmap" // خطاطة ذهنية طارل الفرنسية (Carte Mentale TaRL Français)
   | "number_line" // وسيلة تعليمية: تمثيل الأعداد على خط الأعداد (Droite graduée et fractions)
   | "attendance_register" // سجل حضور وغياب التلاميذ (نظام 4 أيام/الأسبوع)

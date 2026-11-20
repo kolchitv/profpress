@@ -711,7 +711,7 @@ export const TopicArticlePageView: React.FC<TopicArticlePageViewProps> = ({
           isOpen={gatewayFile.isOpen}
           onClose={() => setGatewayFile((prev) => ({ ...prev, isOpen: false }))}
           fileTitle={gatewayFile.title}
-          targetUrl={gatewayFile.url}
+          downloadUrl={gatewayFile.url}
           fileType={gatewayFile.type}
           fileSize={gatewayFile.size}
         />

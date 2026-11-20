@@ -79,6 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Pedagogical documents list consolidated under "وثائق تربوية"
   const pedagogicalDocs = [
+    { key: "eduraeda_generator" as TabKey, label: "مولد الجذاذات والخطاطات (EduRaeda)", icon: Sparkles, badge: "مولد ذكي" },
     { key: "intensive_support" as TabKey, label: "حصص الدعم المكثف (جميع المستويات)", icon: Layers, badge: "جديد 1-6" },
     { key: "attendance_register" as TabKey, label: "سجل الحضور والغياب (4 أيام)", icon: UserCheck, badge: "تفاعلي" },
     { key: "mindmaps" as TabKey, label: "خطاطات ذهنية وعروض الدعم (جميع المواد 1-6)", icon: Sparkles, badge: "جديد 432 حصة" },
@@ -311,7 +312,7 @@ export const Header: React.FC<HeaderProps> = ({
                       isPedagogicalDocActive ? "bg-amber-400 text-slate-950" : "bg-emerald-100 text-emerald-800"
                     }`}
                   >
-                    17 وثيقة
+                    18 وثيقة
                   </span>
                 )}
               </button>
@@ -441,6 +442,27 @@ export const Header: React.FC<HeaderProps> = ({
             <span>التعليم الصريح</span>
             <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-bold">
               الريادة
+            </span>
+          </button>
+
+          {/* مولد الجذاذات والخطاطات المدمج (EduRaeda) */}
+          <button
+            key="eduraeda_generator"
+            id="nav-tab-eduraeda-generator"
+            onClick={() => {
+              setIsDocsDropdownOpen(false);
+              onSelectTab("eduraeda_generator");
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+              activeTab === "eduraeda_generator"
+                ? "bg-indigo-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-indigo-50 hover:text-indigo-900"
+            }`}
+          >
+            <Sparkles className={`w-4 h-4 ${activeTab === "eduraeda_generator" ? "text-amber-300" : "text-indigo-600"}`} />
+            <span>مولد الجذاذات والخطاطات</span>
+            <span className="text-[10px] bg-indigo-100 text-indigo-900 px-1.5 py-0.2 rounded-full font-bold">
+              جديد
             </span>
           </button>
 
